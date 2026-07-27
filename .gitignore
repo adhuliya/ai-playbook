@@ -1,0 +1,6 @@
+# Keep playbook source assets trackable even if core.excludesFile
+# ignores .cursor/ or .dev-notes/ globally.
+!.cursor/
+!.cursor/**
+!.dev-notes/
+!.dev-notes/**
