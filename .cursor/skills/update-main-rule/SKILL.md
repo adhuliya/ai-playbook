@@ -30,17 +30,19 @@ If an old `.cursor/rules/main.mdc` exists, remove it after writing `dev-main.mdc
 
 ## Required behavior in the rule
 
-1. **Map** the fixed `.dev-notes` layout (read files; do not invent policy):
+1. **Define** requirement words (MUST / SHOULD / MAY table) as global agent
+   vocabulary.
+2. **Map** the fixed `.dev-notes` layout (read files; do not invent policy):
    - `definition.md` — project definition
    - `journal.md` — global major-change one-liners (append via `journal` skill only)
    - `knowledge/` — project knowledge (`knowledge/dev-notes.md`)
    - `artifacts/` — project artifacts (`artifacts/dev-notes.md`)
    - `activities/` — `workon` activities
    - `dev-guides/` — hierarchical guides
-2. **Read** guides using deepest-path discovery; escalate via Related only.
-3. **Do not** invoke `dev-guides` for reading — only for create/rewrite/audit/delete
+3. **Read** guides using deepest-path discovery; escalate via Related only.
+4. **Do not** invoke `dev-guides` for reading — only for create/rewrite/audit/delete
    when explicitly requested.
-4. Prefer live tree over stale guide one-liners; factual one-liner fixes OK inline.
+5. Prefer live tree over stale guide one-liners; factual one-liner fixes OK inline.
 
 ## Canonical template
 
@@ -53,7 +55,21 @@ description: Navigate .dev-notes; read dev-guides (project-agnostic).
 alwaysApply: true
 ---
 
-# .dev-notes
+# Requirement words
+
+Use the following vocabulary:
+
+| Word | Meaning |
+|------|---------|
+| MUST / REQUIRED / SHALL | Absolute; always do |
+| MUST NOT / SHALL NOT | Absolute; never do |
+| SHOULD / RECOMMENDED | Strong default; skip only with a valid documented reason |
+| SHOULD NOT / NOT RECOMMENDED | Strong avoid; only if necessary |
+| MAY / OPTIONAL | Truly optional |
+
+Examples: MUST validate input. SHALL NOT share private user data. SHOULD use plain words. MAY suggest extras when useful.
+
+# .dev-notes directory
 
 If present, use for context. Do not invent policy. Do not bulk-read.
 
@@ -96,6 +112,5 @@ present. Escalate only via Related or clear cross-folder need.
 
 1. Confirm any layout change with the user if diverging from the template.
 2. Write `.cursor/rules/dev-main.mdc` from the canonical template (or agreed delta).
-3. Remove stale `.cursor/rules/main.mdc` if present.
-4. Keep the rule short; no project examples (`pkg/…`, product names, etc.).
-5. Show a one-line summary of what changed; stop.
+3. Keep the rule short; no project examples (`pkg/…`, product names, etc.).
+4. Show a summary of what changed; stop.

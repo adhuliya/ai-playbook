@@ -3,6 +3,20 @@ description: Navigate .dev-notes; read dev-guides (project-agnostic).
 alwaysApply: true
 ---
 
+# Requirement words
+
+Use the following vocabulary:
+
+| Word | Meaning |
+|------|---------|
+| MUST / REQUIRED / SHALL | Absolute; always do |
+| MUST NOT / SHALL NOT | Absolute; never do |
+| SHOULD / RECOMMENDED | Strong default; skip only with a valid documented reason |
+| SHOULD NOT / NOT RECOMMENDED | Strong avoid; only if necessary |
+| MAY / OPTIONAL | Truly optional |
+
+Examples: MUST validate input. SHALL NOT share private user data. SHOULD use plain words. MAY suggest extras when useful.
+
 # .dev-notes
 
 If present, use for context. Do not invent policy. Do not bulk-read.
