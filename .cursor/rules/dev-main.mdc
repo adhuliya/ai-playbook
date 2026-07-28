@@ -17,7 +17,7 @@ Use the following vocabulary:
 
 Examples: MUST validate input. SHALL NOT share private user data. SHOULD use plain words. MAY suggest extras when useful.
 
-# .dev-notes
+# .dev-notes directory
 
 If present, use for context. Do not invent policy. Do not bulk-read.
 

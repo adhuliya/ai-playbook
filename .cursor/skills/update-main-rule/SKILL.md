@@ -43,6 +43,11 @@ If an old `.cursor/rules/main.mdc` exists, remove it after writing `dev-main.mdc
 4. **Do not** invoke `dev-guides` for reading — only for create/rewrite/audit/delete
    when explicitly requested.
 5. Prefer live tree over stale guide one-liners; factual one-liner fixes OK inline.
+6. **Trigger (MUST):** read the deepest matching guide before modifying/adding
+   files under a path it covers.
+7. **Keep guides fresh (MUST):** fix any one-liner a change makes factually
+   wrong (renamed/moved/deleted path, changed build/test command, stale role
+   line) in the same change; note material drift for the `dev-guides` skill.
 
 ## Canonical template
 
@@ -90,22 +95,35 @@ If present, use for context. Do not invent policy. Do not bulk-read.
 # Live tree wins
 
 Repo source tree is source of truth. If a guide disagrees on specifics, trust the
-tree; fix clearly stale factual one-liners in the same change. Material guide
-rewrites: `dev-guides` skill.
+tree (see "Keep guides fresh" below for your upkeep duty).
 
 # Read guides (no `dev-guides` skill)
 
-Open guides yourself when needed — never invoke `dev-guides` only to read.
+Open guides yourself — never invoke `dev-guides` only to read.
+
+**Trigger (MUST):** Before you modify or add files under a project path `P`, read
+the deepest matching `dev-guide.md` for `P` if one exists. Read-only exploration
+or a trivial single-file lookup does not require this.
 
 **Find for path `P`:** `.dev-notes/dev-guides/<P>/dev-guide.md`, else walk up
-(`a/b/c` → `a/b` → `a`), else root `dev-guides/dev-guide.md`. Sparse is normal.
-Do not auto-open root/siblings. Re-open when the subtree changes and needs its guide.
+(`a/b/c` → `a/b` → `a`), else root `dev-guides/dev-guide.md`. Sparse is normal
+(intermediate folders may have no guide). Do not auto-open root/siblings. Re-open
+when the subtree changes and needs its guide.
 
-**Use:** Purpose, Layout, Build/test/run, Invariants, Key entry points, Common
-tasks. Root = thin index; detail in deeper guides. No Parent/Children blocks.
+**Use:** Purpose, Invariants/Gotchas, Layout, Key entry points, Build/test/run.
+Root = thin structural index (paths → roles, pipeline, build entrypoint); it does
+not restate vision (see `definition.md`). No Parent/Children blocks.
 
-**Related:** Repo paths only. For `Q`, open `dev-guides/<Q>/dev-guide.md` if
-present. Escalate only via Related or clear cross-folder need.
+**Related:** Repo-rooted paths only. For `Q`, open `dev-guides/<Q>/dev-guide.md`
+if present. Escalate only via Related or clear cross-folder need.
+
+# Keep guides fresh (MUST)
+
+If your change makes a `dev-guide.md` factually wrong — a renamed/moved/deleted
+path it lists, a changed build/test command, a stale role line — you MUST fix
+that one-liner in the same change. For material drift (Purpose, Invariants,
+placement, hierarchy, Related), do not rewrite here: note it for the `dev-guides`
+skill.
 ```
 
 ## Workflow
