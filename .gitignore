@@ -4,3 +4,6 @@
 !.cursor/**
 !.dev-notes/
 !.dev-notes/**
+
+__pycache__/
+*.pyc
