@@ -6,76 +6,54 @@ disable-model-invocation: true
 
 # Optimize Tokens
 
-Single operating mode: balanced compression for clarity and token efficiency.
+Goal: keep all meaning and constraints, remove repetition, and stay easy to read.
 
-Goal: keep meaning and constraints, remove repetition, stay human-readable.
+Balance the two. If shortening text makes it unclear, keep it clear even if it costs a few tokens. Clarity always wins over saving tokens.
 
-## Non-negotiables
+## Never remove
 
-1. Never remove safety warnings, acceptance criteria, or required constraints.
-2. Keep API names, function names, commands, flags, schema names, and exact error strings verbatim.
-3. If wording becomes ambiguous, rewrite for clarity even if it costs a few tokens.
+1. Safety warnings, acceptance criteria, or required constraints.
+2. Exact names: API names, function names, commands, flags, schema names, and exact error strings. Copy them character-for-character.
 
-## Deterministic workflow
+## Steps
 
-1. Detect repetition:
-   - Same policy/decision appears 2+ times.
-   - Same instruction appears with minor wording changes.
-2. Centralize policy:
-   - Create one canonical section: `## Decision Policy` (or `## <topic> Policy`).
-   - Move complete decision logic there.
-3. Replace duplicates:
-   - Use: `Apply the rules in \`Decision Policy\`.`
-4. Tighten local sections:
-   - Keep only section-specific actions.
-   - Remove repeated policy text.
-5. Validate:
-   - Every reference resolves to a real section.
-   - No required rule was removed.
-   - No duplicate policy blocks remain.
+Do these in order.
 
-## Rewrite rules (in order)
+1. Cut filler words. Examples:
+   - "It is important to note that" -> delete the whole phrase.
+   - "In order to" -> "To".
+   - "at this point in time" -> "now".
+2. Make weak wording firm. Pick one clear meaning:
+   - "should generally" -> "should" or "must".
+   - "try to" -> "do" or "do not".
+3. Merge duplicate bullets. If two bullets say the same action, keep one. Keep the more specific wording.
+4. Use one word for one thing. Do not mix "user", "customer", and "client" for the same idea. Choose one and use it everywhere.
+5. Keep only examples that teach something new. Delete examples that repeat a pattern already shown.
+6. Centralize repeated policy. See below.
 
-1. Remove filler:
-   - `It is important to note that` -> remove
-   - `In order to` -> `To`
-   - `at this point in time` -> `now`
-2. Replace weak modality:
-   - `should generally` -> `should` or `must` (choose explicitly)
-   - `try to` -> `do` or `do not`
-3. Merge overlap:
-   - Merge bullets expressing the same action.
-   - Keep the most specific wording.
-4. Keep terminology canonical:
-   - Use one term consistently (`skill`, not `skill/tool/helper` mix).
-5. Keep only high-value examples:
-   - Keep examples only when they show a unique transformation pattern.
+## Centralize repeated policy
 
-## Policy centralization pattern
+Do this only when the same decision rule appears in 2 or more places.
 
-Trigger:
-- A decision rule appears in 2+ places.
+1. Create one section named "Decision Policy" (or "<Topic> Policy").
+2. Move the full decision rule into that section.
+3. In each place that used the rule, replace it with this sentence:
+   Apply the rules in the "Decision Policy" section.
+4. Leave the local sections with their own steps only. Do not repeat the policy.
 
-Implementation:
-1. Add `## Decision Policy`.
-2. Move decision conditions into that section.
-3. Replace duplicates with `Apply the rules in \`Decision Policy\`.`
-4. Keep local sections focused on execution steps only.
+## Before and after examples
 
-## Examples
-
-Example 1 - verbose response -> concise response
+Verbose response -> concise response:
 - Before: "I can certainly help you with that task. What I would like to do first is inspect the repository so I can better understand the implementation before proceeding."
 - After: "I'll inspect the repository first, then apply the changes."
 
-Example 2 - scattered policy -> centralized policy
-- Before: Intake, Execution, and Validation each restate branch-selection logic.
-- After: One `## Branch-Selection` section; dependent sections use `Apply the rules in the \`Branch-Selection\` section.`
+Scattered policy -> one shared section:
+- Before: The Intake, Execution, and Validation sections each explain the same branch-selection logic.
+- After: One "Branch-Selection" section holds the logic. The other sections say: Apply the rules in the "Branch-Selection" section.
 
-## Final quality gate
+## Check before finishing
 
-- Required constraints and safety text preserved.
-- Repeated policy centralized or intentionally kept with a documented exception.
-- References valid and unambiguous.
-- Text is shorter, clearer, and quick to scan.
-
+- No safety warning or required constraint was removed.
+- Every "Apply the rules in ..." sentence points to a section that exists.
+- No policy is written in two places.
+- The text is shorter and still clear on one read.
