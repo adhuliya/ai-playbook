@@ -29,6 +29,12 @@ Keep the metadata table in the **first ~10 lines** (title + table) so listing st
 
 <Concise desired outcome.>
 
+# Scope
+
+<One or two human-readable paragraphs: the whole activity scope and how it fits
+the project. Set after initial grilling; near-fixed afterward. Major change =
+`replan-work`.>
+
 # Background and Special Notes
 
 <Context plus durable global notes that must not be buried in the journal.>
