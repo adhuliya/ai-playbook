@@ -1,0 +1,15 @@
+---
+description: Always provide action summary and directional conclusion
+alwaysApply: true
+---
+
+# Response Summary and Conclusion
+
+At the end of each completed task response, include:
+
+- A bullet list summarizing the concrete actions taken.
+- A short overall conclusion that explains:
+  - the general direction of the work completed, and
+  - what actions the user should take next.
+
+Keep this section concise, practical, and directly tied to the work performed.
