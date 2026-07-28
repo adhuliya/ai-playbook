@@ -61,7 +61,8 @@ Policy questions include:
 - whether a directory deserves a guide
 - guide placement when ancestors are skipped
 - Related entries
-- adding or removing template sections
+- changing the *core* required section set (adding free-form extra sections like
+  Caveats/Gotchas/Background is fine without grilling)
 - line-budget exceptions
 - renaming, deleting, or merging guides
 - changing a guide's purpose or invariants
@@ -75,7 +76,7 @@ Material changes include:
 - Guide placement
 - Related entries
 - Guide hierarchy decisions
-- Template structure
+- The core required section set (not free-form extra sections)
 
 Pure factual corrections do **not** require grilling, for example:
 
@@ -119,20 +120,26 @@ Normally skip:
 
 # Guide template
 
-Default required sections (see `template.md`)
+Core required sections, in order (see `template.md`). The order is deliberate:
+operational guidance an agent needs before changing code comes first.
 
 1. Purpose
-2. Layout
-3. Build / test / run
-4. Invariants
-5. Related (optional)
+2. Invariants
+3. Layout
+4. Build / test / run
 
 Optional sections:
 
+- Gotchas / Caveats (surprises, traps, partial support)
 - Key entry points
+- Related
 - Common tasks
 
-Never include Parent/Children navigation.
+Agents MAY add free-form extra sections when a directory genuinely needs them
+(no grill). Grilling is required only to change the *core* required set.
+
+Never include Parent/Children navigation. Never restate guide meta-policy
+("prefer live tree", "use the dev-guides skill") — it lives in `dev-main.mdc`.
 
 ---
 
@@ -152,8 +159,9 @@ Example:
 
 Rules:
 
-- Use project paths only.
-- Never reference `.dev-notes/dev-guides/...`.
+- Use repo-rooted project paths only (the reader resolves each to
+  `.dev-notes/dev-guides/<path>/dev-guide.md`; a wrong root breaks lookup).
+- Never reference `.dev-notes/dev-guides/...` directly.
 - Related exists for navigation, not strictly for documentation.
 - Omit the section when no clear dependency exists.
 - Avoid weak "see also" links.
@@ -166,9 +174,12 @@ Always enforce:
 
 - No tutorials
 - No API reference dumps
-- No large file listings
+- No large file listings — Layout is selective (only non-obvious roles + key
+  subdirs), never a mirror of `ls`; the live tree is authoritative for the rest
 - No documenting generated or gitignored content
-- No duplicated vision/style/scope documents
+- No duplicated vision/style/scope documents (that is `definition.md`)
+- No restating guide meta-policy ("prefer live tree", "use the dev-guides skill")
+  — it lives in `dev-main.mdc`
 - No dates
 - No Parent/Children navigation
 - Avoid repeating information already covered by ancestor guides
@@ -195,13 +206,12 @@ done
   [ -f .dev-notes/dev-guides/dev-guide.md ] && \
   echo .dev-notes/dev-guides/dev-guide.md
 
-# Immediate child guides
+# Descendant guides under G (any depth — ancestor skips are allowed, so a child
+# guide may sit several unguided levels below G). Exclude G's own guide.
 G=pkg
-if [ -z "$G" ]; then
-  find .dev-notes/dev-guides -mindepth 2 -maxdepth 2 -name dev-guide.md | sort
-else
-  find ".dev-notes/dev-guides/$G" -mindepth 2 -maxdepth 2 -name dev-guide.md | sort
-fi
+base=".dev-notes/dev-guides${G:+/$G}"
+find "$base" -mindepth 1 -name dev-guide.md \
+  ! -path "$base/dev-guide.md" | sort
 ```
 
 ---
@@ -217,8 +227,9 @@ rebuild). Follow the Decision policy throughout.
    directories).
 2. Propose which directories deserve guides (Placement rules). Grill until there
    is shared agreement — including ancestor skips and root vs folder split.
-3. Create the root guide at `.dev-notes/dev-guides/dev-guide.md` first (thin
-   index only):
+3. Create the root guide at `.dev-notes/dev-guides/dev-guide.md` first — a thin
+   *structural* index only (do not restate vision/scope/terms; that is
+   `.dev-notes/definition.md`, link don't duplicate):
    - top-level path → role table
    - high-level pipeline (if any)
    - top-level build entrypoint (`Makefile` / `make help`, or project equivalent)
@@ -300,8 +311,10 @@ Progress:
 - [ ] 1. Follow the Decision policy (grill material forks)
 - [ ] 2. Explore the live project tree
 - [ ] 3. Agree placement (initial set) or target path (single guide)
-- [ ] 4. Create or update guide(s) from template.md
-- [ ] 5. Add Related only for clear dependencies
-- [ ] 6. Fix obviously stale ancestor role lines
-- [ ] 7. Keep within line budget
+- [ ] 4. Create or update guide(s) from template.md (core order:
+        Purpose → Invariants → Layout → Build; extras allowed)
+- [ ] 5. Keep Layout selective; Related repo-rooted; no meta-policy restated
+- [ ] 6. Root guide = structure only (vision stays in definition.md)
+- [ ] 7. Fix obviously stale ancestor role lines
+- [ ] 8. Keep within line budget
 ```

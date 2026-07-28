@@ -5,7 +5,7 @@ not an exhaustive listing. For work under a path, open the deepest matching
 folder guide under `.dev-notes/dev-guides/` instead of reading everything here.
 Prefer the live tree if this file disagrees; fix clearly stale one-liners in the
 same change. Create/maintain guides with the `dev-guides` skill. Scheme:
-[`.cursor/rules/dev-guide.mdc`](../../.cursor/rules/dev-guide.mdc).
+[`.cursor/rules/dev-main.mdc`](../../.cursor/rules/dev-main.mdc).
 
 ## Pipeline
 
