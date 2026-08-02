@@ -7,7 +7,11 @@
 #     on overlap) against the target's whole .cursor/ tree. Anything found
 #     only in the target is pulled back into the project's overlay.
 #   - .dev-notes: fully bidirectional against
-#     artifacts/live-notes/<project>/dev-notes in the playbook.
+#     artifacts/live-notes/<project>/dev-notes in the playbook, except
+#     dev-guides/** (hub-only; see guides domain below).
+#   - Project dev-guides: bidirectional between
+#     live-notes/<project>/dev-notes/dev-guides/<P>/dev-guide.md and
+#     <P>/dev-guide.md at the target repo root (P outside .dev-notes/).
 #
 # Paths already hard-linked to the correct counterpart are no-ops, so this is
 # safe to re-run. Paths that exist on both sides with *different* content are
@@ -77,6 +81,7 @@ fi
 PROJECTS_FILE="$PLAYBOOK_ROOT/projects.txt"
 STRUCTURE="$PLAYBOOK_ROOT/artifacts/dev-notes-structure"
 LIVE_NOTES="$PLAYBOOK_ROOT/artifacts/live-notes/$PROJECT/dev-notes"
+LIVE_GUIDES="$LIVE_NOTES/dev-guides"
 OVERLAY_ROOT="$PLAYBOOK_ROOT/${PROJECT}.cursor"
 SHARED_CURSOR="$PLAYBOOK_ROOT/.cursor"
 DEVNOTES_DEST="$TARGET_ROOT/.dev-notes"
@@ -116,6 +121,55 @@ collect_files() {
     while IFS= read -r -d '' f; do
       printf '%s%s%s\n' "$(rel_under "$src_root" "$f")" "$SEP" "$f"
     done
+}
+
+# dev-guides/** in live-notes is hub storage only — never mirror into target .dev-notes/.
+devnotes_rel_ok() {
+  local rel="$1"
+  [[ "$rel" == dev-guides ]] && return 1
+  [[ "$rel" == dev-guides/* ]] && return 1
+  return 0
+}
+
+collect_devnotes_files() {
+  local src_root="$1"
+  [[ -d "$src_root" ]] || return 0
+  find -P "$src_root" -type f -print0 |
+    while IFS= read -r -d '' f; do
+      local rel
+      rel="$(rel_under "$src_root" "$f")"
+      devnotes_rel_ok "$rel" || continue
+      printf '%s%s%s\n' "$rel" "$SEP" "$f"
+    done
+}
+
+# Target-side project guides: <P>/dev-guide.md where P is outside .dev-notes/.
+collect_project_guides_files() {
+  local root="$1"
+  [[ -d "$root" ]] || return 0
+  find -P "$root" -type f -name dev-guide.md -print0 |
+    while IFS= read -r -d '' f; do
+      local rel
+      rel="$(rel_under "$root" "$f")"
+      [[ "$rel" == .dev-notes/* ]] && continue
+      [[ "$rel" == .dev-notes/dev-guides/* ]] && continue
+      printf '%s%s%s\n' "$rel" "$SEP" "$f"
+    done
+}
+
+# Playbook hub: live-notes/.../dev-guides/<P>/dev-guide.md → target <P>/dev-guide.md
+collect_live_guides_forward() {
+  local src_root="$1"
+  [[ -d "$src_root" ]] || return 0
+  find -P "$src_root" -type f -name dev-guide.md -print0 |
+    while IFS= read -r -d '' f; do
+      printf '%s%s%s\n' "$(rel_under "$src_root" "$f")" "$SEP" "$f"
+    done
+}
+
+warn_legacy_devnotes_devguides() {
+  [[ -d "$DEVNOTES_DEST/dev-guides" ]] || return 0
+  echo "warning: $DEVNOTES_DEST/dev-guides/ is obsolete (guides now live at <P>/dev-guide.md in the project tree). Remove it manually when ready." >&2
 }
 
 ensure_project_known() {
@@ -339,11 +393,25 @@ sync_devnotes_domain() {
   local forward_file target_file
   forward_file="$(mktemp)"
   target_file="$(mktemp)"
-  collect_files "$LIVE_NOTES" >"$forward_file"
-  collect_files "$DEVNOTES_DEST" >"$target_file"
+  collect_devnotes_files "$LIVE_NOTES" >"$forward_file"
+  collect_devnotes_files "$DEVNOTES_DEST" >"$target_file"
 
   process_domain "$forward_file" "$target_file" "$DEVNOTES_DEST" \
     "$LIVE_NOTES" ".dev-notes/"
+
+  rm -f "$forward_file" "$target_file"
+}
+
+sync_guides_domain() {
+  mkdir -p "$LIVE_GUIDES"
+  local forward_file target_file
+  forward_file="$(mktemp)"
+  target_file="$(mktemp)"
+  collect_live_guides_forward "$LIVE_GUIDES" >"$forward_file"
+  collect_project_guides_files "$TARGET_ROOT" >"$target_file"
+
+  process_domain "$forward_file" "$target_file" "$TARGET_ROOT" \
+    "$LIVE_GUIDES" ""
 
   rm -f "$forward_file" "$target_file"
 }
@@ -385,6 +453,8 @@ compute_exclusions
 
 sync_cursor_domain
 sync_devnotes_domain
+warn_legacy_devnotes_devguides
+sync_guides_domain
 
 print_report
 

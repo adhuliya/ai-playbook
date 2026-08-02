@@ -1,33 +1,19 @@
-# span/test/analyze — dev guide
+# span/test/analyze -- Dev-Guide
 
-## Purpose
+Lit FileCheck tests for `span analyze` (intra/inter clients).
 
-Lit FileCheck tests for `span analyze` (intra/inter clients). Plan:
-[`prompts/analyze-test.md`](../../../../../prompts/analyze-test.md).
+## Notes
 
-## Layout
+- Plan: `prompts/analyze-test.md`.
+- **Invariants:** exactly one `.spir.pb` input (link first if needed); `--analysis` required; intra analyzes all bodies; `--entry` ignored on intra.
+- **Run:** `make slang-dbg span-dbg`; `cd span/test && python3 run-tests.py -v -f 'analyze/'`.
 
-| Path | Role |
-|------|------|
-| `botbot_smoke.analyze.c` | P0 harness: `--analysis=botbot` |
-| `livevars_intra.analyze.c` | P1: `--analysis=livevars --mode=intra` |
-| `pointsto_intra.analyze.c` | P2: `--analysis=pointsto --mode=intra` |
-| `waveA_inter.analyze.c` | P3/P4: livevars+pointsto `--mode=inter --k=2` |
+## Artifacts
 
-## Build / test / run
-
-```bash
-make slang-dbg span-dbg
-cd span/test && python3 run-tests.py -v -f 'analyze/'
-```
-
-## Invariants
-
-- Exactly one `.spir.pb` input (link multi-TU first)
-- `--analysis` is required
-- Intra analyzes all function bodies; dumps all; `--entry` ignored
-
-## Related
-
-- `span/pkg/analysis` — runners / fact dump
-- `span/pkg/clients` — concrete analyses under test
+| Name | Description |
+|------|-------------|
+| `span/test/analyze/botbot_smoke.analyze.c` | `--analysis=botbot` |
+| `span/test/analyze/livevars_intra.analyze.c` | `--analysis=livevars --mode=intra` |
+| `span/test/analyze/pointsto_intra.analyze.c` | `--analysis=pointsto --mode=intra` |
+| `span/test/analyze/waveA_inter.analyze.c` | Inter mode `--k=2` |
+| `span/pkg/analysis`, `span/pkg/clients` | Runners and analyses under test |

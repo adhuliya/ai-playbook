@@ -1,40 +1,19 @@
-# span/test/load — dev guide
+# span/test/load -- Dev-Guide
 
-## Purpose
+Lit wrappers: slang → `.spir.pb` → `span load --check` using `slang/test` C (no body copies).
 
-Thin lit wrappers that drive **slang → `.spir.pb` → `span load --check`** using
-the existing `slang/test` C corpus (no C body copies).
+## Notes
 
-## Layout
+- **Sync:** when slang lit C changes, `gen-spanir-tests` / plan `prompts/span-ir.md`.
+- **Invariants:** no copied C bodies; Tier B (`span load --check`); skip `multi/` until Tier D unless requested.
+- **Not in manifest (by design):** `slang/test/src/`, `manual/`, `multi/`, `proto_001.c`, `slang_on_src.c` pattern.
+- **Run:** `make slang-dbg span-dbg`; `cd span/test && python3 run-tests.py -v -f 'load/'`.
 
-| Path | Role |
-|------|------|
-| `manifest.txt` | Sorted relative paths under `slang/test/` in this suite |
-| `*.load.c` / `*/`*.load.c` | Lit wrappers (RUN only) |
-| Category dirs | Mirror `slang/test/{expr,ctrl,call,agg,ptr,switch_case}/` (+ top-level smokes) |
+## Artifacts
 
-**Not synced (by design):** `src/`, `manual/`, `multi/` (Tier D), `proto_001.c`
-(`RUN: true`), `slang_on_src.c` (drives `src/` corpus).
-
-## Sync
-
-When slang lit C files change, run skill `gen-spanir-tests` / `/gen-spanir-tests`.
-Plan: [`prompts/span-ir.md`](../../../../../prompts/span-ir.md).
-
-## Build / run
-
-```bash
-make slang-dbg span-dbg
-cd span/test && python3 run-tests.py -v -f 'load/'
-```
-
-## Invariants
-
-- Do not copy C program bodies from `slang/test`
-- Prefer Tier B (`span load --check`); do not hardcode wire eids
-- Skip `multi/` until Tier D (link) unless explicitly requested
-
-## Related
-
-- `slang/test` — C lit corpus these wrappers drive (no body copies)
-- `span/pkg/spir` — load / ValidateLoadedTU
+| Name | Description |
+|------|-------------|
+| `span/test/load/manifest.txt` | Sorted `slang/test/` paths in suite |
+| `span/test/load/*.load.c` | Lit RUN-only wrappers |
+| `slang/test/` | Source C programs |
+| `span/pkg/spir` | Load and `ValidateLoadedTU` |

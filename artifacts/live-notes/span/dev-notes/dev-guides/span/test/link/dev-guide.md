@@ -1,28 +1,18 @@
-# span/test/link — dev guide
+# span/test/link -- Dev-Guide
 
-## Purpose
+Lit drivers for multi-TU link and single-input serialize (`span link -o`).
 
-Lit drivers for **multi-TU link** and **serialize-only** (`span link -o` with
-one input). Reuses `slang/test/multi/` C sources — no body copies.
+## Notes
 
-Plan: [`prompts/span-linker.md`](../../../../../prompts/span-linker.md),
-[`prompts/spir-serializer.md`](../../../../../prompts/spir-serializer.md).
+- Reuses `slang/test/multi/` sources — no body copies.
+- Plans: `prompts/span-linker.md`, `prompts/spir-serializer.md`.
+- **Run:** `make slang-dbg span-dbg`; `cd span/test && python3 run-tests.py -v -f 'link/'`.
 
-## Layout
+## Artifacts
 
-| Path | Role |
-|------|------|
-| `serialize_one.link.c` | One-file `span link -o` round-trip |
-| `multi_foo_bar.link.c` | Link foo.c + bar.c, `--check`, serialize round-trip |
-| `multi_with_main.link.c` | Link foo + bar + main_calls |
-
-## Build / test / run
-
-```bash
-make slang-dbg span-dbg
-cd span/test && python3 run-tests.py -v -f 'link/'
-```
-
-## Related
-
-- `span/pkg/spir` — link / serialize APIs
+| Name | Description |
+|------|-------------|
+| `span/test/link/serialize_one.link.c` | One-file link round-trip |
+| `span/test/link/multi_foo_bar.link.c` | Link foo+bar with `--check` |
+| `span/test/link/multi_with_main.link.c` | Link with main TU |
+| `span/pkg/spir` | Link / serialize APIs |

@@ -1,57 +1,25 @@
-# span — dev guide
+# span -- Dev-Guide
 
-## Purpose
+Go SPAN analyzer: CLI, SPIR runtime, analysis engine, clients. Module: `github.com/adhuliya/span`.
 
-Go module for the SPAN analyzer: CLI, SPIR runtime, analysis engine, and
-clients. Module path: `github.com/adhuliya/span`.
+## Notes
 
-## Layout
+- **Invariants:** thin `main` with `initialize()`/`finish()`; public API under `pkg/`; `internal/` not for external import.
+- **Build:** `make span-dbg`, `span-dev`, `span-rel`, `test-span`, `make gen`, `make vet && make fmt`. Go tests: `span/Makefile.test`.
+- Do not treat `pkg/mod` or `pkg/sumdb` as project source.
 
-| Path | Role |
-|------|------|
-| `go.mod`, `go.sum` | Module identity and deps |
-| `cmd/span/` | CLI entry (`main`, cobra cmdline) |
-| `pkg/spir/` | SPIR IR + `spir.proto` |
-| `pkg/analysis/` | Analysis interfaces and solvers |
-| `pkg/analysis/lattice/` | Lattice domains |
-| `pkg/clients/` | Concrete analysis clients |
-| `pkg/idgen/` | Unique ID generation (correctness-critical) |
-| `pkg/logger/` | Global structured logging |
-| `pkg/test/` | Go harness / integration helpers |
-| `pkg/cmdline/`, `pkg/system/`, `pkg/transform/` | Empty / reserved stubs |
-| `internal/util/` | Internal helpers (`dsa/`, `errs/`) — not for external import |
-| `test/` | LLVM lit-style integration tests |
-| `Makefile.api`, `Makefile.test` | Span-local make fragments |
-| `scripts/` | Span-specific helpers |
-| `bin/`, `span` | Local binaries (not source of truth) |
+## Artifacts
 
-Do not treat `pkg/mod` or `pkg/sumdb` as project source (module cache paths).
-
-## Build / test / run
-
-From repo root:
-
-```bash
-make span-dbg           # codegen + debug build
-make span-dev           # codegen + non-release build
-make span-rel           # release
-make test-span
-make vet && make fmt
-make gen                # proto + go codegen
-```
-
-Go tests from `span/`: see `Makefile.test` (`test-all`, `test-unit`, …).
-
-## Invariants
-
-- Keep `main` thin: `initialize()` / `finish()` around work; logging via `pkg/logger`
-- Public libraries live under `pkg/`; `internal/` is not an external API
-- Prefer composing small packages behind interfaces over monolithic features
-
-## Common tasks
-
-```bash
-make span-dbg
-./span/bin/span --help    # or path produced by your local make/bin layout
-cd span && go test ./pkg/spir/...
-```
+| Name | Description |
+|------|-------------|
+| `span/go.mod`, `go.sum` | Module identity |
+| `span/cmd/span/` | CLI — `span/cmd/span/dev-guide.md` |
+| `span/pkg/spir/` | IR + `spir.proto` |
+| `span/pkg/analysis/` | Analysis framework |
+| `span/pkg/clients/` | Concrete analyses |
+| `span/pkg/idgen/` | Entity ID generation |
+| `span/pkg/logger/` | Structured logging |
+| `span/pkg/test/` | Go harness helpers |
+| `span/internal/util/` | Internal helpers (not external API) |
+| `span/test/` | Lit integration tests |
+| `span/Makefile.api`, `Makefile.test` | Local make fragments |

@@ -1,5 +1,5 @@
 ---
-description: Navigate .dev-notes; read dev-guides (project-agnostic).
+description: Navigate .dev-notes; read dev-guides.
 alwaysApply: true
 ---
 
@@ -27,13 +27,12 @@ If present, use for context. Do not invent policy. Do not bulk-read.
 
 | Path | When |
 |------|------|
-| `knowledge/` | Notes/reference |
-| `artifacts/` | Stored artifacts |
+| `knowledge/` | Detailed docs/notes |
+| `artifacts/` | Stored artifacts (cited from docs) |
 | `activities/` | `workon` context |
-| `dev-guides/` | Path-specific orientation (below) |
 
 `journal.md`: append only via `journal` when asked. Guide create/rewrite/audit/delete:
-`dev-guides` skill only (explicit request).
+`dev-guides` skill only (invoke on explicit request).
 
 # Live tree wins
 
@@ -45,25 +44,25 @@ tree (see "Keep guides fresh" below for your upkeep duty).
 Open guides yourself — never invoke `dev-guides` only to read.
 
 **Trigger (MUST):** Before you modify or add files under a project path `P`, read
-the deepest matching `dev-guide.md` for `P` if one exists. Read-only exploration
-or a trivial single-file lookup does not require this.
+the deepest matching `dev-guide.md` for `P` if one exists.
+Trivial single-file lookup does not require this.
 
-**Find for path `P`:** `.dev-notes/dev-guides/<P>/dev-guide.md`, else walk up
-(`a/b/c` → `a/b` → `a`), else root `dev-guides/dev-guide.md`. Sparse is normal
-(intermediate folders may have no guide). Do not auto-open root/siblings. Re-open
-when the subtree changes and needs its guide.
+**Find for path `P`:** `<P>/dev-guide.md`, else walk up (`a/b/c` → `a/b` → `a`),
+else repo-root `dev-guide.md`. Sparse is normal (intermediate folders may have no
+guide). Do not auto-open root/siblings. Re-open when the subtree changes and needs
+its guide.
 
-**Use:** Purpose, Invariants/Gotchas, Layout, Key entry points, Build/test/run.
-Root = thin structural index (paths → roles, pipeline, build entrypoint); it does
-not restate vision (see `definition.md`). No Parent/Children blocks.
+**Use:** the summary, **Notes** (invariants, build/test, gotchas), and
+**Artifacts** table. Repo-root guide uses the same shape; it does not
+restate vision (see `definition.md` — link from Notes).
 
-**Related:** Repo-rooted paths only. For `Q`, open `dev-guides/<Q>/dev-guide.md`
-if present. Escalate only via Related or clear cross-folder need.
+**Other guides:** When Notes or the artifact table names repo path `Q`, open
+`<Q>/dev-guide.md` if you need that subtree. Otherwise walk up ancestors.
 
 # Keep guides fresh (MUST)
 
 If your change makes a `dev-guide.md` factually wrong — a renamed/moved/deleted
-path it lists, a changed build/test command, a stale role line — you MUST fix
-that one-liner in the same change. For material drift (Purpose, Invariants,
-placement, hierarchy, Related), do not rewrite here: note it for the `dev-guides`
-skill.
+path in Notes or Artifacts, a changed build command, a stale table
+row — you MUST fix it in the same change. For material drift (placement,
+hierarchy, or what the guide is for), do not rewrite here: note it for the
+`dev-guides` skill.

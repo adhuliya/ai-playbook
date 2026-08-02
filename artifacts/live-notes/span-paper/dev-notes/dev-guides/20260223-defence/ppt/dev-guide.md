@@ -1,29 +1,18 @@
-# 20260223-defence/ppt/ — dev guide
+# 20260223-defence/ppt -- Dev-Guide
 
-## Purpose
+Self-contained Beamer deck for the thesis defence; summarizes `\cSpan{}` work.
 
-Self-contained Beamer slide deck for the thesis defence talk, summarizing the
-same `\cSpan{}` work as the root paper and thesis.
+## Notes
 
-## Invariants
+- **Invariants:** own `main.tex`, `Makefile`, `theme.sty`, `presentation.sty` — no root file dependencies. `notes.txt` is speaker notes, not built.
+- **Build:** from this dir: `make`, `make show`, `make clean`.
 
-- Fully self-contained: own `main.tex`, own `Makefile`, own `theme.sty` /
-  `presentation.sty`. Does not depend on root-level files.
-- `notes.txt` holds freeform speaker/planning notes, not part of the build.
+## Artifacts
 
-## Layout
-
-| Path | Role |
-|------|------|
-| `main.tex` | Beamer document driver; `\input`s the frame files below |
-| `*.tex` (top-level) | Individual sections/examples included as frames (e.g. `spanExample1.tex`, `overview.tex`) |
-| `codes/` | Source-code snippets shown in slides |
-| `resource/` | Figures/scripts used by slides |
-
-## Build / test / run
-
-- From this directory: `make` (builds `main.pdf`), `make show`, `make clean`.
-
-## Related
-
-- `../../` (repo root) — full paper this talk summarizes
+| Name | Description |
+|------|-------------|
+| `20260223-defence/ppt/main.tex` | Beamer driver |
+| `20260223-defence/ppt/*.tex` | Frame sections |
+| `20260223-defence/ppt/codes/` | Slide code snippets |
+| `20260223-defence/ppt/resource/` | Slide figures |
+| `dev-guide.md` (repo root) | Full paper this talk summarizes |

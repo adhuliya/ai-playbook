@@ -1,70 +1,23 @@
-# span/pkg/spir — dev guide
+# span/pkg/spir -- Dev-Guide
 
-## Purpose
+SPIR runtime and wire format: types through TU, protobuf IO, linking, validation dumps.
 
-SPIR (SPAN IR) runtime: types → entities → exprs → instructions → BBs → CFG →
-functions → TU, plus protobuf IO and linking hooks. Shared wire contract with
-slang via `spir.proto`.
+## Notes
 
-Conceptual IR layering: see [`span/pkg/spir/README.md`](../../../../../span/pkg/spir/README.md).
+- Layering overview: `span/pkg/spir/README.md`.
+- **Invariants:** wire changes via `spir.proto` only; regenerate `.pb.go` / slang `.pb.*`; coordinate IDs with `pkg/idgen`; prefer three-address IR clarity.
+- **Build:** `make gen-proto`, `make gen`; `cd span && go test ./pkg/spir/...`. Follow `.cursor/rules/proto-style.mdc` for proto edits.
+- **Key APIs:** `spir.io.go` (load); `serialize.go`/`WriteTU`; `EqualTU`; `ValidateLoadedTU`; `LinkTUs`; verify dumps (`prompts/human-verif.md`, `prompts/span-linker.md`, `prompts/spir-serializer.md`).
 
-## Layout
+## Artifacts
 
-| Path | Role |
-|------|------|
-| `spir.proto` | Serialized SPIR schema (source of truth for wire format) |
-| `spir.pb.go` | Generated Go protobuf — do not hand-edit |
-| `types.go` | IR types |
-| `entityid.go`, `entitysets.go`, `entitystack.go` | Entities / ID sets |
-| `expressions.go`, `instructions.go` | Exprs and instructions |
-| `graph.go` | CFG / basic blocks / worklists |
-| `TU.go` | Translation unit |
-| `tu_query.go` | Pretty names, var sets/filters, `EnsureFuncCFG` / `DefinedFunctions` |
-| `linker.go` | Multi-TU link (`LinkTUs` / `LinkTUsWithOptions`) |
-| `spir.io.go` | Load BitTU; Clang remap vs span-origin identity load |
-| `serialize.go` | `ConvertInternalTUToBitTU`, `WriteTU` (span origin) |
-| `equal_tu.go` | `EqualTU` round-trip oracle |
-| `validate_load.go` | `ValidateLoadedTU` after convert (ids/types/names/insns) |
-| `verify_dump.go`, `verify_report.go`, `callgraph.go` | Human-verif dumps (MD catalogs, CFG/call DOT, staged report) |
-| `context.go`, `srclocation.go`, `consts.go`, `util.go` | Context and helpers |
-| `*_test.go`, `example_tus.go` | Tests and examples |
-
-## Build / test / run
-
-```bash
-make gen-proto          # regenerate Go + C++ pb from spir.proto
-make gen                # proto + other codegen
-cd span && go test ./pkg/spir/...
-```
-
-Follow `.cursor/rules/proto-style.mdc` for proto edits.
-
-## Invariants
-
-- Edit `spir.proto` only for wire changes; regenerate — never hand-edit `.pb.go` / slang `.pb.*`
-- Prefer analysis-friendly three-address IR clarity over cloning LLVM IR
-- ID allocation for entities coordinates with `pkg/idgen` — do not invent ad-hoc ID schemes
-- Prefer live tree + proto over stale docs; fix clearly stale one-liners in the same change
-
-## Key entry points
-
-- `spir.io.go` — deserialize TUs for the CLI/`load` (span-origin keeps 32-bit ids)
-- `serialize.go` / `WriteTU` — emit span-origin `.spir.pb` (`OriginSpanIR`)
-- `EqualTU` — structural round-trip equality (see `prompts/spir-serializer.md`)
-- `ValidateLoadedTU` — structural checks used by `span load --check` / `link --check`
-- `TU.go`, `graph.go` — structures analyses walk
-- `LinkTUs` — multi-file linking (`prompts/span-linker.md`); CLI: `span link -o`
-- `WriteTUStageReport` / `WriteFlatDumps` / `FormatCallGraph` — human-verif (`prompts/human-verif.md`)
-
-## Related
-
-- `slang` — frontend that emits this wire format
-
-## Common tasks
-
-```bash
-make gen-proto
-cd span && go test ./pkg/spir/ -count=1
-# staged report (example SPEC TU dir):
-span link --check --verify-report --verify-report-inputs -o linked.spir.pb *.c.spir.pb
-```
+| Name | Description |
+|------|-------------|
+| `span/pkg/spir/spir.proto` | Wire schema (source of truth) |
+| `span/pkg/spir/spir.pb.go` | Generated Go — do not hand-edit |
+| `span/pkg/spir/types.go`, `TU.go`, `graph.go` | IR structures |
+| `span/pkg/spir/linker.go` | Multi-TU link |
+| `span/pkg/spir/spir.io.go`, `serialize.go` | Load / write |
+| `span/pkg/spir/validate_load.go`, `equal_tu.go` | Checks and oracles |
+| `span/pkg/spir/verify_dump.go`, `verify_report.go` | Human-verif output |
+| `slang/` | Frontend emitting this wire format |

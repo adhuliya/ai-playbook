@@ -1,38 +1,16 @@
-# span/pkg/idgen — dev guide
+# span/pkg/idgen -- Dev-Guide
 
-## Purpose
+Unique SPIR entity IDs; correctness-critical for IR identity and analysis facts.
 
-Unique ID generation for SPIR entities. Correctness-critical: bad IDs corrupt
-IR identity, sets, and analysis facts.
+## Notes
 
-## Layout
+- **Invariants:** no parallel ID schemes in `spir`/clients; respect pool prefix/bit layout (overflow panics); free/reuse must match pool rules; bit-layout changes need explicit agreement.
+- **Tests:** `cd span && go test ./pkg/idgen/... -count=1 -v` — treat failures as high priority.
+- **APIs:** `GetNextIdA/B/C`; pool-based `IDGenerator`.
 
-| Path | Role |
-|------|------|
-| `idgen.go` | Simple counters (`GetNextIdA/B/C`) and pool-based `IDGenerator` |
-| `idgen_test.go` | Unit tests (treat failures as high priority) |
+## Artifacts
 
-## Build / test / run
-
-```bash
-cd span && go test ./pkg/idgen/...
-cd span && go test ./pkg/idgen/... -count=1 -v
-```
-
-## Invariants
-
-- Do not invent parallel ID schemes in `spir` or clients — extend this package
-- Respect pool prefix / sequence bit-length encoding; overflows panic by design
-- Free/reuse paths must stay consistent with pool invariants (see tests)
-- Changing ID bit layouts is an API/contract change — ask before widening scope
-
-## Key entry points
-
-- `GetNextIdA`, `GetNextIdB`, `GetNextIdC` — simple monotonic counters
-- `IDGenerator` — allocate/free IDs from prefix pools
-
-## Common tasks
-
-```bash
-cd span && go test ./pkg/idgen/... -count=1
-```
+| Name | Description |
+|------|-------------|
+| `span/pkg/idgen/idgen.go` | Counters and pool generator |
+| `span/pkg/idgen/idgen_test.go` | Unit tests |
