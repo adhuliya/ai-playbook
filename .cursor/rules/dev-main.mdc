@@ -30,6 +30,7 @@ If present, use for context. Do not invent policy. Do not bulk-read.
 | `knowledge/` | Detailed docs/notes |
 | `artifacts/` | Stored artifacts (cited from docs) |
 | `activities/` | `workon` context |
+| `seed-prompt.md` | Recreate-from-scratch DNA (update only via `seed-prompt` skill) |
 
 `journal.md`: append only via `journal` when asked. Guide create/rewrite/audit/delete:
 `dev-guides` skill only (invoke on explicit request).

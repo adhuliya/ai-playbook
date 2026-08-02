@@ -16,12 +16,12 @@ Shared Cursor rules/skills, per-project overlays, and sync into target repos.
 | Name | Description |
 |------|-------------|
 | `README.md` | Sync usage and layout entrypoint |
-| `prompt.md` | Authoritative sync/overlay contract |
+| `.dev-notes/seed-prompt.md` | Recreate playbook from scratch (`seed-prompt` skill) |
 | `projects.txt` | Registered target project keys |
 | `scripts/sync-playbook.sh` | Hard-link sync into targets |
 | `scripts/smoke-test-sync-guides.sh` | Smoke test for in-tree guide sync |
 | `.cursor/rules/` | Always-applied rules (`dev-main`, `dev-git`) |
-| `.cursor/skills/` | Shared skills (`dev-guides`, `journal`, …) |
+| `.cursor/skills/` | Shared skills (`dev-guides`, `journal`, `seed-prompt`, …) |
 | `artifacts/live-notes/` | Per-project `.dev-notes` + hub `dev-guides/` store |
 | `artifacts/dev-notes-structure/` | Scaffold for new live-notes trees |
 | `<name>.cursor/` | Per-project `.cursor` overlay (wins on clash) |

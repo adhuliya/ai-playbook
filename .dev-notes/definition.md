@@ -1,7 +1,8 @@
 # ai-playbook — definition
 
 Vision, scope, and key terms. Repository structure lives in
-`dev-guide.md` at the repository root; operational behavior lives in `prompt.md`.
+`dev-guide.md` at the repository root; cold-start rebuild instructions in
+`.dev-notes/seed-prompt.md`.
 
 ## Vision
 
