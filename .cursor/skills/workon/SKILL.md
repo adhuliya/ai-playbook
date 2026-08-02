@@ -3,9 +3,10 @@ name: workon
 description: >-
   Manage durable, portable engineering activities under .dev-notes/activities/
   using self-contained activity.md + journal.md lifecycle workflows
-  (create/derive/list/resume/replan/import and reserved lifecycle commands). Use
-  when the user manages activities, imports an activity from another
-  system/session, or issues workon lifecycle keywords.
+  (create/derive/list/resume/replan/self-review/import and reserved lifecycle
+  commands), plus optional complementary notes.md. Use when the user manages
+  activities, imports an activity from another system/session, or issues workon
+  lifecycle keywords.
 disable-model-invocation: true
 ---
 
@@ -22,6 +23,8 @@ Documentation is part of the deliverable: keep records resumable months later.
 - Honor only reserved lifecycle commands (exact keywords).
 - No dates in `activity.md` / `journal.md` unless user explicitly asks.
 - `activity.md` is current truth (rewrite stale sections); `journal.md` is append-only.
+- `notes.md` is optional complementary context; it never replaces truth in
+  `activity.md`. Fold anything load-bearing back into `activity.md`.
 - No engineering until plan is approved and user starts execution.
 - **Portable by default**: `activity.md` + `journal.md` must let another system
   or agent session assess and continue the task with no host-specific context
@@ -52,6 +55,7 @@ Documentation is part of the deliverable: keep records resumable months later.
 .dev-notes/activities/<slug>/
     activity.md          # current truth (rewritable)
     journal.md           # append-only history
+    notes.md             # optional complementary notes (user + agent)
     artifacts/           # optional activity artifacts
     activities/<child>/  # optional child (max depth 2)
 ```
@@ -80,6 +84,7 @@ trigger them):
 | `resume-work` | Resume protocol. |
 | `complete-work` | Completion protocol. |
 | `replan-work` | Re-open scope: re-run project-fit + scope grill on a major change. |
+| `self-review` | Review plan + notes + verified progress; grill as needed and update `activity.md`. |
 | `query-work` | Enter read-only query mode (no changes) until `no-query-work`. |
 | `no-query-work` | Exit query mode; changes allowed again. |
 | `imported-activity` | Adopt an `activity.md` + `journal.md` brought from another system/session and orient. |
@@ -185,10 +190,30 @@ Required sections (order):
 
 - Resume must not depend on opening source activity.
 
+## `notes.md` contract (complementary, optional)
+
+Free-form scratch space for context that does not belong in `activity.md`
+(current truth) or `journal.md` (session history).
+
+- Optional: create lazily on first real need; absence is normal.
+- Holds complementary info: user-supplied notes, agent working notes, open
+  questions, links, snippets, half-formed ideas, reminders.
+- Not load-bearing for handoff. A fresh session must still be able to assess
+  and continue from `activity.md` + `journal.md` alone. Treat `notes.md` as a
+  helpful extra, not a source of truth.
+- When a note becomes decided/durable, fold it into the right `activity.md`
+  section (Design/Plan/Milestones/etc.) and trim it here.
+- Both user and agent may edit freely; no gating, no append-only rule.
+- Keep it lean; prune stale content. Not a dumping ground.
+- Attribute non-obvious entries lightly (e.g. `user:` / `agent:`) when it aids
+  later reading; not mandatory.
+- Template: [`templates.md`](templates.md)
+
 ## Portability
 
 `activity.md` + `journal.md` are the whole handoff. Assume the next reader is a
-fresh agent on a different machine with no memory of this chat.
+fresh agent on a different machine with no memory of this chat. `notes.md`, if
+present, is a bonus only — the handoff must not depend on it.
 
 - Self-contained: inline the context needed to assess and continue. No reliance
   on chat history, tool state, or "as discussed".
@@ -209,6 +234,8 @@ Write files for durability and handoff, not as a live log.
 - Append **one** concise `journal.md` entry per work session, not per action.
 - Do not micro-edit on every minor step; a fresh session should be able to
   reconstruct fine-grained progress from repo state, tests, and evidence.
+- `notes.md` is exempt from the checkpoint cadence: jot to it freely as scratch.
+  It stays complementary — sync durable items into `activity.md` at checkpoints.
 - Always sync before `pause-work`, `complete-work`, or handing the activity off.
 
 ## List/details output
@@ -267,6 +294,37 @@ Use when a major scope change is needed (minor scope edits do not need it).
 3. Rewrite `# Scope` and affected sections; keep completion/decision history.
 4. If status is not `Planning`, reopen to `Planning` and journal the reason.
 5. Then file review + Execution gate before engineering.
+
+## `self-review`
+
+Reconcile the plan against reality. Reviews `# Current Plan`, `# Milestones`,
+and `# Next Steps` together with `notes.md` and **verified** repo progress,
+then updates `activity.md` so it reflects actual state. Allowed in any status;
+does not change status by itself.
+
+Not a replan: this fixes drift within the existing scope. If review surfaces a
+**material** scope change, stop and route to the material-change choice set
+(`create-sibling` / `create-child` / `replan-work`) per the Gating policy.
+
+1. Gather inputs (read-only first):
+   - `activity.md` (full), enough recent `journal.md`, and `notes.md` if present.
+   - Verify progress independently: run milestone evidence commands/checks and
+     inspect repo state. Do not trust prose alone.
+2. Surface findings: claimed vs verified status, done vs remaining milestones,
+   drift between files and repo, stale plan/next steps, and any open questions
+   or loose ends captured in `notes.md`.
+3. Grill only where it helps: if the review finds ambiguity, conflicts, or
+   decisions the user must make, grill the user to resolve them (use `grill-me`
+   when a fuller design grill is warranted). Skip grilling when the picture is
+   already clear.
+4. Update `activity.md` accordingly: refresh `# Current Design`, `# Current
+   Plan`, `# Milestones` (tick/untick with evidence), and `# Next Steps`.
+   Fold any decided items from `notes.md` into the right section and prune them
+   from `notes.md`; leave still-open notes in place.
+5. Do not silently expand scope. For a material change, require the user's
+   choice from the material-change choice set before rewriting scope.
+6. Append one concise `journal.md` entry summarizing the review outcome
+   (drift found, corrections made, decisions taken).
 
 ## `query-work` / `no-query-work`
 
@@ -448,6 +506,8 @@ Status-specific reminders:
      validation commands, safest first edit targets).
 
 5. Set `status` to `Complete`; keep maintenance context needed for future fixes.
+   If `notes.md` exists, fold any still-relevant items into `activity.md` and
+   prune the rest (completion must not depend on `notes.md`).
 
 6. Append final journal entry: outcome, key decisions, lessons, accepted gaps,
    and concrete "Resume from Complete" hint.

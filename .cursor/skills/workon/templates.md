@@ -6,6 +6,7 @@
 .dev-notes/activities/<slug>/
     activity.md
     journal.md
+    notes.md                # optional; complementary user/agent notes
     artifacts/              # optional; create when first needed
     activities/<child>/     # optional children
 ```
@@ -109,6 +110,27 @@ Provenance only — the new `activity.md` must stand alone without reading the s
 
 Derived from `<slug>`: <reason>. New `activity.md` rewritten to be
 self-contained; do not require the source on resume.
+```
+
+## notes.md
+
+Optional, complementary. Free-form scratch for user + agent notes that are not
+current truth (`activity.md`) or session history (`journal.md`). Not part of the
+portable handoff. Keep lean; fold decided items into `activity.md` and prune.
+
+```markdown
+# Notes
+
+<Complementary context: user notes, agent working notes, open questions, links,
+snippets, ideas, reminders. Light attribution (user: / agent:) when it helps.>
+
+## Open questions
+
+- <thing still undecided>
+
+## Ideas / parking lot
+
+- <half-formed idea to revisit>
 ```
 
 ## List output (agent → user)
