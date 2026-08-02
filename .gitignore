@@ -4,6 +4,7 @@
 !.cursor/**
 !.dev-notes/
 !.dev-notes/**
+!dev-guide.md
 
 __pycache__/
 *.pyc
