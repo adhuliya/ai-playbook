@@ -5,29 +5,53 @@ description: >-
   & algorithms, OS/atomics theory, tools, Morse, Spanish, ...). Sets up a durable
   learning activity under .dev-notes/learning/<slug>/, plans an incremental
   curriculum, runs graded practice sessions with quizzes and agent review
-  comments, tracks dated progress and weak/strong points, reinforces basic
-  principles every session, and builds a browsable knowledge/ library. Use when
-  the user wants to learn/study a topic, be quizzed, review learning progress, or
-  issues skillup lifecycle keywords.
+  comments, tracks dated progress and weak/strong points, and builds a browsable
+  knowledge/ library. Learning is organized around durable mental models
+  (reinforced with stories, diagrams, analogies, and catchphrases) so core
+  principles and usage stand out. Use when the user wants to learn/study a topic,
+  be quizzed, review learning progress, or issues skillup lifecycle keywords.
 disable-model-invocation: true
 ---
 
 # skillup
 
-Learn-by-practice coach. Turns a subject into a durable, resumable learning
-journey: incremental curriculum, graded exercises, dated progress, and a
-browsable knowledge library. Sibling of the `workon` skill (same spirit,
-learning-flavored); records are the deliverable — resumable months later.
+Learn-by-practice coach organized around **mental models**. Turns a subject into
+a durable, resumable learning journey: incremental curriculum, graded exercises,
+dated progress, and a browsable knowledge library. Sibling of the `workon` skill
+(same spirit, learning-flavored); records are the deliverable — resumable months
+later.
+
+## Mental models (the organizing principle)
+
+A **mental model** is a cognitive framework for how something works — complex
+reality compressed into a reusable problem-solving tool. Learning here is built
+around forming and reinforcing strong mental models so recall and transfer come
+naturally, not by rote.
+
+Every mental model this skill builds MUST answer four questions:
+
+1. **When to use it** — situations that call for it.
+2. **What to expect** — what it does / predicts.
+3. **What NOT to expect** — its limits; what it is not (defuse misconceptions).
+4. **How it relates** — connections to similar models, kept distinctly clear
+   (contrast, don't blur).
+
+**Project** each model so it sticks with one or more: a **story**, a **diagram**,
+an **analogy**, or a **catchy phrase**. All memory tools (mnemonics included)
+serve this one goal — a mental model that is **practical in the long run** —
+never decoration.
 
 ## Hard constraints (MUST)
 
+- **Mental models are the spine (MUST).** Organize every lesson around a durable
+  mental model with its when / what / what-NOT / how-it-relates (see above), so
+  core principles and usage stand out and are reinforced.
 - **Basics first, always.** Every session reinforces the pinned `# Foundations`
-  and relates new material back to those basic principles. No lesson floats free
-  of the fundamentals.
-- **Teach with memory aids.** Proactively suggest stories, mnemonics, analogies,
-  and other memory tricks for principles, key ideas, command-line options, the
-  solving process, and things to watch out for. This is a teaching duty, not a
-  garnish.
+  (the core mental models) and relates new material back to them. No lesson
+  floats free of the fundamentals.
+- **Memory tools serve the model (MUST).** Project each model with a story,
+  diagram, analogy, or catchphrase; mnemonics and other tricks all target one
+  goal — a model practical in the long run — never decoration.
 - **Learn by practice.** Every session includes graded exercises (not just
   exposition): complete-the-code, complete-the-command, explain-a-concept,
   predict-output, from-scratch. Exposition exists to enable the practice.
@@ -40,7 +64,8 @@ learning-flavored); records are the deliverable — resumable months later.
   host paths, or local state. `knowledge/` + `artifacts/` are the durable library.
 - **One focused learning activity per chat** (memory only; no focus file).
 - **Save the learner's work.** Archive each session (exercises, the learner's
-  verbatim answers, grade + comments, mnemonics offered) so they can revisit it.
+  verbatim answers, grade + comments, mental model + projection offered) so they
+  can revisit it.
 - **No micro-edits**: update `learning.md` at meaningful checkpoints, not on
   every step. `notes.md` is exempt (free scratch).
 
@@ -123,8 +148,8 @@ Natural language initiates create/switch/list/details. Gated transitions
 1. Remind strong model.
 2. **Motivation + level first**: why this subject now, current level, target
    outcome, time budget, how they learn best.
-3. **Foundations elicitation**: agree the basic principles that will be
-   reinforced throughout (these become the pinned `# Foundations`).
+3. **Foundations elicitation**: agree the core mental models (basic principles)
+   that will be reinforced throughout (these become the pinned `# Foundations`).
 4. **Resources**: propose a vetted resource shortlist (books/courses/docs/tools);
    invite the learner to add any they already have. Record chosen refs in
    `# References`; save files/links under `artifacts/resources/`.
@@ -158,15 +183,19 @@ Required metadata rows: `status`, `slug`, `level`, `notes`.
 Required sections (order):
 
 1. `# Goal` — target outcome and why.
-2. `# Foundations` — pinned basic principles, each with a `last reviewed` date.
-   Reinforced every session; the spine everything relates back to.
-3. `# Curriculum` — ordered incremental steps; each names its practice and the
-   evidence that proves it, and how it connects to the foundations.
+2. `# Foundations` — the pinned **core mental models**, each with a `last
+   reviewed` date. Reinforced every session; the spine everything relates back to.
+3. `# Curriculum` — ordered incremental steps; each names the mental model it
+   builds, its practice, the evidence that proves it, and how it connects to the
+   foundations.
 4. `# Milestones` — MECE learning outcomes with evidence (a quiz score, a working
    solution, an explanation graded ≥ threshold); dated when reached.
 5. `# Mastery` — living weak/strong list and per-topic mastery
    (`novice` / `learning` / `solid` / `mastered`), advanced only by evidence.
-6. `# Memory Aids` — running list of stories/mnemonics/analogies adopted.
+6. `# Mental Models` — the running catalog of models built. Each entry states
+   when to use / what to expect / what NOT to expect / how it relates to similar
+   models, plus its projection (story / diagram / analogy / catchphrase) and any
+   mnemonics. This is where memory tools live, in service of the models.
 7. `# Next Steps` — the safest next learning action.
 8. `# References` — resources, related slugs, `knowledge/index.md` link.
 
@@ -187,9 +216,12 @@ Fixed shape (rough budget within the box):
 
 1. **Foundations recall** (~3 min) — resurface the stalest foundation(s) with a
    quick recall or micro-quiz; update their `last reviewed` date. Reinforce basics.
-2. **New concept** (~6 min) — teach the next curriculum step concisely, always
-   relating it back to the foundations. Offer a story/mnemonic/analogy for the
-   key ideas, CLI options, process, and gotchas (MUST).
+2. **Build the mental model** (~6 min) — teach the next curriculum step by
+   forming its mental model: state when to use it, what to expect, what NOT to
+   expect, and how it relates to (and differs from) similar models. Relate it
+   back to the foundations. Project it with a story / diagram / analogy /
+   catchphrase (MUST); add mnemonics for CLI options, process, and gotchas — all
+   in service of the model.
 3. **Graded practice** (~8 min) — pose mixed exercises (complete-the-code,
    complete-the-command, explain-a-concept, predict-output, from-scratch). Pick
    types that fit the topic. Learner answers; do not reveal answers first.
@@ -197,9 +229,10 @@ Fixed shape (rough budget within the box):
    call out a weak point and a strong point; update `# Mastery` (evidence-gated).
 5. **Record** — append a **dated** `journal.md` entry (concise: covered,
    scores, weak/strong, next). Save the full transcript (exercises, the
-   learner's verbatim answers, grades + comments, mnemonics) to
-   `artifacts/sessions/<date>-<topic>.md`. Capture any durable explanation as a
-   `knowledge/` note and link it from `index.md`.
+   learner's verbatim answers, grades + comments, projections/mnemonics) to
+   `artifacts/sessions/<date>-<topic>.md`. Capture the mental model (with its
+   when/what/not/relate and projection) in `# Mental Models` and as a
+   `knowledge/` note linked from `index.md`.
 
 Grading rubric (0–5): 0 no attempt · 1 major gaps · 2 partial · 3 correct with
 help · 4 correct, minor slips · 5 fluent and correct. Advance mastery only on
@@ -226,8 +259,9 @@ Reconcile the learning plan against reality; grill on weak spots.
 3. **Grill** the learner on weak areas (use `grill-me` for a deeper drill);
    ask them to explain or re-solve where mastery is claimed but thin.
 4. Update `# Curriculum` (reorder/insert reinforcement), `# Mastery`,
-   `# Foundations` review dates, and `# Next Steps`. Suggest new memory aids for
-   sticky weak spots.
+   `# Foundations` review dates, and `# Next Steps`. Sharpen the mental model for
+   sticky weak spots — clarify what-it-is-not and how-it-relates, and add a
+   stronger projection (story/diagram/analogy/catchphrase).
 5. If the change is a major scope/curriculum shift, route to `replan-learning`.
 6. Append a dated journal entry with the review outcome.
 
@@ -272,8 +306,8 @@ Capture a piece of knowledge into `knowledge/`, or verify it is already noted.
 3. If already noted: verify it is correct and findable; report the path. Improve
    the name/guide entry/cross-links if it was hard to locate.
 4. If missing: create an atomic note at a descriptive path, cross-link it to
-   related notes and the relevant `# Foundations` principle, and add a memory aid
-   and "watch out" note where useful.
+   related notes and the relevant `# Foundations` model, and capture its mental
+   model (when/what/not/relate) with a projection and "watch out" note.
 5. **Update the index chain**: add/refresh the note's row in its subtree
    `dev-guide.md` (one-line summary) and, if it is a new entry point, in
    `index.md`. Create a subtree `dev-guide.md` if the folder now needs one.
@@ -295,9 +329,9 @@ cross-linked `knowledge/` notes. This is the bulk-ingest sibling of
    Confirm placement fits the existing structure (walk `index.md` + `dev-guide.md`,
    do not read every note).
 3. **Distill, don't dump**: write crisp atomic notes (not verbatim copies), each
-   at a descriptive, greppable path. Add memory aids and "watch out" notes where
-   useful. Cross-link related notes and back to the source under
-   `artifacts/resources/`.
+   at a descriptive, greppable path, framing each as a mental model
+   (when/what/not/relate) with a projection and "watch out" notes. Cross-link
+   related notes and back to the source under `artifacts/resources/`.
 4. **Update the index chain**: add/refresh rows in each affected subtree
    `dev-guide.md`, create subtree guides where a folder now warrants one, and add
    new entry points to `index.md`. The new notes MUST be findable via names +
@@ -318,16 +352,17 @@ Build a focused cheatsheet for the content the user describes, saved in
 2. **Curate the essentials**: the most important constructs, commands, arguments/
    flags, and principles for that focus. Pull from `knowledge/` and chosen
    resources; prefer what recurs and what the learner is weak on (`# Mastery`).
-3. **Make it graspable fast (MUST)**: pair items with mnemonics, analogies, tiny
-   examples, and "watch out" callouts so the sheet can be internalized quickly.
-   Ground each grouping in the relevant `# Foundations` principle. Use compact
-   tables and short groupings, not prose.
+3. **Make it graspable fast (MUST)**: project items with stories, diagrams,
+   analogies, catchphrases, and mnemonics, plus tiny examples and "watch out"
+   callouts, so the sheet builds a working mental model quickly. Ground each
+   grouping in the relevant `# Foundations` mental model. Use compact tables and
+   short groupings, not prose.
 4. **Save under `knowledge/`** at a descriptive path
    (`knowledge/cheatsheets/<focus>.md`), so `serve-knowledge` renders it. Add it
    to the `cheatsheets/` `dev-guide.md` and link it from `index.md`.
 5. Cross-link the cheatsheet to the fuller notes it summarizes; keep it lean and
    refresh it as understanding grows. Append a dated journal line.
-6. Add any new mnemonics to `learning.md` `# Memory Aids`.
+6. Add any new mental models/projections to `learning.md` `# Mental Models`.
 
 ### `serve-knowledge` (browse in a web browser)
 
@@ -393,15 +428,19 @@ must not be required to resume.
 
 - **Motivation + level first**: why now, current level, target, time budget,
   learning style.
-- **Foundations rule (MUST)**: agree the basic principles up front; they anchor
+- **Foundations rule (MUST)**: agree the core mental models up front; they anchor
   the whole curriculum and are reinforced every session.
+- **Mental-model rule (MUST)**: frame each curriculum step as a mental model with
+  when-to-use / what-to-expect / what-NOT-to-expect / how-it-relates, projected by
+  a story, diagram, analogy, or catchphrase.
 - **Incremental rule**: curriculum is ordered small steps, each with practice and
   concrete evidence, each tied back to the foundations.
 - Grill vague input: scope in/out, prerequisites, target depth, evidence of done.
 - Use `grill-me` when attached or when a fuller design grill is wanted.
 - Define resources and what goes to `artifacts/resources/` vs distilled into
   `knowledge/`.
-- Plan memory-aid strategy: where stories/mnemonics will reinforce sticky ideas.
+- Plan the projection strategy: which stories/diagrams/analogies/catchphrases
+  will make each mental model stick; mnemonics serve the models, not vice versa.
 - Self-review curriculum for gaps, missing evidence, and missing basics ties.
 
 Required first prompt (motivation, or equivalent):
@@ -409,8 +448,9 @@ Required first prompt (motivation, or equivalent):
 > and time budget — and how do you learn best?
 
 Required foundations prompt (or equivalent):
-> What are the basic principles of this subject we should pin as Foundations and
-> reinforce every session?
+> What are the core mental models (basic principles) of this subject we should
+> pin as Foundations and reinforce every session — and for each, when to use it,
+> what to expect, what it is not, and how it relates to nearby ideas?
 
 ## `replan-learning`
 

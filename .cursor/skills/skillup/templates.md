@@ -40,21 +40,21 @@ Keep the metadata table in the **first ~10 lines** so listing stays greppable.
 
 # Foundations
 
-Pinned basic principles. Reinforced every session; new material relates back
+Pinned core mental models. Reinforced every session; new material relates back
 here. Near-fixed after planning (major change = `replan-learning`).
 
-| Principle | Note | Last reviewed |
+| Mental model | Essence (when / what / not / relates) | Last reviewed |
 |---|---|---|
-| <core principle A> | <one-line essence> | YYYY-MM-DD |
-| <core principle B> | <one-line essence> | (unreviewed) |
+| <core model A> | <one-line: when to use, what to expect, what it is not, nearby> | YYYY-MM-DD |
+| <core model B> | <one-line essence> | (unreviewed) |
 
 # Curriculum
 
-Ordered incremental steps. Each names its practice, its evidence, and how it
-ties back to the Foundations.
+Ordered incremental steps. Each names the mental model it builds, its practice,
+its evidence, and how it ties back to the Foundations.
 
-1. [ ] <Step> — practice: <exercise type(s)> — evidence: <quiz/solution/explanation ≥ threshold> — ties to: <foundation>
-2. [ ] <Step> — practice: ... — evidence: ... — ties to: ...
+1. [ ] <Step> — model: <mental model> — practice: <exercise type(s)> — evidence: <quiz/solution/explanation ≥ threshold> — ties to: <foundation>
+2. [ ] <Step> — model: ... — practice: ... — evidence: ... — ties to: ...
 
 # Milestones
 
@@ -74,12 +74,19 @@ Levels: novice → learning → solid → mastered.
 Strong points: <...>
 Weak points: <... (targets for reinforcement)>
 
-# Memory Aids
+# Mental Models
 
-Adopted stories / mnemonics / analogies for sticky ideas, CLI options, process,
-and gotchas.
+The catalog of models built. Each states when to use / what to expect / what
+NOT to expect / how it relates, plus its projection and any mnemonics. Memory
+tools live here in service of the models.
 
-- <idea> → <mnemonic/story/analogy>
+## <Model name>
+- When to use: <situations that call for it>
+- Expect: <what it predicts / does>
+- Not: <its limits; what it is not>
+- Relates to: <nearby models, and how to keep it distinct>
+- Projection: <story / diagram (mermaid) / analogy / catchphrase>
+- Mnemonics: <optional, serving the model>
 
 # Next Steps
 
@@ -174,9 +181,14 @@ then open the printed URL.
 ```markdown
 # <Concept>
 
-<Crisp explanation. Relate to a Foundation.>
+<Crisp explanation as a mental model. Relate to a Foundation.>
 
-Memory aid: <mnemonic/story/analogy, if any>.
+- When to use: <situations>
+- Expect: <what it does / predicts>
+- Not: <limits; what it is not>
+- Relates to: <nearby concepts, kept distinct>
+
+Projection: <story / diagram / analogy / catchphrase that makes it stick>.
 
 Watch out: <common pitfalls>.
 
@@ -248,7 +260,7 @@ Full session transcript; keep the learner's answers **verbatim**.
 Q: <...>  A (learner): <verbatim>  — <grade + comment>
 
 ## New concept
-<what was taught + memory aid offered>
+<mental model built (when/what/not/relate) + projection offered>
 
 ## Exercises
 ### 1. <type> — <prompt>
