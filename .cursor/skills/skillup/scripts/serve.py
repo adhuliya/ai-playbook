@@ -80,6 +80,10 @@ def _inline(text: str) -> str:
     return text
 
 
+_FENCE_OPEN = re.compile(r"^(\s*)```(\w*)\s*$")
+_FENCE_CLOSE = re.compile(r"^\s*```\s*$")
+
+
 def _link(m: re.Match) -> str:
     label, href = m.group(1), m.group(2)
     # Keep relative .md links inside the server; leave external/anchor links.
@@ -102,15 +106,19 @@ def md_to_html(md: str) -> str:
 
     while i < n:
         line = lines[i]
-        # Fenced code / mermaid.
-        fence = re.match(r"^```(\w*)", line)
+        # Fenced code / mermaid (opening fence may be indented, e.g. under a list).
+        fence = _FENCE_OPEN.match(line)
         if fence:
             close_list()
-            lang = fence.group(1)
+            base_indent = fence.group(1)
+            lang = fence.group(2)
             i += 1
             buf: list[str] = []
-            while i < n and not lines[i].startswith("```"):
-                buf.append(lines[i])
+            while i < n and not _FENCE_CLOSE.match(lines[i]):
+                raw = lines[i]
+                if base_indent and raw.startswith(base_indent):
+                    raw = raw[len(base_indent):]
+                buf.append(raw)
                 i += 1
             i += 1  # skip closing fence
             code = "\n".join(buf)
