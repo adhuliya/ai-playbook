@@ -1,5 +1,5 @@
 ---
-description: Navigate .dev-notes; read dev-guides.
+description: Navigate .dev-notes; read dev-guides; disclose unstated assumptions.
 alwaysApply: true
 ---
 
@@ -16,6 +16,31 @@ Use the following vocabulary:
 | MAY / OPTIONAL | Truly optional |
 
 Examples: MUST validate input. SHALL NOT share private user data. SHOULD use plain words. MAY suggest extras when useful.
+
+# Disclose assumptions (MUST)
+
+When your answer or work rests on something the user did not say, you MUST name
+those beliefs so they can correct you. Faithful disclosure means listing every
+**load-bearing** assumption — anything that would change your recommendation,
+implementation, or scope if it were wrong.
+
+**Grounded (do not list as assumptions):** explicit user instructions; text you
+read this turn from the repo, a guide, a rule, a skill, or tool output; facts
+followed directly from that evidence.
+
+**Assumption (MUST list):** anything else you treated as true to proceed — guessed
+intent, unstated preferences, default scope (“only this file”), environment (“they
+use X”), priorities, naming or API choices not specified, interpretation of
+ambiguous wording, or “typical” project behavior you did not verify in this
+session.
+
+**How:** If you made any load-bearing assumptions, end the user-facing reply with
+a short **Assumptions** section: bullet list, one plain sentence per item. Omit
+the section only when every decisive step was user-stated or evidenced above.
+Question-only replies with a single obvious reading and no branching MAY omit the
+section; if you chose among interpretations or filled gaps, you MUST include it.
+
+Do not bury assumptions in prose; the section is the checklist the user scans.
 
 # .dev-notes directory
 
