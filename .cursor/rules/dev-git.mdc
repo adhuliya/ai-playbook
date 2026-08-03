@@ -20,7 +20,7 @@ Apply when the user asks to commit.
 
 1. Inspect: `git status`, `git diff` (staged + unstaged), `git log -2 --name-only` to look at the last two commits".
 2. Draft title and required body per Commit Policy (1–2 paras describing the changes -- hard limit of min 30 and max 500 words).
-Cover and explain all the changes as best as possible withing the word limits.
+Cover and explain all the changes as best as possible withing the word limits. Prefer bulleted list whenever appropriate.
 3. Stage relevant files. Do not stage secrets (`.env`, credentials, etc.); warn if asked to.
 4. List staged paths and the draft message. Ask to adjust staging or reply `approve-commit`.
 5. Only `approve-commit` shall commit staged files via HEREDOC (`git commit -m "$(cat <<'EOF' ... EOF)"`). Then `git status` to verify.
