@@ -15,7 +15,7 @@ ROOT defaults to the current directory. Two modes, auto-detected:
 
 Renders .md to HTML on the fly: headings, fenced code, inline code, bold/italic,
 relative links (kept inside the server), lists, blockquotes, tables, and
-```mermaid blocks (via CDN). Non-.md files are served as-is. Ctrl-C to stop.
+```mermaid blocks (Mermaid 11 ESM via CDN). Non-.md files served as-is. Ctrl-C to stop.
 
 Deliberately small: a convenient local reader for revision and quick reference,
 not a full markdown engine.
@@ -43,14 +43,17 @@ PAGE = """<!doctype html>
  code{{background:#f3f4f6;padding:.15em .35em;border-radius:4px;font-size:.9em}}
  pre{{background:#f6f8fa;padding:1rem;border-radius:6px;overflow:auto}}
  pre code{{background:none;padding:0}}
+ pre.mermaid{{background:none;padding:0}}
  blockquote{{color:#57606a;border-left:.25em solid #d0d7de;margin:0;padding:0 1em}}
  table{{border-collapse:collapse}} td,th{{border:1px solid #d0d7de;padding:.4em .7em}}
  nav{{font-size:.85em;color:#57606a;margin-bottom:1.5rem}}
  hr{{border:none;border-top:1px solid #eaecef}}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-<script>document.addEventListener('DOMContentLoaded',()=>{{if(window.mermaid)
-  mermaid.initialize({{startOnLoad:true}});}});</script>
+<script type="module">
+ import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+ mermaid.initialize({{startOnLoad:false,securityLevel:"loose"}});
+ await mermaid.run({{querySelector:".mermaid"}});
+</script>
 </head><body>
 <nav><a href="/">index</a> &middot; {crumb}</nav>
 {body}
@@ -112,7 +115,13 @@ def md_to_html(md: str) -> str:
             i += 1  # skip closing fence
             code = "\n".join(buf)
             if lang == "mermaid":
-                out.append(f'<pre class="mermaid">{html.escape(code)}</pre>')
+                # Mermaid parses the element's text as diagram source, so it must
+                # stay raw — escaping arrows (--> to --&gt;) breaks parsing. Dedent
+                # each line (leading indentation confuses the v11 parser) and drop
+                # blank lines so statements are cleanly newline-separated.
+                diagram = "\n".join(
+                    ln.strip() for ln in buf if ln.strip())
+                out.append(f'<pre class="mermaid">\n{diagram}\n</pre>')
             else:
                 out.append(f"<pre><code>{html.escape(code)}</code></pre>")
             continue
