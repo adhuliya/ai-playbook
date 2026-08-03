@@ -68,6 +68,7 @@ learning-flavored); records are the deliverable — resumable months later.
         index.md             # home page: browse the whole subject
         <topic>/dev-guide.md # per-subtree structure (when it earns its keep)
         *.md                 # atomic notes, cross-linked
+        cheatsheets/*.md     # focused cheatsheets (create-cheatsheet)
     artifacts/
         resources/           # books, docs, tool refs (learner-supplied + vetted)
         quizzes/             # <date>-<topic>.md formal quizzes + answers + grade
@@ -94,6 +95,8 @@ Honor only these exact keywords (ordinary words do not trigger them):
 | `quiz-me` | Run a standalone graded quiz and archive it. |
 | `review-progress` | Review curriculum + progress + weak spots; grill and update. |
 | `note-knowledge` | Note a piece of knowledge into `knowledge/`, or verify it is already noted. |
+| `build-knowledge` | Distill a new resource or detail into structured, linked `knowledge/` notes. |
+| `create-cheatsheet` | Build a focused cheatsheet (constructs/commands/args/principles + mnemonics) saved in `knowledge/`. |
 | `pause-work` | Pause protocol. |
 | `resume-work` | Resume protocol. |
 | `replan-learning` | Re-open the curriculum on a major change; re-grill scope. |
@@ -276,6 +279,55 @@ Capture a piece of knowledge into `knowledge/`, or verify it is already noted.
    `index.md`. Create a subtree `dev-guide.md` if the folder now needs one.
 6. Keep it lean; if the knowledge is a decided item sitting in `notes.md`, fold
    it in and prune the scratch copy.
+
+### `build-knowledge`
+
+Distill a whole resource (a book chapter, doc, course section, spec, article,
+tool man page) or a larger detail the learner supplies into structured,
+cross-linked `knowledge/` notes. This is the bulk-ingest sibling of
+`note-knowledge` (which handles a single piece).
+
+1. **Take the input**: the resource or detail the user names. If it lives under
+   `artifacts/resources/`, read it there; otherwise ingest what the user pasted
+   or pointed to, and save a copy/link under `artifacts/resources/` for provenance.
+2. **Outline before writing**: propose a small set of atomic note topics and the
+   subtree/folder they belong in, tying each back to a `# Foundations` principle.
+   Confirm placement fits the existing structure (walk `index.md` + `dev-guide.md`,
+   do not read every note).
+3. **Distill, don't dump**: write crisp atomic notes (not verbatim copies), each
+   at a descriptive, greppable path. Add memory aids and "watch out" notes where
+   useful. Cross-link related notes and back to the source under
+   `artifacts/resources/`.
+4. **Update the index chain**: add/refresh rows in each affected subtree
+   `dev-guide.md`, create subtree guides where a folder now warrants one, and add
+   new entry points to `index.md`. The new notes MUST be findable via names +
+   guides without reading them.
+5. **Reconcile with the curriculum**: if the material maps to curriculum steps or
+   foundations, note the linkage; suggest a `learn-session` or `quiz-me` to
+   practice it (do not silently expand scope).
+6. Append a dated `journal.md` line noting what was built and from which source.
+
+### `create-cheatsheet`
+
+Build a focused cheatsheet for the content the user describes, saved in
+`knowledge/` for later reference through the server.
+
+1. **Scope it**: confirm the focus (topic/tool/language subset) and the intended
+   use (quick recall, exam prep, daily reference). Keep it tight — a cheatsheet
+   overviews the essentials, not everything.
+2. **Curate the essentials**: the most important constructs, commands, arguments/
+   flags, and principles for that focus. Pull from `knowledge/` and chosen
+   resources; prefer what recurs and what the learner is weak on (`# Mastery`).
+3. **Make it graspable fast (MUST)**: pair items with mnemonics, analogies, tiny
+   examples, and "watch out" callouts so the sheet can be internalized quickly.
+   Ground each grouping in the relevant `# Foundations` principle. Use compact
+   tables and short groupings, not prose.
+4. **Save under `knowledge/`** at a descriptive path
+   (`knowledge/cheatsheets/<focus>.md`), so `serve-knowledge` renders it. Add it
+   to the `cheatsheets/` `dev-guide.md` and link it from `index.md`.
+5. Cross-link the cheatsheet to the fuller notes it summarizes; keep it lean and
+   refresh it as understanding grows. Append a dated journal line.
+6. Add any new mnemonics to `learning.md` `# Memory Aids`.
 
 ### `serve-knowledge` (browse in a web browser)
 

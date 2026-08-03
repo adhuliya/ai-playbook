@@ -12,6 +12,7 @@
         <topic>/dev-guide.md     # subtree index: names + one-line summaries
         <topic>/<concept>.md     # descriptive, greppable note file names
         *.md                     # atomic, cross-linked notes
+        cheatsheets/<focus>.md   # focused cheatsheets (create-cheatsheet)
     artifacts/
         resources/               # books/docs/tools (learner + vetted)
         quizzes/<date>-<topic>.md
@@ -157,6 +158,9 @@ Browse map for the whole subject. Start here.
 - [<topic 1>](topic-1/index.md)
 - [<topic 2>](topic-2.md)
 
+## Cheatsheets
+- [<focus>](cheatsheets/focus.md)
+
 ## Resources
 - see `../artifacts/resources/`
 
@@ -200,6 +204,37 @@ and link child subtrees.
 
 ## Subtrees
 - [addressing/](addressing/dev-guide.md) — memory addressing modes
+```
+
+## knowledge/cheatsheets/<focus>.md (cheatsheet)
+
+Focused overview built by `create-cheatsheet`. Compact tables + mnemonics, not
+prose. Must be graspable fast; ground groupings in a Foundation.
+
+```markdown
+# <Focus> cheatsheet
+
+Focus: <what this covers>. Foundation: <the principle it rests on>.
+
+## Constructs / commands
+| Item | Does what | Watch out | Mnemonic |
+|---|---|---|---|
+| `<cmd/construct>` | <one line> | <pitfall> | <memory aid> |
+
+## Key arguments / flags
+| Flag | Meaning | Mnemonic |
+|---|---|---|
+| `-x` | <one line> | <aid> |
+
+## Principles to remember
+- <principle> — <mnemonic/analogy>
+
+## Quick example
+\`\`\`text
+<tiny worked example>
+\`\`\`
+
+See also: [<fuller note>](../topic/concept.md)
 ```
 
 ## artifacts/sessions/<date>-<topic>.md
