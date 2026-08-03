@@ -1,14 +1,21 @@
 #!/usr/bin/env python3
-"""Serve a knowledge/ folder as browsable HTML. Stdlib only, no dependencies.
+"""Serve skillup knowledge as browsable HTML. Stdlib only, no dependencies.
 
 Usage:
     python3 serve.py [ROOT] [--port N]
 
-ROOT defaults to the current directory (point it at a knowledge/ folder).
-Renders .md files to HTML on the fly: headings, fenced code, inline code,
-bold/italic, links (relative .md links are rewritten to stay in the server),
-lists, blockquotes, and ```mermaid blocks (via CDN). Serves index.md as the
-home page. Any non-.md file is served as-is. Ctrl-C to stop.
+ROOT defaults to the current directory. Two modes, auto-detected:
+
+- **Learning root** (contains one or more <slug>/learning.md): the home page is
+  a generated global index linking every learning activity — title, status, and
+  level parsed from each learning.md — with quick links to its knowledge index,
+  essentials, and cheatsheets. Per-activity notes render under <slug>/knowledge/.
+- **Single knowledge folder** (has index.md, no activity children): serves that
+  folder with index.md as the home page (legacy behavior).
+
+Renders .md to HTML on the fly: headings, fenced code, inline code, bold/italic,
+relative links (kept inside the server), lists, blockquotes, tables, and
+```mermaid blocks (via CDN). Non-.md files are served as-is. Ctrl-C to stop.
 
 Deliberately small: a convenient local reader for revision and quick reference,
 not a full markdown engine.
@@ -167,9 +174,73 @@ def md_to_html(md: str) -> str:
     return "\n".join(out)
 
 
+def _meta(learning_md: str) -> dict:
+    """Parse title + first metadata table from a learning.md (first ~15 lines)."""
+    meta = {"title": "", "status": "", "level": "", "slug": ""}
+    with open(learning_md, encoding="utf-8") as f:
+        for line in f.read().splitlines()[:15]:
+            if not meta["title"]:
+                h = re.match(r"^#\s+(.*)$", line)
+                if h:
+                    meta["title"] = h.group(1).strip()
+                    continue
+            row = re.match(r"^\|\s*(\w+)\s*\|\s*(.*?)\s*\|\s*$", line)
+            if row and row.group(1).lower() in meta:
+                meta[row.group(1).lower()] = row.group(2).strip()
+    return meta
+
+
+def discover_activities(root: str) -> list[dict]:
+    """Find <slug>/learning.md under root; return sorted metadata dicts."""
+    acts = []
+    for entry in sorted(os.listdir(root)):
+        lm = os.path.join(root, entry, "learning.md")
+        if os.path.isfile(lm):
+            m = _meta(lm)
+            m["dir"] = entry
+            m["slug"] = m["slug"] or entry
+            acts.append(m)
+    return acts
+
+
+def global_index_html(root: str) -> str:
+    """Home page listing every learning activity with quick links."""
+    acts = discover_activities(root)
+    rows = []
+    for a in acts:
+        d = a["dir"]
+        links = []
+        for label, rel in (("knowledge", f"{d}/knowledge/index.md"),
+                            ("essentials", f"{d}/knowledge/essentials.md"),
+                            ("cheatsheets", f"{d}/knowledge/cheatsheets/")):
+            if os.path.exists(os.path.join(root, rel.rstrip("/"))):
+                links.append(f'<a href="/{html.escape(rel)}">{label}</a>')
+        rows.append(
+            "<tr>"
+            f"<td>{html.escape(a['title'] or a['slug'])}</td>"
+            f"<td><code>{html.escape(a['slug'])}</code></td>"
+            f"<td>{html.escape(a['status'])}</td>"
+            f"<td>{html.escape(a['level'])}</td>"
+            f"<td>{' &middot; '.join(links)}</td>"
+            "</tr>")
+    body = ["<h1>Learning activities</h1>"]
+    if rows:
+        body.append("<table><thead><tr><th>Title</th><th>Slug</th>"
+                     "<th>Status</th><th>Level</th><th>Links</th></tr></thead>"
+                     "<tbody>" + "".join(rows) + "</tbody></table>")
+    else:
+        body.append("<p>No learning activities found under this folder.</p>")
+    return "\n".join(body)
+
+
 class Handler(http.server.SimpleHTTPRequestHandler):
+    is_learning_root = False  # set on the class in main()
+
     def do_GET(self) -> None:  # noqa: N802
         path = urllib.parse.unquote(self.path.split("?", 1)[0])
+        if path in ("/", "") and self.is_learning_root:
+            self._send_html(global_index_html(self.directory), "Learning", "home")
+            return
         if path in ("/", ""):
             path = "/index.md"
         rel = path.lstrip("/")
@@ -185,23 +256,26 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if fs.endswith(".md") and os.path.exists(fs):
             with open(fs, encoding="utf-8") as f:
                 md = f.read()
-            title = os.path.basename(fs)
-            crumb = html.escape(rel)
-            page = PAGE.format(title=html.escape(title), crumb=crumb,
-                               body=md_to_html(md))
-            data = page.encode("utf-8")
-            self.send_response(200)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
-            self.send_header("Content-Length", str(len(data)))
-            self.end_headers()
-            self.wfile.write(data)
+            self._send_html(md_to_html(md), os.path.basename(fs), rel)
             return
         super().do_GET()
 
+    def _send_html(self, body: str, title: str, crumb: str) -> None:
+        page = PAGE.format(title=html.escape(title), crumb=html.escape(crumb),
+                           body=body)
+        data = page.encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Serve a knowledge/ folder as HTML.")
-    ap.add_argument("root", nargs="?", default=".", help="folder to serve")
+    ap = argparse.ArgumentParser(
+        description="Serve skillup knowledge (a learning root or one knowledge/ folder).")
+    ap.add_argument("root", nargs="?", default=".",
+                    help="learning root (.dev-notes/learning) or a knowledge/ folder")
     ap.add_argument("--port", type=int, default=8800)
     args = ap.parse_args()
     root = os.path.abspath(args.root)
@@ -209,10 +283,13 @@ def main() -> int:
         print(f"error: not a directory: {root}", file=sys.stderr)
         return 1
 
+    is_root = bool(discover_activities(root))
+    Handler.is_learning_root = is_root
     handler = lambda *a, **k: Handler(*a, directory=root, **k)  # noqa: E731
     with socketserver.TCPServer(("127.0.0.1", args.port), handler) as httpd:
         url = f"http://127.0.0.1:{args.port}/"
-        print(f"serving {root}\n  {url}\nCtrl-C to stop.")
+        mode = "learning root (global index)" if is_root else "knowledge folder"
+        print(f"serving {root}\n  mode: {mode}\n  {url}\nCtrl-C to stop.")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:

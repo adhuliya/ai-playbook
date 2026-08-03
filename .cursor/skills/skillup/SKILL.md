@@ -52,6 +52,11 @@ never decoration.
 - **Memory tools serve the model (MUST).** Project each model with a story,
   diagram, analogy, or catchphrase; mnemonics and other tricks all target one
   goal — a model practical in the long run — never decoration.
+- **Surface the essentials (MUST).** For every module/command/feature, capture
+  the most common/important concepts, combinations, and commands/args — the
+  day-to-day 20% that covers 80% of use — in a dedicated, practiceable
+  `knowledge/essentials.md` (see Knowledge library), so the skill is usable in
+  daily work, not just study.
 - **Learn by practice.** Every session includes graded exercises (not just
   exposition): complete-the-code, complete-the-command, explain-a-concept,
   predict-output, from-scratch. Exposition exists to enable the practice.
@@ -91,6 +96,7 @@ never decoration.
     notes.md                 # optional complementary notes (learner + agent)
     knowledge/               # durable note library (see Knowledge library)
         index.md             # home page: browse the whole subject
+        essentials.md        # daily-use 20%: top concepts/commands/args (drillable)
         <topic>/dev-guide.md # per-subtree structure (when it earns its keep)
         *.md                 # atomic notes, cross-linked
         cheatsheets/*.md     # focused cheatsheets (create-cheatsheet)
@@ -232,7 +238,8 @@ Fixed shape (rough budget within the box):
    learner's verbatim answers, grades + comments, projections/mnemonics) to
    `artifacts/sessions/<date>-<topic>.md`. Capture the mental model (with its
    when/what/not/relate and projection) in `# Mental Models` and as a
-   `knowledge/` note linked from `index.md`.
+   `knowledge/` note linked from `index.md`. If the step introduced a heavily-used
+   construct/command/arg combo, add it to `knowledge/essentials.md`.
 
 Grading rubric (0–5): 0 no attempt · 1 major gaps · 2 partial · 3 correct with
 help · 4 correct, minor slips · 5 fluent and correct. Advance mastery only on
@@ -242,7 +249,8 @@ repeated ≥4 evidence.
 
 Standalone graded quiz (broader than one session).
 
-1. Ask scope (topic(s) / whole curriculum / weak spots) and length.
+1. Ask scope (topic(s) / whole curriculum / weak spots / `essentials.md` drill)
+   and length.
 2. Pose questions; collect answers without revealing solutions first.
 3. Grade with the rubric; comment on each; summarize weak/strong.
 4. Save quiz + answers + grades to `artifacts/quizzes/<date>-<topic>.md`.
@@ -292,6 +300,13 @@ by reading every note. Achieve this pragmatically:
 - **Break big artifacts down**: when a book/spec/course is a chosen resource,
   progressively distill it into crisp `knowledge/` notes (do not dump the source
   verbatim); link notes back to the source under `artifacts/resources/`.
+- **`essentials.md` is the daily-use index (MUST)**: maintain
+  `knowledge/essentials.md` listing, per module/command/feature, the most
+  common/frequent/important concepts, combinations, features, and commands/args
+  — the practical 20% for day-to-day work. Keep it compact, tabular, and
+  practiceable (it is a drill target for `quiz-me`), cross-linked to fuller
+  notes, and grow it whenever a new heavily-used construct is learned. Link it
+  from `index.md`.
 - Both learner and agent may edit knowledge notes freely.
 
 ### `note-knowledge`
@@ -335,7 +350,8 @@ cross-linked `knowledge/` notes. This is the bulk-ingest sibling of
 4. **Update the index chain**: add/refresh rows in each affected subtree
    `dev-guide.md`, create subtree guides where a folder now warrants one, and add
    new entry points to `index.md`. The new notes MUST be findable via names +
-   guides without reading them.
+   guides without reading them. Add any heavily-used constructs/commands/args to
+   `knowledge/essentials.md`.
 5. **Reconcile with the curriculum**: if the material maps to curriculum steps or
    foundations, note the linkage; suggest a `learn-session` or `quiz-me` to
    practice it (do not silently expand scope).
@@ -366,16 +382,23 @@ Build a focused cheatsheet for the content the user describes, saved in
 
 ### `serve-knowledge` (browse in a web browser)
 
-Launch the shipped local server to read `knowledge/` as linked HTML pages:
+Launch the shipped local server. Point it at the **learning root** for a global
+index across all activities, or at one activity's `knowledge/` folder:
 
 ```bash
+# Global: home page lists every activity (title/status/level) with quick links
+python3 <skill-dir>/scripts/serve.py .dev-notes/learning
+
+# Single activity (legacy): serve just this activity's knowledge/
 python3 <skill-dir>/scripts/serve.py .dev-notes/learning/<slug>/knowledge
 ```
 
-It renders `.md` → HTML (relative links, fenced code, and Mermaid diagrams),
-serving `index.md` as the home page. Zero third-party dependencies. See
-[`scripts/serve.py`](scripts/serve.py). Tell the learner the URL it prints; stop
-the server with Ctrl-C when done.
+It auto-detects the mode: a learning root (containing `<slug>/learning.md`)
+shows the generated global index linking each activity's knowledge index,
+`essentials.md`, and cheatsheets; a single `knowledge/` folder serves `index.md`.
+Renders `.md` → HTML (relative links, fenced code, Mermaid); zero dependencies.
+See [`scripts/serve.py`](scripts/serve.py). Tell the learner the URL; stop with
+Ctrl-C. Prefer global mode so all ongoing learning is reachable from one page.
 
 ## `journal.md` contract (history)
 

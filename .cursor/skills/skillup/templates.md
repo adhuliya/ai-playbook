@@ -9,6 +9,7 @@
     notes.md                     # optional; complementary notes
     knowledge/
         index.md                 # home page
+        essentials.md            # daily-use 20%: top concepts/commands/args
         <topic>/dev-guide.md     # subtree index: names + one-line summaries
         <topic>/<concept>.md     # descriptive, greppable note file names
         *.md                     # atomic, cross-linked notes
@@ -165,6 +166,9 @@ Browse map for the whole subject. Start here.
 - [<topic 1>](topic-1/index.md)
 - [<topic 2>](topic-2.md)
 
+## Daily use
+- [essentials](essentials.md) — the practical 20% for day-to-day work
+
 ## Cheatsheets
 - [<focus>](cheatsheets/focus.md)
 
@@ -172,8 +176,29 @@ Browse map for the whole subject. Start here.
 - see `../artifacts/resources/`
 
 ## How to browse
-Run `serve-knowledge` (python3 <skill-dir>/scripts/serve.py <this folder>),
-then open the printed URL.
+Run `serve-knowledge`, then open the printed URL.
+```
+
+## knowledge/essentials.md (daily-use index)
+
+The practical 20%: per module/command/feature, the most common/important
+concepts, combinations, and commands/args. Compact and drillable (a `quiz-me`
+target). Grow it as heavily-used constructs are learned.
+
+```markdown
+# <Subject> — Essentials
+
+Day-to-day quick reference. The 20% that covers 80% of use.
+
+## <Module / command / feature>
+| Item | Common use / combo | Watch out | → note |
+|---|---|---|---|
+| `<cmd/construct + args>` | <the frequent pattern> | <pitfall> | [details](topic/x.md) |
+
+## <Another module>
+| Item | Common use / combo | Watch out | → note |
+|---|---|---|---|
+| `<...>` | <...> | <...> | [details](...) |
 ```
 
 ## knowledge note (atomic, cross-linked)
