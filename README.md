@@ -1,28 +1,60 @@
 # AI Playbook
 
-Shared Cursor rules/skills plus per-project overlays. Target repos pull content
-with a bash sync script (per-file hard links + a `.dev-notes` symlink).
+Shared Cursor rules/skills plus per-project overlays, distributed by
+`scripts/sync-playbook.sh` (per-file hard links).
 
-## Sync into a target repo
+## Sync
 
-From the **target git repo root** (must contain a `.git/` directory):
+### From a target repo
 
 ```bash
-/path/to/ai-playbook/scripts/sync-playbook.sh --project <name> [--overwrite] [--yes]
+/path/to/ai-playbook/scripts/sync-playbook.sh --project <name> [--yes] [--force]
 ```
 
-- Playbook root is derived from the script’s location (call it from anywhere by path).
-- Safe to re-run: paths already linked to the correct final source are no-ops.
-- Unknown `--project`: confirm, or pass `--yes` to append to `projects.txt`.
-- Optional overlay: top-level `<name>.cursor/` in the playbook maps onto target `.cursor/` and wins on clashes.
-- Missing live-notes: auto-scaffolded from `artifacts/dev-notes-structure/`.
-- Conflicts (pre-existing divergent paths): skipped unless `--overwrite`; listed at end.
-- Hard-link failures: warned, listed at end, exit non-zero.
+### From the playbook root
 
-Sync prints `=== gitignore ===` with the
-`git config --global core.excludesFile '~/.gitignore_global'` one-liner, then the
-exact path list (current + older manifest entries).
+```bash
+./scripts/sync-playbook.sh [--project <name>] [--yes] [--force]
+```
+
+Uses `machines/<id>/projects.txt` (`project:/abs/path`). No `--project` ⇒ all
+paths for this machine. Missing paths: update / skip / delete (`--yes` ⇒ skip).
+
+### Machine home-file map (separate)
+
+```bash
+./scripts/sync-playbook.sh --machine [--yes] [--force]
+```
+
+Processes `machines/<id>/syncmap.txt` only (`playbook-rel:/abs/dest`).
+
+### Flags
+
+| Flag | Meaning |
+|------|---------|
+| `--yes` | Admin defaults (register project/path; skip missing paths). Not content conflicts. |
+| `--force` | Content conflict ⇒ playbook wins (re-link dest). |
+
+Machine id = `hostname`, optional `machines/aliases.txt`. New host gets empty
+`projects.txt` / `syncmap.txt` / `ignoresync.txt`.
+
+### Behavior notes
+
+- Same inode: no-op. Same bytes, different inode: re-link. Different bytes: prompt or `--force`.
+- `.cursor/`: playbook → target only. `.dev-notes/` + project `dev-guide.md`: bidirectional.
+- Target git-tracked paths: warn, never touch.
+- Ignores: `ignoresync.txt` (global), `machines/<id>/ignoresync.txt`, `artifacts/live-notes/<project>/ignoresync.txt`. Full playbook-root paths; `!` unignore. Not applied to `--machine`.
+
+See `./scripts/sync-playbook.sh --help` and `.dev-notes/definition.md`.
 
 ## Layout
 
-See `prompt.md` for the full contract.
+| Path | Role |
+|------|------|
+| `projects.txt` | Project keys |
+| `machines/` | Per-machine paths, syncmap, ignores, aliases |
+| `ignoresync.txt` | Global sync ignores |
+| `.cursor/` | Shared rules/skills |
+| `<name>.cursor/` | Per-project overlay |
+| `artifacts/live-notes/<name>/` | Live `.dev-notes` + optional `ignoresync.txt` |
+| `tests/smoke-test-sync-*.sh` | Smoke tests |

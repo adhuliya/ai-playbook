@@ -19,8 +19,11 @@ In scope:
   (`.cursor/skills/<name>/`).
 - Per-project **overlays** (`<project>.cursor/`) that add or override assets for
   one target repo.
-- A **sync tool** (`scripts/sync-playbook.sh`) that installs assets into a target
-  repo via per-file hard links plus a `.dev-notes` symlink.
+- A **sync tool** (`scripts/sync-playbook.sh`) that installs assets into target
+  repos via per-file hard links (playbook or target cwd), plus optional
+  `--machine` syncmap for project-agnostic home/user files.
+- Per-machine registry under `machines/<id>/` (project paths, syncmap, ignores).
+- Layered `ignoresync.txt` (global / machine / project).
 - The scaffold (`artifacts/dev-notes-structure/`) and per-project live notes
   (`artifacts/live-notes/<project>/`).
 
@@ -39,17 +42,24 @@ Out of scope:
 | Target repo | A separate git repo that consumes assets via sync. |
 | Shared asset | A rule/skill under `.cursor/` installed into every target. |
 | Overlay | `<project>.cursor/` — per-project assets; wins over shared on clashes. |
-| Sync | Running `sync-playbook.sh` from a target repo root to install assets. |
+| Sync | Running `sync-playbook.sh` (playbook cwd, target cwd, or `--machine`). |
 | Hard link | How asset **files** land in a target (same-filesystem link, not copy). |
-| Live notes | `artifacts/live-notes/<project>/dev-notes/` — the target's `.dev-notes` symlink destination. |
-| Scaffold | `artifacts/dev-notes-structure/` — template used when live notes are missing. |
-| Manifest | `.cursor/.sync-playbook-manifest` in a target — union list of synced paths. |
+| Live notes | `artifacts/live-notes/<project>/dev-notes/` — target `.dev-notes` counterpart. |
+| Scaffold | `artifacts/dev-notes-structure/` — template when live notes are missing. |
+| Machine | Host identity (`hostname` / `machines/aliases.txt`) with path + syncmap files. |
+| Syncmap | `machines/<id>/syncmap.txt` — playbook path → absolute dest (via `--machine`). |
+| Ignoresync | Playbook-root paths excluded from project sync (`!` unignore). |
 
 ## Principles
 
 - **Thin:** source assets plus one sync script; add nothing that isn't required.
-- **Idempotent sync:** re-running is safe; already-correct paths are no-ops.
-- **Non-destructive:** pre-existing divergent target paths are skipped unless
-  `--overwrite`; stale manifest entries are warned about, never deleted.
+- **Idempotent sync:** re-running is safe; correct hard links are no-ops; broken
+  links with identical bytes are re-linked.
+- **Playbook wins on forced conflict:** divergent content prompts unless `--force`.
+- **Non-touch git-tracked targets:** warn and skip paths tracked in the target.
+- **Cursor one-way:** `.cursor/` is playbook → target only; notes/guides stay
+  bidirectional.
+- **Machine syncmap is explicit:** `--machine` only; never mixed into default
+  project sync.
 - **Single operational entry:** all install behavior flows through
-  `sync-playbook.sh`, run from the target repo root.
+  `sync-playbook.sh`.

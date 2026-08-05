@@ -6,9 +6,12 @@ Shared Cursor rules/skills, per-project overlays, and sync into target repos.
 
 - For work under a path, open the deepest `dev-guide.md` on the ancestor chain.
 - Vision, scope, terms: `.dev-notes/definition.md` (not duplicated here).
-- No build. Run sync from a **target repo root**:
-  `/path/to/ai-playbook/scripts/sync-playbook.sh --project <name> [--yes]`
-- Guide sync smoke test: `./scripts/smoke-test-sync-guides.sh`
+- Sync from a **target** root:
+  `/path/to/ai-playbook/scripts/sync-playbook.sh --project <name> [--yes] [--force]`
+- Sync from the **playbook** root (all or one project for this machine):
+  `./scripts/sync-playbook.sh [--project <name>] [--yes] [--force]`
+- Machine syncmap only: `./scripts/sync-playbook.sh --machine [--yes] [--force]`
+- Smoke: `./tests/smoke-test-sync-guides.sh` and `./tests/smoke-test-sync-marshal.sh`
 - Create/maintain guides with the `dev-guides` skill (target repo only).
 
 ## Artifacts
@@ -18,8 +21,11 @@ Shared Cursor rules/skills, per-project overlays, and sync into target repos.
 | `README.md` | Sync usage and layout entrypoint |
 | `.dev-notes/seed-prompt.md` | Recreate playbook from scratch (`seed-prompt` skill) |
 | `projects.txt` | Registered target project keys |
-| `scripts/sync-playbook.sh` | Hard-link sync into targets |
-| `scripts/smoke-test-sync-guides.sh` | Smoke test for in-tree guide sync |
+| `machines/` | Per-machine `projects.txt`, `syncmap.txt`, `ignoresync.txt`, `aliases.txt` |
+| `ignoresync.txt` | Global sync ignore paths |
+| `scripts/sync-playbook.sh` | Hard-link sync into targets + `--machine` syncmap |
+| `tests/smoke-test-sync-guides.sh` | Smoke test for in-tree guide sync |
+| `tests/smoke-test-sync-marshal.sh` | Smoke test for marshal sync behaviors |
 | `.cursor/rules/` | Always-applied rules (`dev-main`, `dev-git`) |
 | `.cursor/skills/` | Shared skills (`dev-guides`, `journal`, `seed-prompt`, …) |
 | `artifacts/live-notes/` | Per-project `.dev-notes` + hub `dev-guides/` store |

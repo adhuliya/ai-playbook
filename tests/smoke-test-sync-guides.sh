@@ -4,11 +4,19 @@ set -euo pipefail
 
 PLAYBOOK_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROJECT="_smoke_guides_$$"
+MACHINE="_smoke_guides_machine_$$"
 LIVE_NOTES="$PLAYBOOK_ROOT/artifacts/live-notes/$PROJECT/dev-notes"
 LIVE_GUIDES="$LIVE_NOTES/dev-guides"
 WORKDIR="$(mktemp -d)"
 TARGET="$WORKDIR/target"
-trap 'rm -rf "$WORKDIR"; rm -rf "$LIVE_NOTES"; sed -i "" "/^${PROJECT}$/d" "$PLAYBOOK_ROOT/projects.txt" 2>/dev/null || sed -i "/^${PROJECT}$/d" "$PLAYBOOK_ROOT/projects.txt" 2>/dev/null || true' EXIT
+MACHINE_DIR="$PLAYBOOK_ROOT/machines/$MACHINE"
+export SYNC_PLAYBOOK_HOSTNAME="$MACHINE"
+trap 'rm -rf "$WORKDIR"; rm -rf "$PLAYBOOK_ROOT/artifacts/live-notes/$PROJECT"; rm -rf "$MACHINE_DIR"; sed -i "" "/^${PROJECT}$/d" "$PLAYBOOK_ROOT/projects.txt" 2>/dev/null || sed -i "/^${PROJECT}$/d" "$PLAYBOOK_ROOT/projects.txt" 2>/dev/null || true' EXIT
+
+mkdir -p "$MACHINE_DIR"
+: >"$MACHINE_DIR/projects.txt"
+: >"$MACHINE_DIR/syncmap.txt"
+: >"$MACHINE_DIR/ignoresync.txt"
 
 file_id() { stat -f '%d:%i' "$1" 2>/dev/null; }
 same_file() {

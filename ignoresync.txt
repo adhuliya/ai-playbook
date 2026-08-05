@@ -1,0 +1,2 @@
+# Paths relative to playbook root. No globs. `!` unignores (last match wins).
+# Folder path ignores that tree. Missing paths warn at sync time.
