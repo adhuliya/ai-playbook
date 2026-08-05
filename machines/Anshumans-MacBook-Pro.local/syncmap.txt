@@ -2,3 +2,5 @@ configs/vimrc:/Users/anshumandhuliya/.vimrc
 configs/zshrc:/Users/anshumandhuliya/.zshrc
 configs/agent.zshrc.sh:/Users/anshumandhuliya/.agent.zshrc.sh
 configs/tmux.conf:/Users/anshumandhuliya/.tmux.conf
+configs/vim-agent.vim:/Users/anshumandhuliya/.vim/vim-agent.vim
+configs/vim-agent-run.sh:/Users/anshumandhuliya/.vim/vim-agent-run.sh

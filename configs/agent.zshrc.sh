@@ -12,12 +12,7 @@ typeset -gi zsh_agent_prompt_mode=0   # 0=off, 1=command, 2=ask
 typeset -g _agent_context_cmd=''
 typeset -g _agent_buffer_prefix=''
 
-typeset -ga _AGENT_PRINT_FLAGS=(
-  --print
-  --output-format json
-  --trust
-  --model auto
-)
+# Model comes from AGENT_MODEL at call time (default: auto). Shared with Vim agent helpers.
 
 _agent_trim() {
   local text="$1"
@@ -109,7 +104,7 @@ _agent_run_print() {
   local outfile=$1 timeout=$2
   shift 2
 
-  ( command agent "${_AGENT_PRINT_FLAGS[@]}" "$@" >"$outfile" 2>/dev/null ) &
+  ( command agent --print --output-format json --trust --model "${AGENT_MODEL:-auto}" "$@" >"$outfile" 2>/dev/null ) &
   local pid=$!
   _agent_show_progress "$pid" "Agent working..." "$timeout"
 }
