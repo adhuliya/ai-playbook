@@ -1,0 +1,4 @@
+configs/vimrc:/Users/anshumandhuliya/.vimrc
+configs/zshrc:/Users/anshumandhuliya/.zshrc
+configs/agent.zshrc.sh:/Users/anshumandhuliya/.agent.zshrc.sh
+configs/tmux.conf:/Users/anshumandhuliya/.tmux.conf

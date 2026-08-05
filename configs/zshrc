@@ -1,0 +1,134 @@
+# REF: https://ianyepan.github.io/posts/moving-away-from-ohmyzsh/
+# REF: https://zsh.sourceforge.io/Doc/Release/Prompt-Expansion.html
+
+# Skip heavy setup only when IDE probes shell environment.
+if [[ -n "$VSCODE_RESOLVING_ENVIRONMENT" ]]; then
+  typeset -f dump_zsh_state >/dev/null 2>&1 || dump_zsh_state() { :; }
+  return
+fi
+
+# Only run this file for interactive shells.
+[[ $- != *i* ]] && return
+
+# Some macOS shell session hooks can call this; keep a no-op fallback.
+typeset -f dump_zsh_state >/dev/null 2>&1 || dump_zsh_state() { :; }
+
+NEWLINE=$'\n';
+PROMPT="[%D %* history: %! tty: %y jobs: %j status: $?] ${NEWLINE}%n@%m %3~ %# ";
+
+HISTSIZE=1000000
+HISTFILE=~/.zsh_history
+SAVEHIST=1000000
+HISTDUP=erase
+setopt appendhistory
+setopt sharehistory
+setopt incappendhistory
+setopt hist_ignore_all_dups
+setopt hist_save_no_dups
+setopt hist_ignore_dups
+setopt hist_find_no_dups
+setopt histverify
+
+setopt autocd
+
+# Complete partial command and file name searches.
+zstyle ':completion:&' completer _complete
+zstyle ':completion:*' matcher-list '' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' '+l:|=* r:|=*'
+autoload -Uz compinit
+compinit -C
+
+# vim bindinds (use -e for emacs)
+bindkey -v 
+
+# Edit command line in Vim.
+autoload edit-command-line
+zle -N edit-command-line
+bindkey -M vicmd v edit-command-line
+
+# Move, copy, symlink files by making names with patterns.
+# REF: https://unix.stackexchange.com/a/19291
+autoload zmv
+alias zmv='noglob zmv'
+alias zcp='noglob zmv -C'
+alias zln='noglob zmv -L'
+alias zsy='noglob zmv -Ls'
+
+####### START: Idempotent modification of ENV vars #######
+
+# Read shell variable by name (bash + zsh).
+_env_get() {
+  if [[ -n "${ZSH_VERSION:-}" ]]; then
+    print -r -- "${(P)1}"
+  else
+    printf '%s' "${!1}"
+  fi
+}
+# Set (and export) shell variable by name.
+_env_set() {
+  if [[ -n "${ZSH_VERSION:-}" ]]; then
+    typeset -g "$1"="$2"
+    export "$1"
+  else
+    export "$1"="$2"
+  fi
+}
+# Prepend VALUE(s) to VAR if not already a segment (idempotent).
+# Segments are split/joined with SEP (e.g. ':' for PATH).
+env_list_prepend() {
+  local var_name sep val item wrapped
+  var_name=$1
+  sep=$2
+  shift 2
+  val=$(_env_get "$var_name")
+  for item in "$@"; do
+    [[ -n "$item" ]] || continue
+    wrapped="${sep}${val}${sep}"
+    case "$wrapped" in
+      *"${sep}${item}${sep}"*) ;;
+      *) val="${item}${val:+${sep}${val}}" ;;
+    esac
+  done
+  _env_set "$var_name" "$val"
+}
+# Append VALUE(s) to VAR if not already a segment (idempotent).
+env_list_append() {
+  local var_name sep val item wrapped
+  var_name=$1
+  sep=$2
+  shift 2
+  val=$(_env_get "$var_name")
+  for item in "$@"; do
+    [[ -n "$item" ]] || continue
+    wrapped="${sep}${val}${sep}"
+    case "$wrapped" in
+      *"${sep}${item}${sep}"*) ;;
+      *) val="${val:+$val${sep}}$item" ;;
+    esac
+  done
+  _env_set "$var_name" "$val"
+}
+
+# Usage and Notes
+#
+# env_list_append PATH ':' "$HOME/.local/bin" "/opt/foo/bin"
+# env_list_prepend PATH ':' "$HOME/bin"
+# env_list_append MANPATH ':' "/usr/local/share/man"
+# env_list_append PYTHONPATH ':' "$HOME/myproject"
+# # comma-separated example
+# env_list_append MY_DIRS ',' "/tmp/a" "/tmp/b"
+#
+# • Matching is exact segment equality (after wrapping with SEP), not filesystem resolution.
+# • case patterns treat *, ?, and [ in item specially; normal paths are fine.
+# • Empty item arguments are skipped.
+# • _env_set always exports the variable; say if you want a non-export variant.
+
+####### END  : Idempotent modification of ENV vars #######
+
+
+# Load machine specific ENV variables and settings
+# e.g.: export PATH="$HOME/.local/bin:$PATH"
+[[ -f ~/.envrc.sh ]] && source ~/.envrc.sh
+
+# Load after bindkey -v so Ctrl-G / Ctrl-O bindings are not reset.
+[[ -f ~/.agent.zshrc.sh ]] && source ~/.agent.zshrc.sh
+
