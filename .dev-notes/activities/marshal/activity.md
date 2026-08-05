@@ -10,76 +10,72 @@
 
 # Goal
 
-Close operational gaps in `scripts/sync-playbook.sh`: hard-link repair, playbook-side multi-project sync with a per-machine path registry, layered `ignoresync.txt`, explicit `--machine` syncmap, smoke harnesses, and matching docs.
+Harden `scripts/sync-playbook.sh` for playbook/target sync, machine registry, ignores, syncmap, and nested-git `dev-guide.md` handling.
 
 # Scope
 
-Hardened the existing sync tool (shared Cursor assets → targets via hard links; bash + git only): inode repair after broken links; run from playbook root against per-machine project paths; hierarchical ignores; separate `--machine` syncmap; `--yes` vs `--force`; automated smokes under `tests/`; definition/README/dev-guide updates.
-
-Out of scope (unchanged): new asset types, CI/package managers, per-machine-project ignore files, default syncmap during project sync, auto-fixing target git-tracked collisions.
+Shipped: hard-link repair; per-machine `projects.txt` / `syncmap.txt` / `ignoresync.txt`; `--machine` syncmap; layered ignores; nested submodule guide policy (`--ignore-submodules`, `project-modules.txt`, path inference); smokes and docs.
 
 # Background and Special Notes
 
-- Targets are not expected to commit hard-linked playbook files; content conflicts after inode break usually come from playbook git ops.
-- Smoke harnesses isolate machines via `SYNC_PLAYBOOK_HOSTNAME`.
-- Host scaffold: `machines/Anshumans-MacBook-Pro.local/` (empty paths/syncmap until filled by operator).
-- Accepted gap: root `ignoresync.txt` has no entries yet (add when needed).
-- Future bugs or scheme changes: reopen via `resume-work` → Planning (do not jump Complete → Active). Use `replan-work` / derive if scope is material.
+- Smoke harnesses use `SYNC_PLAYBOOK_HOSTNAME` for isolated machine dirs.
+- Submodule guide prompts are not satisfied by `--yes`.
+- Reopen via `resume-work` → Planning for fixes or extensions (`replan-work` if material).
 
 # Current Design
 
-Shipped behavior in `scripts/sync-playbook.sh`:
+### Core sync (`scripts/sync-playbook.sh`)
 
 | Mode | Behavior |
 |---|---|
-| Playbook cwd | Sync all (or `--project`) paths from `machines/<id>/projects.txt`. No syncmap. |
-| Target cwd | Sync that repo only (`--project` required); may register `project:pwd`. No syncmap. |
-| `--machine` | Syncmap-only; incompatible with `--project`. |
+| Playbook cwd | Sync paths from `machines/<id>/projects.txt` (optional `--project`). |
+| Target cwd | Sync current repo (`--project` required). |
+| `--machine` | `syncmap.txt` only. |
 
-- Machine id = `hostname` (+ `machines/aliases.txt`); new host gets empty `projects.txt` / `syncmap.txt` / `ignoresync.txt`.
-- Hard links: same inode no-op; same bytes re-link; content conflict prompts (playbook wins) or `--force`.
-- `.cursor/`: playbook → target only. `.dev-notes/` + project guides: bidirectional. Syncmap: one-way.
-- Target git-tracked paths: warn, never touch.
-- Ignores: global + machine + `artifacts/live-notes/<project>/ignoresync.txt`; full playbook-root paths; `!` unignore; not applied to syncmap.
-- Must-not-break: hard-link semantics on same filesystem; playbook cwd detection via same inode as `scripts/sync-playbook.sh`.
+- Hard links; `--force` for content conflicts; git-tracked target paths skipped.
+- `.cursor/` one-way; `.dev-notes/` + guides bidirectional (except nested policy below).
+- New machine scaffold: `projects.txt`, `project-modules.txt`, `syncmap.txt`, `ignoresync.txt`.
 
-Touched paths: `scripts/sync-playbook.sh`, `ignoresync.txt`, `machines/`, `tests/smoke-test-sync-*.sh`, `.dev-notes/definition.md`, `README.md`, `dev-guide.md`.
+### Nested `dev-guide.md`
+
+| Piece | Behavior |
+|---|---|
+| `--ignore-submodules` | Skip nested guide paths (no prompts). |
+| `machines/<id>/projects.txt` | Abs path match on nested root ⇒ that project’s hub (queued nested pass). |
+| `machines/<id>/project-modules.txt` | `project:/abs/nested` ⇒ same-project hub paths under parent sync root. |
+| Unmapped | Interactive skip / same project (`m`) / separate project (`p`). |
+
+Must-not-break: playbook cwd detection via script inode; hard-link semantics on same filesystem.
+
+Touched: `scripts/sync-playbook.sh`, `tests/smoke-test-sync-*.sh`, `README.md`, `dev-guide.md`, `.dev-notes/definition.md`.
 
 # Current Plan
 
-Complete. No further planned implementation in this activity.
+None (scope complete).
 
 # Milestones
 
-1. [x] Machine registry + dual entry + `--machine` syncmap
-   - evidence: `./scripts/sync-playbook.sh --help`; `./tests/smoke-test-sync-marshal.sh`
-
-2. [x] Hard-link repair, conflicts, ignores, git-tracked warn
+1. [x] Machine registry + syncmap + marshal smoke
    - evidence: `./tests/smoke-test-sync-marshal.sh`
 
-3. [x] Domain directionality + docs
-   - evidence: marshal smoke + `.dev-notes/definition.md` / `README.md` / `dev-guide.md`
+2. [x] Nested guides + `project-modules.txt` + `--ignore-submodules`
+   - evidence: `./tests/smoke-test-sync-submodule-guides.sh`
 
-4. [x] Marshal smoke harness green
-   - evidence: `./tests/smoke-test-sync-marshal.sh`; `./tests/smoke-test-sync-guides.sh`
+3. [x] Guides smoke still green
+   - evidence: `./tests/smoke-test-sync-guides.sh`
+
+4. [x] Docs aligned
+   - evidence: `README.md`, `dev-guide.md`, `.dev-notes/definition.md`
 
 # Next Steps
 
-Minor-fix / operator runway (not open milestones):
-
-1. Fill `machines/$(hostname)/projects.txt` (`span:/abs/...`, etc.) and sync from playbook root.
-2. Add `syncmap.txt` lines (e.g. `scripts/agent.zshrc:…`) → `./scripts/sync-playbook.sh --machine`.
-3. Fastest validation: `./tests/smoke-test-sync-marshal.sh` and `./tests/smoke-test-sync-guides.sh`.
-4. Safest first edit targets on bugfix: `scripts/sync-playbook.sh`, then matching smoke under `tests/`.
-5. Resume from Complete: `resume-work` on `marshal`; describe the fix/improvement; expect reopen to Planning then Execution gate (`approve-plan` → `start-building`). Material scheme changes → `replan-work` or derive.
+1. Fill `machines/$(hostname)/projects.txt` and `project-modules.txt` for real nested checkouts.
+2. Validate: `./tests/smoke-test-sync-submodule-guides.sh` (and other sync smokes).
+3. Bugfixes: `scripts/sync-playbook.sh` first, then matching smoke under `tests/`.
 
 # References
 
-- `.dev-notes/definition.md`
 - `scripts/sync-playbook.sh`
-- `projects.txt`
-- `machines/`
-- `ignoresync.txt`
-- `tests/smoke-test-sync-marshal.sh`
-- `tests/smoke-test-sync-guides.sh`
-- `scripts/agent.zshrc`
+- `machines/`, `projects.txt`, `ignoresync.txt`
+- `tests/smoke-test-sync-marshal.sh`, `tests/smoke-test-sync-guides.sh`, `tests/smoke-test-sync-submodule-guides.sh`
+- `.dev-notes/definition.md`

@@ -16,8 +16,8 @@ SEP=$'\x1f'
 usage() {
   cat <<'EOF'
 Usage:
-  sync-playbook.sh [--project <name>] [--yes] [--force]   # from playbook root
-  sync-playbook.sh --project <name> [--yes] [--force]     # from target repo root
+  sync-playbook.sh [--project <name>] [--yes] [--force] [--ignore-submodules]
+  sync-playbook.sh --project <name> [--yes] [--force] [--ignore-submodules]
   sync-playbook.sh --machine [--yes] [--force]            # syncmap only (any cwd)
 
 Modes (auto-detected by cwd, unless --machine):
@@ -34,12 +34,15 @@ Flags:
   --project <name>  Limit to one project key (required in target-cwd mode).
   --yes             Auto-confirm admin/registry prompts (add project, register path).
                     Missing machine project paths ⇒ skip. Does NOT resolve content conflicts.
+                    Does NOT answer nested-submodule guide prompts (use --ignore-submodules).
+  --ignore-submodules  Skip dev-guide.md under nested .git (no prompts).
   --force           On content conflict, playbook wins without prompting (re-link dest).
   -h, --help        Show this help.
 
 Files:
   projects.txt                         Project key list
-  machines/<id>/projects.txt           project:/abs/path lines
+  machines/<id>/projects.txt           project:/abs/path lines (many paths per project OK)
+  machines/<id>/project-modules.txt    project:/abs/submodule (nested repo = same project)
   machines/<id>/syncmap.txt            playbook-rel:/abs/dest (files or dirs)
   machines/<id>/ignoresync.txt         machine ignores
   ignoresync.txt                       global ignores
@@ -57,6 +60,7 @@ PLAYBOOK_ROOT="$(cd -P "$SCRIPT_DIR/.." && pwd)"
 PROJECT=""
 YES=0
 FORCE=0
+IGNORE_SUBMODULES=0
 MACHINE_MODE=0
 
 while [[ $# -gt 0 ]]; do
@@ -68,6 +72,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     --machine) MACHINE_MODE=1; shift ;;
     --yes) YES=1; shift ;;
+    --ignore-submodules) IGNORE_SUBMODULES=1; shift ;;
     --force) FORCE=1; shift ;;
     -h|--help) usage; exit 0 ;;
     *)
@@ -183,6 +188,239 @@ scaffold_machine_dir() {
   [[ -f "$dir/projects.txt" ]] || : >"$dir/projects.txt"
   [[ -f "$dir/syncmap.txt" ]] || : >"$dir/syncmap.txt"
   [[ -f "$dir/ignoresync.txt" ]] || : >"$dir/ignoresync.txt"
+  [[ -f "$dir/project-modules.txt" ]] || : >"$dir/project-modules.txt"
+}
+
+dir_has_git() {
+  local d="${1%/}"
+  [[ -e "$d/.git" ]]
+}
+
+# Closest strict ancestor of guide file below target_root that has .git (not target_root).
+nested_git_root_for_guide() {
+  local target_root="${1%/}" guide_abs="$2"
+  local dir
+  target_root="$(cd -P "$target_root" && pwd)"
+  if [[ -f "$guide_abs" ]]; then
+    dir="$(cd -P "$(dirname "$guide_abs")" && pwd)"
+  else
+    dir="$(cd -P "$(dirname "$guide_abs")" 2>/dev/null && pwd)" || return 1
+  fi
+  while [[ "$dir" != "$target_root" && "$dir" == "$target_root"/* ]]; do
+    if dir_has_git "$dir"; then
+      echo "$dir"
+      return 0
+    fi
+    dir="$(dirname "$dir")"
+  done
+  return 1
+}
+
+# When the guide file is missing on disk, infer nested root from rel path under target_root.
+nested_git_root_for_rel() {
+  local target_root="$1" rel="$2"
+  target_root="$(cd -P "$target_root" && pwd)"
+  local dir_rel="${rel%/*}"
+  [[ "$dir_rel" != "$rel" ]] || return 1
+  local cur="$target_root" p
+  while IFS= read -r -d '' p; do
+    [[ -n "$p" ]] || continue
+    cur="$cur/$p"
+    if dir_has_git "$cur"; then
+      echo "$(cd -P "$cur" && pwd)"
+      return 0
+    fi
+  done < <(printf '%s\0' ${dir_rel//\//$'\0'})
+  return 1
+}
+
+nested_git_root_for_target_guide() {
+  local target_root="$1" rel="$2"
+  local guide_abs="$target_root/$rel"
+  if [[ -e "$guide_abs" ]]; then
+    nested_git_root_for_guide "$target_root" "$(cd -P "$(dirname "$guide_abs")" && pwd)/$(basename "$rel")"
+  else
+    nested_git_root_for_rel "$target_root" "$rel"
+  fi
+}
+
+lookup_project_for_abs_path() {
+  local want="${1%/}"
+  [[ -f "$MACHINE_DIR/projects.txt" ]] || return 1
+  local line proj path
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    [[ -z "$line" || "$line" == \#* ]] && continue
+    proj="${line%%:*}"
+    path="${line#*:}"
+    if [[ "$proj" == "$line" || -z "$proj" || -z "$path" ]]; then
+      continue
+    fi
+    path="$(cd -P "$path" 2>/dev/null && pwd)" || continue
+    if [[ "$path" == "$want" ]]; then
+      echo "$proj"
+      return 0
+    fi
+  done <"$MACHINE_DIR/projects.txt"
+  return 1
+}
+
+lookup_project_module_owner() {
+  local want="${1%/}"
+  [[ -f "$MACHINE_DIR/project-modules.txt" ]] || return 1
+  local line proj path
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    [[ -z "$line" || "$line" == \#* ]] && continue
+    proj="${line%%:*}"
+    path="${line#*:}"
+    if [[ "$proj" == "$line" || -z "$proj" || -z "$path" ]]; then
+      continue
+    fi
+    path="$(cd -P "$path" 2>/dev/null && pwd)" || continue
+    if [[ "$path" == "$want" ]]; then
+      echo "$proj"
+      return 0
+    fi
+  done <"$MACHINE_DIR/project-modules.txt"
+  return 1
+}
+
+append_project_module_line() {
+  local proj="$1" path="$2"
+  local line="${proj}:${path}"
+  touch "$MACHINE_DIR/project-modules.txt"
+  grep -qxF "$line" "$MACHINE_DIR/project-modules.txt" 2>/dev/null && return 0
+  echo "$line" >>"$MACHINE_DIR/project-modules.txt"
+  echo "note: registered $line in machines/${MACHINE_ID}/project-modules.txt"
+}
+
+append_machine_project_line() {
+  local proj="$1" path="$2"
+  local line="${proj}:${path}"
+  touch "$MACHINE_DIR/projects.txt"
+  grep -qxF "$line" "$MACHINE_DIR/projects.txt" 2>/dev/null && return 0
+  echo "$line" >>"$MACHINE_DIR/projects.txt"
+  echo "note: registered $line in machines/${MACHINE_ID}/projects.txt"
+}
+
+list_known_project_keys() {
+  [[ -f "$PROJECTS_FILE" ]] || return 0
+  awk 'NF && $0 !~ /^#/ { print }' "$PROJECTS_FILE" | LC_ALL=C sort -u
+}
+
+prompt_nested_guide_resolution() {
+  local nested_abs="$1" guide_rel="$2"
+  echo "Nested git repo (dev-guide.md at ${guide_rel}): $nested_abs" >&2
+  if [[ "$IGNORE_SUBMODULES" -eq 1 ]]; then
+    return 1
+  fi
+  printf "Submodule guides: [s]kip / same project as '%s' [m] / separate project [p]? " "$PROJECT" >&2
+  local ans
+  read_tty ans
+  case "$ans" in
+    m|M)
+      append_project_module_line "$PROJECT" "$nested_abs"
+      echo "module"
+      ;;
+    p|P)
+      local keys=() pick=""
+      while IFS= read -r k; do
+        [[ -n "$k" ]] && keys+=("$k")
+      done < <(list_known_project_keys)
+      if [[ ${#keys[@]} -gt 0 ]]; then
+        echo "Known project keys:" >&2
+        local i
+        for i in "${!keys[@]}"; do
+          echo "  $((i + 1))) ${keys[$i]}" >&2
+        done
+        echo "  n) new project key" >&2
+        printf "Choose [1-%d/n]: " "${#keys[@]}" >&2
+        read_tty ans
+        local pick=""
+        if [[ "$ans" == "n" || "$ans" == "N" ]]; then
+          printf "New project key: " >&2
+          read_tty pick
+        elif [[ "$ans" =~ ^[0-9]+$ ]] && ((ans >= 1 && ans <= ${#keys[@]})); then
+          pick="${keys[$((ans - 1))]}"
+        else
+          echo "note: invalid choice — skip nested guide" >&2
+          return 1
+        fi
+        [[ -n "$pick" ]] || return 1
+        ensure_project_known "$pick"
+        append_machine_project_line "$pick" "$nested_abs"
+        echo "project:$pick"
+      else
+        printf "New project key: " >&2
+        read_tty pick
+        [[ -n "$pick" ]] || return 1
+        ensure_project_known "$pick"
+        append_machine_project_line "$pick" "$nested_abs"
+        echo "project:$pick"
+      fi
+      ;;
+    *)
+      echo "note: skip nested guide at $guide_rel" >&2
+      return 1
+      ;;
+  esac
+}
+
+# Deduped nested guide syncs: project<SEP>abs_root (global for one sync_one_target run)
+NESTED_GUIDE_SYNCS=()
+NESTED_GUIDE_SYNC_SEEN=""
+
+queue_nested_guide_sync() {
+  local proj="$1" root="$2"
+  root="$(cd -P "$root" && pwd)"
+  local key="${proj}${SEP}${root}"
+  [[ "$NESTED_GUIDE_SYNC_SEEN" == *"$SEP$key$SEP"* ]] && return 0
+  NESTED_GUIDE_SYNC_SEEN+="${SEP}${key}${SEP}"
+  NESTED_GUIDE_SYNCS+=("$key")
+}
+
+collect_project_guides_files_filtered() {
+  local root="$1"
+  [[ -d "$root" ]] || return 0
+  root="$(cd -P "$root" && pwd)"
+  local f rel nested nested_abs mod_owner reg_proj resolution pick_proj
+  while IFS= read -r -d '' f; do
+    rel="$(rel_under "$root" "$f")"
+    [[ "$rel" == .dev-notes/* ]] && continue
+    nested="$(nested_git_root_for_guide "$root" "$f" 2>/dev/null)" || nested=""
+    if [[ -z "$nested" ]]; then
+      printf '%s%s%s\n' "$rel" "$SEP" "$f"
+      continue
+    fi
+    nested_abs="$(cd -P "$nested" && pwd)"
+    if [[ "$IGNORE_SUBMODULES" -eq 1 ]]; then
+      echo "note: --ignore-submodules — skip $rel" >&2
+      continue
+    fi
+    mod_owner="$(lookup_project_module_owner "$nested_abs" 2>/dev/null)" || mod_owner=""
+    if [[ -n "$mod_owner" ]]; then
+      if [[ "$mod_owner" == "$PROJECT" ]]; then
+        printf '%s%s%s\n' "$rel" "$SEP" "$f"
+      else
+        queue_nested_guide_sync "$mod_owner" "$nested_abs"
+      fi
+      continue
+    fi
+    reg_proj="$(lookup_project_for_abs_path "$nested_abs" 2>/dev/null)" || reg_proj=""
+    if [[ -n "$reg_proj" ]]; then
+      queue_nested_guide_sync "$reg_proj" "$nested_abs"
+      continue
+    fi
+    resolution="$(prompt_nested_guide_resolution "$nested_abs" "$rel" 2>/dev/null)" || continue
+    case "$resolution" in
+      module)
+        printf '%s%s%s\n' "$rel" "$SEP" "$f"
+        ;;
+      project:*)
+        pick_proj="${resolution#project:}"
+        queue_nested_guide_sync "$pick_proj" "$nested_abs"
+        ;;
+    esac
+  done < <(find -P "$root" -type f -name dev-guide.md -print0)
 }
 
 list_machine_ids() {
@@ -554,7 +792,46 @@ sync_devnotes_domain() {
   rm -f "$forward_file" "$target_file" "$filtered"
 }
 
-sync_guides_domain() {
+filter_guides_nested_policy() {
+  local root="$1" infile="$2"
+  local outfile rel abs guide_abs nested mod_owner reg_proj
+  root="$(cd -P "$root" && pwd)"
+  outfile="$(mktemp)"
+  while IFS="$SEP" read -r rel abs; do
+    [[ -n "$rel" ]] || continue
+    nested="$(nested_git_root_for_target_guide "$root" "$rel" 2>/dev/null)" || nested=""
+    if [[ -z "$nested" ]]; then
+      if [[ -n "$abs" ]]; then
+        printf '%s%s%s\n' "$rel" "$SEP" "$abs"
+      else
+        printf '%s%s%s\n' "$rel" "$SEP" ""
+      fi
+      continue
+    fi
+    nested="$(cd -P "$nested" && pwd)"
+    if [[ "$IGNORE_SUBMODULES" -eq 1 ]]; then
+      echo "note: --ignore-submodules — skip $rel" >&2
+      continue
+    fi
+    mod_owner="$(lookup_project_module_owner "$nested" 2>/dev/null)" || mod_owner=""
+    if [[ -n "$mod_owner" && "$mod_owner" == "$PROJECT" ]]; then
+      if [[ -n "$abs" ]]; then
+        printf '%s%s%s\n' "$rel" "$SEP" "$abs"
+      else
+        printf '%s%s%s\n' "$rel" "$SEP" ""
+      fi
+      continue
+    fi
+    reg_proj="$(lookup_project_for_abs_path "$nested" 2>/dev/null)" || reg_proj=""
+    if [[ -n "$reg_proj" ]]; then
+      continue
+    fi
+    echo "note: skip unmapped nested guide path $rel (resolve via prompt on next interactive sync)" >&2
+  done <"$infile" >"$outfile"
+  mv "$outfile" "$infile"
+}
+
+sync_guides_domain_core() {
   mkdir -p "$LIVE_GUIDES"
   local forward_file target_file filtered
   forward_file="$(mktemp)"
@@ -562,10 +839,56 @@ sync_guides_domain() {
   filtered="$(mktemp)"
   collect_live_guides_forward "$LIVE_GUIDES" >"$forward_file"
   filter_forward_ignored <"$forward_file" >"$filtered"
-  collect_project_guides_files "$TARGET_ROOT" >"$target_file"
+  collect_project_guides_files_filtered "$TARGET_ROOT" >"$target_file"
+  filter_guides_nested_policy "$TARGET_ROOT" "$filtered"
+  filter_guides_nested_policy "$TARGET_ROOT" "$target_file"
   process_domain "$filtered" "$target_file" "$TARGET_ROOT" \
     "$LIVE_GUIDES" "" 1 "artifacts/live-notes/${PROJECT}/dev-notes/dev-guides/"
   rm -f "$forward_file" "$target_file" "$filtered"
+}
+
+sync_guides_domain_at() {
+  local project="$1" target="$2"
+  local save_project="$PROJECT" save_target="$TARGET_ROOT"
+  local save_live="$LIVE_NOTES" save_guides="$LIVE_GUIDES"
+  local save_devnotes="$DEVNOTES_DEST" save_overlay="$OVERLAY_ROOT"
+  local save_exclude="$EXCLUDE_FILE"
+
+  PROJECT="$project"
+  TARGET_ROOT="$target"
+  LIVE_NOTES="$PLAYBOOK_ROOT/artifacts/live-notes/$PROJECT/dev-notes"
+  LIVE_GUIDES="$LIVE_NOTES/dev-guides"
+  load_ignores_for_project "$PROJECT"
+  ensure_project_known "$PROJECT"
+  scaffold_live_notes_if_needed
+  compute_git_tracked
+  sync_guides_domain_core
+
+  PROJECT="$save_project"
+  TARGET_ROOT="$save_target"
+  LIVE_NOTES="$save_live"
+  LIVE_GUIDES="$save_guides"
+  DEVNOTES_DEST="$save_devnotes"
+  OVERLAY_ROOT="$save_overlay"
+  EXCLUDE_FILE="$save_exclude"
+}
+
+run_queued_nested_guide_syncs() {
+  local entry proj root
+  while [[ ${#NESTED_GUIDE_SYNCS[@]} -gt 0 ]]; do
+    entry="${NESTED_GUIDE_SYNCS[0]}"
+    NESTED_GUIDE_SYNCS=("${NESTED_GUIDE_SYNCS[@]:1}")
+    proj="${entry%%"$SEP"*}"
+    root="${entry#*"$SEP"}"
+    sync_guides_domain_at "$proj" "$root"
+  done
+}
+
+sync_guides_domain() {
+  NESTED_GUIDE_SYNCS=()
+  NESTED_GUIDE_SYNC_SEEN=""
+  sync_guides_domain_core
+  run_queued_nested_guide_syncs
 }
 
 reset_report_arrays() {
