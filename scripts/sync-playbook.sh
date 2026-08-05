@@ -89,6 +89,11 @@ MACHINES_DIR="$PLAYBOOK_ROOT/machines"
 ALIASES_FILE="$MACHINES_DIR/aliases.txt"
 GLOBAL_IGNORE="$PLAYBOOK_ROOT/ignoresync.txt"
 
+# Interactive prompts must not use stdin (often redirected from syncmap/join).
+read_tty() {
+  read -r "$@" </dev/tty
+}
+
 EXCLUDED=()
 EXISTING=()
 REPAIRED=()
@@ -219,7 +224,7 @@ resolve_machine() {
       else
         printf "Choose [1-%d/n]: " "${#ids[@]}"
         local ans
-        read -r ans
+        read_tty ans
         if [[ "$ans" == "n" || "$ans" == "N" ]]; then
           MACHINE_ID="$HOSTNAME_KEY"
           scaffold_machine_dir "$MACHINES_DIR/$MACHINE_ID"
@@ -344,7 +349,7 @@ resolve_both_sides() {
     ans=y
   else
     printf "Conflict %s: different content (inode differs). Replace dest with playbook hard link? [y/N] " "$rel_full" >&2
-    read -r ans
+    read_tty ans
   fi
   case "$ans" in
     y|Y|yes|YES)
@@ -459,7 +464,7 @@ ensure_project_known() {
   fi
   printf "Project '%s' is not in projects.txt. Add it? [y/N] " "$project"
   local ans
-  read -r ans
+  read_tty ans
   case "$ans" in
     y|Y|yes|YES) echo "$project" >>"$PROJECTS_FILE"; echo "note: appended '$project' to projects.txt" ;;
     *) echo "error: aborted (project not registered)" >&2; exit 1 ;;
@@ -674,7 +679,7 @@ register_machine_path() {
   fi
   printf "Register %s in machines/%s/projects.txt? [y/N] " "$line" "$MACHINE_ID"
   local ans
-  read -r ans
+  read_tty ans
   case "$ans" in
     y|Y|yes|YES)
       echo "$line" >>"$MACHINE_DIR/projects.txt"
@@ -709,11 +714,11 @@ handle_missing_path() {
   fi
   printf "update / skip / delete [u/s/d]? " >&2
   local ans newp
-  read -r ans
+  read_tty ans
   case "$ans" in
     u|U)
       printf "New absolute path: " >&2
-      read -r newp
+      read_tty newp
       rewrite_machine_projects_line "$line" "${project}:${newp}"
       if [[ -d "$newp/.git" ]]; then
         echo "$newp"
