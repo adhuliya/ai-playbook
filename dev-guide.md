@@ -28,10 +28,6 @@ Shared Cursor rules/skills, per-project overlays, and sync into target repos.
 | `tests/smoke-test-sync-guides.sh` | Smoke test for in-tree guide sync |
 | `tests/smoke-test-sync-submodule-guides.sh` | Smoke test for nested-git dev-guide sync |
 | `tests/smoke-test-sync-marshal.sh` | Smoke test for marshal sync behaviors |
-| `.cursor/rules/` | Agent rules: `dev-main` (always); `dev-git`, `iloop` (on invoke) |
-| `.cursor/skills/` | Shared skills (`build-vocabulary`, `curate-knowledge`, `dev-guides`, `journal`, `knowledge`, `seed-prompt`, …) |
 | `artifacts/live-notes/` | Per-project `.dev-notes` + hub `dev-guides/` store |
 | `artifacts/dev-notes-structure/` | Scaffold for new live-notes trees |
 | `<name>.cursor/` | Per-project `.cursor` overlay (wins on clash) |
-| `.cursor/skills/build-vocabulary` | `.dev-notes/vocabulary.md` glossary workflow |
-| `.cursor/skills/dev-guides` | Guide format and maintenance workflow |
