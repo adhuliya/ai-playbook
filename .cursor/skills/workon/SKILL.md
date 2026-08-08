@@ -22,7 +22,9 @@ Documentation is part of the deliverable: keep records resumable months later.
 - New chat without a named activity: list activities and ask.
 - Honor only reserved lifecycle commands (exact keywords).
 - No dates in `activity.md` / `journal.md` unless user explicitly asks.
-- `activity.md` is current truth (rewrite stale sections); `journal.md` is append-only.
+- `activity.md` is current truth (rewrite stale sections); `journal.md` records
+  **completed project work** only — append **one** entry at **`complete-work`**,
+  at the **end** of the file; prior journal entries are **read-only**.
 - `notes.md` is optional complementary context; it never replaces truth in
   `activity.md`. Fold anything load-bearing back into `activity.md`.
 - No engineering until plan is approved and user starts execution.
@@ -54,21 +56,23 @@ Documentation is part of the deliverable: keep records resumable months later.
 ```text
 .dev-notes/activities/<slug>/
     activity.md          # current truth (rewritable)
-    journal.md           # append-only history
+    journal.md           # completed project-work log (`complete-work` only)
     notes.md             # optional complementary notes (user + agent)
-    artifacts/           # optional activity artifacts
+    knowledge/           # optional activity knowledge tree (see below)
     activities/<child>/  # optional child (max depth 2)
 ```
 
+**`knowledge/`:** optional activity tree — layout and navigation per the
+[`knowledge`](../knowledge/SKILL.md) skill. Create lazily when first needed.
+Durable activity knowledge and files: commit under `knowledge/`; avoid huge
+generated trees better kept outside the repo.
 - Slug: kebab-case, top-level at `.dev-notes/activities/<slug>/`.
 - Child ref: `parent-slug/child-slug` maps to
   `.../<parent-slug>/activities/<child-slug>/`.
 - Filesystem hierarchy only (no parent/children metadata rows).
 - Max depth 2 (top-level → child only).
-- `artifacts/` stores activity-specific durable files; avoid dumping huge
-  generated trees better kept elsewhere.
-- Keep durable activity context in repo; commit
-  `.dev-notes/activities/` (including useful `artifacts/`).
+- Keep durable activity context in repo; commit `.dev-notes/activities/`
+  (including useful `knowledge/`).
 - Ambiguous slug: list matches and ask; never guess.
 
 ## Reserved lifecycle commands
@@ -123,7 +127,7 @@ first when new work is needed.
 3. Discovery/grill until scope and evidence are clear.
 4. Draft + self-review `activity.md`, including the human-readable `# Scope`
    paragraph(s).
-5. Write `activity.md` + `journal.md` immediately once coherent.
+5. Write `activity.md` + `journal.md` scaffold (`# Journal` only; no entries yet).
 6. File review gate: user reviews and approves plan.
 7. Revision loop until satisfied.
 8. Pass the Execution gate (`approve-plan`, then `start-building`) before
@@ -182,18 +186,32 @@ Required sections (order):
 
 ## `journal.md` contract (history)
 
-- Append-only, no dates, concise entries.
-- Keep one short heading per session; skip noise.
-- On derive, first entry is provenance only:
+- **When to write:** append **one** entry **only** in the `complete-work` protocol,
+  after `activity.md` is synced and `status` is set to `Complete`. No journal
+  updates on `approve-plan`, `start-building`, `pause-work`, `self-review`,
+  `replan-work`, import, derive, or mid-session checkpoints.
+- **Append-only at end:** add that entry after the last existing entry. Prior
+  entries are **read-only** (no edits, inserts, or reordering).
+- **Content — project work only:** what was built, changed, or learned in the
+  repo (paths, behavior, decisions, tradeoffs, accepted gaps). **Not** activity
+  lifecycle or status prose — no status transitions, approvals, pauses, reopen
+  reasons, or “Resume Hint” (those live in `activity.md` metadata, sections,
+  and `notes.md`).
+- No dates unless the user explicitly asks.
+- One short heading per completion (describe the work slice, not the command).
+- Resume must not depend on opening source activity (derive: provenance in
+  `activity.md` `# References`, not journal).
 
-  `Derived from <slug>: <reason>.`
+## Activity `knowledge/`
 
-- Resume must not depend on opening source activity.
+- Follow the [`knowledge`](../knowledge/SKILL.md) skill for structure and navigation.
+- Complements `activity.md` (handoff truth); deep reference stays in the tree.
+- Create/maintain notes via [`curate-knowledge`](../curate-knowledge/SKILL.md).
 
 ## `notes.md` contract (complementary, optional)
 
 Free-form scratch space for context that does not belong in `activity.md`
-(current truth) or `journal.md` (session history).
+(current truth) or completed work log (`journal.md`).
 
 - Optional: create lazily on first real need; absence is normal.
 - Holds complementary info: user-supplied notes, agent working notes, open
@@ -231,7 +249,7 @@ Write files for durability and handoff, not as a live log.
 
 - Update `activity.md` at meaningful checkpoints: scope/design/plan change,
   milestone reached, blocker found, or before pausing/completing.
-- Append **one** concise `journal.md` entry per work session, not per action.
+- Do **not** update `journal.md` until `complete-work` (see `journal.md` contract).
 - Do not micro-edit on every minor step; a fresh session should be able to
   reconstruct fine-grained progress from repo state, tests, and evidence.
 - `notes.md` is exempt from the checkpoint cadence: jot to it freely as scratch.
@@ -268,7 +286,7 @@ Write files for durability and handoff, not as a live log.
 - Draft explicit Goal / Design / Plan / MECE milestones / evidence /
   Next Steps / References.
 - Capture execution-critical invariants and guardrails in planning.
-- Define artifact expectations up front (`artifacts/` vs pointers elsewhere).
+- Define knowledge/artifact expectations up front (`knowledge/` tree vs pointers elsewhere).
 - Self-review for ambiguity and missing evidence before user review.
 
 Required first prompt (project fit, or equivalent wording):
@@ -292,7 +310,8 @@ Use when a major scope change is needed (minor scope edits do not need it).
 2. Re-run Planning quality bar from the top: project-fit question first, then
    free-text scope, then detailed grill.
 3. Rewrite `# Scope` and affected sections; keep completion/decision history.
-4. If status is not `Planning`, reopen to `Planning` and journal the reason.
+4. If status is not `Planning`, reopen to `Planning` and record the reason in
+   `activity.md` (not `journal.md`).
 5. Then file review + Execution gate before engineering.
 
 ## `self-review`
@@ -323,8 +342,7 @@ Not a replan: this fixes drift within the existing scope. If review surfaces a
    from `notes.md`; leave still-open notes in place.
 5. Do not silently expand scope. For a material change, require the user's
    choice from the material-change choice set before rewriting scope.
-6. Append one concise `journal.md` entry summarizing the review outcome
-   (drift found, corrections made, decisions taken).
+   (No `journal.md` update — `self-review` does not append journal.)
 
 ## `query-work` / `no-query-work`
 
@@ -354,15 +372,16 @@ No "see parent" or "continues from" dependency language.
 4. Run full discovery/grill for new scope (do not inherit fuzziness).
 5. Rewrite all required sections for new task; inline required context
    (no load-bearing source dependency).
-6. Fresh journal with provenance line only; reset metadata
-   (`status: Planning`, new slug, ticket/notes/branch).
+6. Fresh `journal.md` scaffold only (`# Journal`); reset metadata
+   (`status: Planning`, new slug, ticket/notes/branch). Provenance in
+   `# References` (`derived-from: <slug>`), not journal.
 7. Self-review: derived `activity.md` must stand alone even if source
    were deleted.
 8. File review + revision loop.
 9. `create-sibling` = top-level sibling.
    `create-child` = under `activities/` (respect max depth 2).
 10. Under a `Complete` parent, parent may stay `Complete`;
-    optional parent journal/note breadcrumb.
+    optional breadcrumb in parent `activity.md` / `notes.md` (not journal).
 
 Optional provenance reference in `# References`:
 
@@ -386,7 +405,7 @@ another system or agent. Assume no prior chat context.
 5. Set up the activity for this session: place the files under this repo's
    `.dev-notes/activities/<slug>/` if not already there, reconcile any drift
    into `activity.md`, and set `status` to `Planning` (or `Approved` if the
-   user immediately approves). Append a journal entry noting the import.
+   user immediately approves). Do not append import notes to `journal.md`.
 6. Do not start engineering. Wait for `approve-plan`, then `start-building`
    (Execution gate); only then set `status` to `Active` and begin work.
 7. If the import is `Complete` and new work is requested, apply the Complete
@@ -427,8 +446,8 @@ another system or agent. Assume no prior chat context.
      - `replan-work`: reopen current to `Planning` and re-run the replan
        protocol, preserving completion history.
 
-   - If non-material in same activity: reopen `Complete → Planning`,
-     journal reason, add targeted plan delta.
+   - If non-material in same activity: reopen `Complete → Planning`, record
+     reason in `activity.md`, add targeted plan delta.
 
 5. From any reopened/new planning path, require reviewed file updates,
    then pass the Execution gate before engineering.
@@ -459,31 +478,30 @@ Status-specific reminders:
 
 1. Preferred precondition: status `Approved`.
 2. If status is `Planning`, require `approve-plan` first.
-3. Set `status` to `Active`; append journal start entry.
+3. Set `status` to `Active`.
 4. Begin engineering only after this command.
 
 ## `approve-plan`
 
 1. Validate planning outputs are written and reviewed.
 2. Set `status` to `Approved` in `activity.md`.
-3. Append short journal entry (approved and ready to build).
-4. Give the one-time note that planning is complete, so the user may switch off
+3. Give the one-time note that planning is complete, so the user may switch off
    the strong model for execution.
-5. Do not implement yet; ask user to run `start-building`.
-6. If already `Approved` or `Active`, report current state; do not rewrite history.
+4. Do not implement yet; ask user to run `start-building`.
+5. If already `Approved` or `Active`, report current state; do not rewrite history.
 
 ## `pause-work`
 
 1. Sync `activity.md` current truth (Design / Plan / Milestones / Next Steps).
 2. Set `status` to `Paused`.
-3. Append concise journal entry with Resume Hint.
+3. Put resume context in `activity.md` `# Next Steps` (and `notes` if needed).
 4. Present concise pause summary.
 
 ## `Blocked` vs `Paused`
 
 - `Paused`: intentional stop, can continue later.
 - `Blocked`: cannot continue until dependency clears; record one-line blocker
-  in `notes` and details in `activity.md` / `journal.md`.
+  in `notes` and details in `activity.md` / `notes.md`.
 
 ## `complete-work`
 
@@ -493,8 +511,8 @@ Status-specific reminders:
 
 2. Abandon child = `Complete` with notes: `abandoned: <reason>`.
 
-3. Require milestones complete or explicitly dropped with journal reason;
-   verify evidence when possible (or ask user to confirm).
+3. Require milestones complete or explicitly dropped with reason recorded in
+   `activity.md`; verify evidence when possible (or ask user to confirm).
 
 4. Before setting `Complete`, rewrite `activity.md` as a resumable completion
    handoff:
@@ -509,8 +527,9 @@ Status-specific reminders:
    If `notes.md` exists, fold any still-relevant items into `activity.md` and
    prune the rest (completion must not depend on `notes.md`).
 
-6. Append final journal entry: outcome, key decisions, lessons, accepted gaps,
-   and concrete "Resume from Complete" hint.
+6. Append **one** journal entry at the **end** of `journal.md`: project work
+   only — shipped outcomes, key technical decisions, lessons, accepted gaps
+   (no status/lifecycle narration). See [`templates.md`](templates.md).
 
 7. If post-completion fixes are requested, reopen via planning
    (`Complete → Planning`), capture delta plan, pass the Execution gate,

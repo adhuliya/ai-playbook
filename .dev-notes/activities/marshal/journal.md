@@ -16,22 +16,6 @@ Shipped sync rewrite + `ignoresync.txt` + `machines/` + `--machine` syncmap + do
 
 Status → Complete. Smokes green; docs match. Operator still fills real machine paths/syncmap as needed. Resume Hint: bugs or scheme tweaks → `resume-work` (reopen Planning; material change → `replan-work` / derive).
 
-## Reopen — submodule .git file as git root
-
-Reopened Complete → Planning. User: submodule checkouts use `.git` file not directory; sync must treat file or folder `.git` as git root (`projects.txt`, target-cwd, path repair). Nested guide code already uses `-e`; three `-d` checks are wrong. Plan + iloop smoke extension in `activity.md`. Awaiting `approve-plan`.
-
-## Build — submodule .git file
-
-Plan approved; `start-building`. iloop: extend submodule smoke (`.git` file), fix three `-d` checks → `dir_has_git`, verify all sync smokes.
-
-## Build — submodule .git file (done)
-
-Shipped `dir_has_git` for `projects.txt`, path repair, target-cwd; submodule smoke cases 8–9. All sync smokes green.
-
-## Complete — marshal (submodule .git file)
-
-Status → Complete. Submodule `.git` file roots + smoke cases 8–9; full marshal sync surface unchanged. Resume Hint: `resume-work` on `marshal` for sync bugs; `replan-work` if scope grows materially.
-
 ## Resume — nested git / submodule guides
 
 Reopened Complete → Planning. User request: do not auto-sync `dev-guide.md` under nested `.git` trees; prompt to opt in; associate nested dir with known (or new) project; save path mapping; sync guides via associated project hub. Drafted plan + open decisions in `activity.md`. Awaiting grill answers and plan approval.
@@ -51,3 +35,19 @@ Status → Complete. Nested submodule guide sync + submodule smoke + docs; prior
 ## Fix — git-tracked hard-link noise
 
 Re-sync warned on every git-tracked path even when target inode already matched playbook (`same_file`). Fixed via `playbook_src_for_managed_rel` + silent `EXISTING` when linked; marshal smoke extended. All three sync smokes green.
+
+## Reopen — submodule .git file as git root
+
+Reopened Complete → Planning. User: submodule checkouts use `.git` file not directory; sync must treat file or folder `.git` as git root (`projects.txt`, target-cwd, path repair). Nested guide code already uses `-e`; three `-d` checks are wrong. Plan + iloop smoke extension in `activity.md`. Awaiting `approve-plan`.
+
+## Build — submodule .git file
+
+Plan approved; `start-building`. iloop: extend submodule smoke (`.git` file), fix three `-d` checks → `dir_has_git`, verify all sync smokes.
+
+## Build — submodule .git file (done)
+
+Shipped `dir_has_git` for `projects.txt`, path repair, target-cwd; submodule smoke cases 8–9. All sync smokes green.
+
+## Complete — marshal (submodule .git file)
+
+Status → Complete. Submodule `.git` file roots + smoke cases 8–9; full marshal sync surface unchanged. Resume Hint: `resume-work` on `marshal` for sync bugs; `replan-work` if scope grows materially.

@@ -7,9 +7,11 @@
     activity.md
     journal.md
     notes.md                # optional; complementary user/agent notes
-    artifacts/              # optional; create when first needed
+    knowledge/              # optional; see `knowledge` skill
     activities/<child>/     # optional children
 ```
+
+**`knowledge/`:** see [`knowledge`](../knowledge/SKILL.md) skill (optional; lazy-create).
 
 ## activity.md
 
@@ -38,9 +40,10 @@ the project. Set after initial grilling; near-fixed afterward. Major change =
 
 # Background and Special Notes
 
-<Context plus durable global notes that must not be buried in the journal.>
+<Context plus durable global notes. Lifecycle and resume hints live here or in
+`# Next Steps`, not in `journal.md`.>
 
-<Artifacts plan: what will live under artifacts/ vs pointers elsewhere.>
+<Knowledge plan: what lives under `knowledge/` (and `knowledge/artifacts/`) vs pointers elsewhere.>
 
 # Current Design
 
@@ -76,46 +79,46 @@ Up to ~10 short lines per milestone.
 
 ## journal.md
 
-Append-only. No dates. Free prose under a short heading. Keep entries short
-(token economy — essentials only; no dumps or full restatement of `activity.md`).
+Written **only** on `complete-work`: append **one** entry at the **end** of the
+file after `status` → `Complete`. Prior entries are **read-only**. No dates.
+
+**Content:** project/engineering work only (what shipped, paths, behavior,
+decisions, tradeoffs, lessons, accepted gaps). **Not** activity status or
+lifecycle (no approvals, pauses, reopens, resume hints — use `activity.md` and
+`notes.md`).
+
+Until the first `complete-work`, the file is only:
 
 ```markdown
 # Journal
-
-## <Short session title>
-
-<What was done, decisions, discoveries, obstacles, open questions, next actions.>
-
-## <Another session title>
-
-...
 ```
 
-### pause-work entry shape (guidance)
+### `complete-work` entry shape
+
+Heading names the **work slice** (not the command or status).
 
 ```markdown
-## Pause: <short label>
+## <Short work title>
 
-<Work completed, discoveries, decisions, remaining work, unresolved issues.>
-
-Resume Hint: <best place to continue.>
+<Shipped outcomes, technical decisions, discoveries, accepted gaps. Repo paths
+and evidence pointers; no status narration.>
 ```
 
-### derive first entry
+### derive provenance (not journal)
 
-Provenance only — the new `activity.md` must stand alone without reading the source.
+Put in derived `activity.md` `# References`:
 
-```markdown
-## Derived from <source-slug>
+`derived-from: <slug>` — non-load-bearing; journal stays scaffold until first
+`complete-work` on the derived activity.
 
-Derived from `<slug>`: <reason>. New `activity.md` rewritten to be
-self-contained; do not require the source on resume.
-```
+## knowledge.md (inside `knowledge/`)
+
+Per [`knowledge`](../knowledge/SKILL.md) skill. Not a substitute for `activity.md` handoff truth.
 
 ## notes.md
 
 Optional, complementary. Free-form scratch for user + agent notes that are not
-current truth (`activity.md`) or session history (`journal.md`). Not part of the
+current truth (`activity.md`) or completed work log (`journal.md`). Not part of the
 portable handoff. Keep lean; fold decided items into `activity.md` and prune.
 
 ```markdown
