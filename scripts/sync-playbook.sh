@@ -1073,7 +1073,7 @@ handle_missing_path() {
       printf "New absolute path: " >&2
       read_tty newp
       rewrite_machine_projects_line "$line" "${project}:${newp}"
-      if [[ -d "$newp/.git" ]]; then
+      if dir_has_git "$newp"; then
         echo "$newp"
         return 0
       fi
@@ -1179,7 +1179,7 @@ if is_playbook_cwd; then
       continue
     fi
     local_lines=1
-    if [[ ! -d "$local_path/.git" ]]; then
+    if ! dir_has_git "$local_path"; then
       new_path=""
       if new_path="$(handle_missing_path "$local_proj" "$local_path" "$line")"; then
         local_path="$new_path"
@@ -1205,8 +1205,8 @@ if [[ -z "$PROJECT" ]]; then
   usage >&2
   exit 2
 fi
-if [[ ! -d "$CWD/.git" ]]; then
-  echo "error: current directory is not a git repo root (missing .git/): $CWD" >&2
+if ! dir_has_git "$CWD"; then
+  echo "error: current directory is not a git repo root (missing .git file or directory): $CWD" >&2
   exit 1
 fi
 

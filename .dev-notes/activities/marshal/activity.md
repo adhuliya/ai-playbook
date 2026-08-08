@@ -14,13 +14,13 @@ Harden `scripts/sync-playbook.sh` for playbook/target sync, machine registry, ig
 
 # Scope
 
-Shipped: hard-link repair; per-machine `projects.txt` / `syncmap.txt` / `ignoresync.txt`; `--machine` syncmap; layered ignores; nested submodule guide policy (`--ignore-submodules`, `project-modules.txt`, path inference); smokes and docs.
+Shipped: hard-link repair; per-machine `projects.txt` / `syncmap.txt` / `ignoresync.txt` / `project-modules.txt`; `--machine` syncmap; layered ignores; nested submodule guide policy; git roots with `.git` **file or directory** (submodule checkouts).
 
 # Background and Special Notes
 
 - Smoke harnesses use `SYNC_PLAYBOOK_HOSTNAME` for isolated machine dirs.
 - Submodule guide prompts are not satisfied by `--yes`.
-- Reopen via `resume-work` → Planning for fixes or extensions (`replan-work` if material).
+- Reopen via `resume-work` → Planning for fixes (`replan-work` if material).
 
 # Current Design
 
@@ -35,6 +35,7 @@ Shipped: hard-link repair; per-machine `projects.txt` / `syncmap.txt` / `ignores
 - Hard links; `--force` for content conflicts; git-tracked target paths skipped (warn only when not already hard-linked to playbook).
 - `.cursor/` one-way; `.dev-notes/` + guides bidirectional (except nested policy below).
 - New machine scaffold: `projects.txt`, `project-modules.txt`, `syncmap.txt`, `ignoresync.txt`.
+- **Git root:** `dir_has_git` — path is a repo root if `.git` exists as file or directory (`projects.txt`, path repair, target-cwd, nested detection).
 
 ### Nested `dev-guide.md`
 
@@ -44,6 +45,8 @@ Shipped: hard-link repair; per-machine `projects.txt` / `syncmap.txt` / `ignores
 | `machines/<id>/projects.txt` | Abs path match on nested root ⇒ that project’s hub (queued nested pass). |
 | `machines/<id>/project-modules.txt` | `project:/abs/nested` ⇒ same-project hub paths under parent sync root. |
 | Unmapped | Interactive skip / same project (`m`) / separate project (`p`). |
+
+Nested detection: strict ancestor below sync target with `.git` (file or directory) counts as nested git root.
 
 Must-not-break: playbook cwd detection via script inode; hard-link semantics on same filesystem.
 
@@ -67,11 +70,14 @@ None (scope complete).
 4. [x] Docs aligned
    - evidence: `README.md`, `dev-guide.md`, `.dev-notes/definition.md`
 
+5. [x] Submodule-style `.git` file accepted as git root
+   - evidence: `./tests/smoke-test-sync-submodule-guides.sh` (cases 8–9); all three sync smokes green
+
 # Next Steps
 
-1. Fill `machines/$(hostname)/projects.txt` and `project-modules.txt` for real nested checkouts.
-2. Validate: `./tests/smoke-test-sync-submodule-guides.sh` (and other sync smokes).
-3. Bugfixes: `scripts/sync-playbook.sh` first, then matching smoke under `tests/`.
+1. Fill `machines/$(hostname)/projects.txt` and `project-modules.txt` for real nested checkouts; run sync.
+2. Validate: `./tests/smoke-test-sync-submodule-guides.sh` and other sync smokes after script edits.
+3. Bugfixes: edit `scripts/sync-playbook.sh`, extend matching smoke under `tests/`.
 
 # References
 

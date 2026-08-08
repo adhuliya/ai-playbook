@@ -148,4 +148,41 @@ same_file "$SUBMOD/dev-guide.md" "$CHILD_GUIDES/dev-guide.md" || \
   fail "child hub content not updated from nested target"
 pass "bidirectional nested guide pull into child hub"
 
+# --- 8) Submodule-style .git file (not directory) at nested root ---
+to_submodule_git_file() {
+  local repo="$1"
+  local gitdir
+  gitdir="$(git -C "$repo" rev-parse --git-dir)"
+  if [[ "$gitdir" != /* ]]; then
+    gitdir="$repo/$gitdir"
+  fi
+  gitdir="$(cd -P "$gitdir" && pwd)"
+  rm -rf "$repo/.git"
+  printf 'gitdir: %s\n' "$gitdir" >"$repo/.git"
+}
+to_submodule_git_file "$SUBMOD"
+[[ -f "$SUBMOD/.git" ]] || fail "nested .git not converted to file"
+[[ ! -d "$SUBMOD/.git" ]] || fail "nested .git still a directory"
+echo "${PARENT}:${TARGET}" >"$MACHINE_DIR/projects.txt"
+echo "${CHILD}:${SUBMOD}" >>"$MACHINE_DIR/projects.txt"
+printf '%s\n' 'child hub after gitfile' >"$CHILD_GUIDES/dev-guide.md"
+rm -f "$SUBMOD/dev-guide.md"
+( cd "$PLAYBOOK_ROOT" && "$SYNC" --project "$PARENT" --yes --force ) >/dev/null || \
+  fail "sync failed with submodule-style .git file at nested root"
+same_file "$SUBMOD/dev-guide.md" "$CHILD_GUIDES/dev-guide.md" || \
+  fail "nested guide not synced when nested root has .git file"
+[[ "$(cat "$SUBMOD/dev-guide.md")" == "child hub after gitfile" ]] || \
+  fail "nested guide content wrong with .git file root"
+pass "submodule-style .git file accepted as nested git root"
+
+# --- 9) projects.txt entry with submodule-style .git file at registered path ---
+printf '%s\n' 'child direct sync' >"$CHILD_GUIDES/dev-guide.md"
+rm -f "$SUBMOD/dev-guide.md"
+echo "${CHILD}:${SUBMOD}" >"$MACHINE_DIR/projects.txt"
+( cd "$PLAYBOOK_ROOT" && "$SYNC" --project "$CHILD" --yes --force ) >/dev/null || \
+  fail "sync --project child failed when path has .git file"
+same_file "$SUBMOD/dev-guide.md" "$CHILD_GUIDES/dev-guide.md" || \
+  fail "child project sync did not link guide at .git-file root"
+pass "projects.txt accepts path with .git file as git root"
+
 pass "all submodule guide smoke checks"
