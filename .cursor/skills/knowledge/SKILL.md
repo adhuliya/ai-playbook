@@ -33,7 +33,7 @@ knowledge/
 | Activity | `.dev-notes/activities/<slug>/knowledge/` |
 | Learning | `.dev-notes/learning/<slug>/knowledge/` |
 
-`workon`, `skillup`, and other skills that use `knowledge/` MUST follow this skill for layout and navigation; they document only their add-ons (e.g. `essentials.md` in skillup). Writes/restructures: [`curate-knowledge`](../curate-knowledge/SKILL.md).
+`workon`, `skillup`, and other skills that use `knowledge/` MUST follow this skill for layout and navigation; they document only their add-ons (e.g. skillup `essentials.md`, lab-maps). Writes/restructures: [`curate-knowledge`](../curate-knowledge/SKILL.md).
 
 ## Navigate (MUST)
 

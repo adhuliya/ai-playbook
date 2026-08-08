@@ -10,6 +10,7 @@
     knowledge/                 # see `knowledge` skill + skillup Knowledge library
         knowledge.md           # root index
         essentials.md            # skillup: daily-use 20%
+        lab-maps/                # optional; Project Lab breadcrumbs
         <topic>/knowledge.md   # optional subtree indexes
         <topic>/<concept>.md
         cheatsheets/<focus>.md
@@ -38,6 +39,24 @@ Keep the metadata table in the **first ~10 lines** so listing stays greppable.
 
 <Target outcome and why it matters now.>
 
+# Project Lab
+
+Optional. Only when learning against a codebase. Place after Goal. Absolute
+machine paths go in `notes.md`, not here.
+
+| Key | Value |
+|---|---|
+| binding | in-repo \| submodule \| path |
+| remote | <clone URL or (none)> |
+| default-ref | <branch/tag/commit or (default)> |
+| lab-path-rel | <notes-home-relative path when binding=submodule; else (n/a)> |
+| branch-prefix | skillup/<slug>/ |
+| guide-spine | pending \| accepted |
+| relevant-paths | `<path1>`, `<path2>`, … (seed; grow with curriculum) |
+
+Notes: <clone recipe; shared-with other slugs; guide acceptance summary>.
+Lab maps: `knowledge/<…>` (session-grown). Local absolute path: see `notes.md`.
+
 # Foundations
 
 Pinned core mental models. Reinforced every session; new material relates back
@@ -51,10 +70,11 @@ here. Near-fixed after planning (major change = `replan-learning`).
 # Curriculum
 
 Ordered incremental steps. Each names the mental model it builds, its practice,
-its evidence, and how it ties back to the Foundations.
+its evidence, and how it ties back to the Foundations. Lab steps MAY add a short
+tour (file:symbol list) inside `relevant-paths`.
 
 1. [ ] <Step> — model: <mental model> — practice: <exercise type(s)> — evidence: <quiz/solution/explanation ≥ threshold> — ties to: <foundation>
-2. [ ] <Step> — model: ... — practice: ... — evidence: ... — ties to: ...
+2. [ ] <Step> — model: ... — practice: locate-and-explain \| trace-path \| patch-and-verify — tour: `<file>:<symbol>`, … — evidence: ... — ties to: ...
 
 # Milestones
 
@@ -96,6 +116,7 @@ tools live here in service of the models.
 
 - resources: see `knowledge/artifacts/resources/`
 - knowledge: `knowledge/knowledge.md`
+- project lab: see `# Project Lab` (guides live in the lab repo as `dev-guide.md`)
 - <docs, courses, related slugs>
 ```
 
@@ -145,6 +166,11 @@ attribution (learner: / agent:) when it helps.>
 
 ## Parking lot
 - <idea to revisit>
+
+## Project Lab (local only)
+
+- absolute-path: </abs/path/to/checkout>
+- last-resolved: <YYYY-MM-DD or unknown>
 ```
 
 ## knowledge/knowledge.md
@@ -168,6 +194,9 @@ Browse map for the whole subject. Start here.
 ## Daily use
 - [essentials](essentials.md) — the practical 20% for day-to-day work
 
+## Lab maps
+- [<lab map>](lab-maps/overview.md) — entry points / tours (only if Project Lab)
+
 ## Cheatsheets
 - [<focus>](cheatsheets/focus.md)
 
@@ -176,6 +205,24 @@ Browse map for the whole subject. Start here.
 
 ## How to browse
 Run `serve-knowledge` ([`knowledge`](../knowledge/SKILL.md) skill), then open the printed URL.
+```
+
+## knowledge/lab-maps (optional, Project Lab)
+
+Thin breadcrumbs only — path/symbol → concept; cite lab `dev-guide.md`. Grow from
+sessions; do not mirror the tree.
+
+```markdown
+# Lab map — <focus>
+
+Learning-relevant orientation. Guides in the lab repo are authoritative for layout.
+
+| Path / symbol | Why it matters | → note | Lab guide |
+|---|---|---|---|
+| `lib/Foo.cpp` / `Foo::bar` | <one line> | [concept](../topic/x.md) | `lib/dev-guide.md` |
+
+Tours:
+1. <file:symbol> → <file:symbol> — <what to notice>
 ```
 
 ## knowledge/essentials.md (daily-use index)
@@ -289,10 +336,19 @@ Q: <...>  A (learner): <verbatim>  — <grade + comment>
 Answer (learner): <verbatim>
 Grade: <n>/5 — <comment>
 
-### 2. ...
+### 2. patch-and-verify — <intent>
+Branch: <actual-branch-name>
+Oracle: agent-review \| diff-hint \| test/build
+Runner: agent \| learner \| either
+Success criterion: <plain language>
+Diff summary: <files touched / key hunks>
+Oracle result: <output or agent-review notes; or build verification pending>
+Answer (learner): <verbatim notes / what they changed and why>
+Grade: <n>/5 — <comment>
 
 ## Review
 Weak: <...>  Strong: <...>  Mastery update: <topic → level>  Next: <...>
+Lab: paths/symbols opened: <...>; guides touched: <...>; guide factual fixes: <none|list>
 ```
 
 ## knowledge/artifacts/quizzes/<date>-<topic>.md
