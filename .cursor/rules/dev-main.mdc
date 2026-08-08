@@ -59,7 +59,7 @@ generic synonyms unless the user overrides.
 | Path | When |
 |------|------|
 | `vocabulary.md` | Maintained via `build-vocabulary` skill (explicit invoke) |
-| `knowledge/` | Detailed docs/notes |
+| `knowledge/` | Domain knowledge trees; navigate via `knowledge` skill |
 | `artifacts/` | Stored artifacts (cited from docs) |
 | `activities/` | `workon` context |
 | `seed-prompt.md` | Recreate-from-scratch DNA (update only via `seed-prompt` skill) |

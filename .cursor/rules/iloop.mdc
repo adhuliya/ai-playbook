@@ -1,0 +1,17 @@
+---
+description: >-
+  Iterative change loop: baseline test, implement, verify, cleanup on user okay.
+  Use when the user invokes iloop or asks for test-first then change then verify.
+alwaysApply: false
+---
+
+# iloop
+
+Apply when the user invokes **iloop** or wants this workflow.
+
+1. **Baseline:** Run tests that show current behavior (repo tests or new **temporary** cases you add for this change). Fix the harness only if broken; do not change product code yet.
+2. **Implement:** Add the desired behavior (minimal diff).
+3. **Verify:** Run the same tests (and any new ones) to show the desired behavior.
+4. **Cleanup:** Remove temporary tests, scripts, and scratch paths **only** after the user explicitly says `okay` (or equivalent clear approval). Until then, leave temporaries in place so they can re-run or inspect.
+
+If baseline fails for reasons unrelated to the change, say so and agree with the user before step 2.
