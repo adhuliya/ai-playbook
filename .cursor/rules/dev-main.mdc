@@ -46,12 +46,19 @@ Do not bury assumptions in prose; the section is the checklist the user scans.
 
 If present, use for context. Do not invent policy. Do not bulk-read.
 
-**Start:** `definition.md`, `README.md` (if any), `journal.md`.
+**Start:** `definition.md`, `vocabulary.md` (if present), `README.md` (if any),
+`journal.md`.
+
+**Vocabulary (MUST):** If `.dev-notes/vocabulary.md` exists, read it with the
+startup set. Deliberately use its **Term** values (including multi-word phrases)
+in user-facing prose, docs, and naming; think in that vocabulary instead of
+generic synonyms unless the user overrides.
 
 **As needed:**
 
 | Path | When |
 |------|------|
+| `vocabulary.md` | Maintained via `build-vocabulary` skill (explicit invoke) |
 | `knowledge/` | Detailed docs/notes |
 | `artifacts/` | Stored artifacts (cited from docs) |
 | `activities/` | `workon` context |

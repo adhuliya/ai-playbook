@@ -13,6 +13,7 @@ Shared Cursor rules/skills, per-project overlays, and sync into target repos.
 - Machine syncmap only: `./scripts/sync-playbook.sh --machine [--yes] [--force]`
 - Smoke: `./tests/smoke-test-sync-guides.sh`, `./tests/smoke-test-sync-submodule-guides.sh`, and `./tests/smoke-test-sync-marshal.sh`
 - Create/maintain guides with the `dev-guides` skill (target repo only).
+- Domain vocabulary: `.dev-notes/vocabulary.md` (`build-vocabulary` skill).
 
 ## Artifacts
 
@@ -28,8 +29,9 @@ Shared Cursor rules/skills, per-project overlays, and sync into target repos.
 | `tests/smoke-test-sync-submodule-guides.sh` | Smoke test for nested-git dev-guide sync |
 | `tests/smoke-test-sync-marshal.sh` | Smoke test for marshal sync behaviors |
 | `.cursor/rules/` | Always-applied rules (`dev-main`, `dev-git`) |
-| `.cursor/skills/` | Shared skills (`dev-guides`, `journal`, `seed-prompt`, …) |
+| `.cursor/skills/` | Shared skills (`build-vocabulary`, `dev-guides`, `journal`, `seed-prompt`, …) |
 | `artifacts/live-notes/` | Per-project `.dev-notes` + hub `dev-guides/` store |
 | `artifacts/dev-notes-structure/` | Scaffold for new live-notes trees |
 | `<name>.cursor/` | Per-project `.cursor` overlay (wins on clash) |
+| `.cursor/skills/build-vocabulary` | `.dev-notes/vocabulary.md` glossary workflow |
 | `.cursor/skills/dev-guides` | Guide format and maintenance workflow |
