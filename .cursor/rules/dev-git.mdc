@@ -1,7 +1,7 @@
 ---
 description: >-
-  Git commit workflow: stage, confirm, commit only on approve-commit.
-  Use this when the user asks to commit, create a git commit, stage for commit etc.
+  Git commit workflow: stage, list session temporaries, delete only on delete-files,
+  commit only on approve-commit. Use when the user asks to commit, create a git commit, stage for commit, etc.
 alwaysApply: false
 ---
 
@@ -16,15 +16,23 @@ Apply when the user asks to commit.
 3. **Body:** MUST include a short paragraph or two describing the changes (what/why).
 4. **Gate:** After staging, stop and show staged files first. Wait for the user. Commit **only** when the user types `approve-commit`. Until then: add/remove/restage as they ask; do not commit.
 
+## Session temporary files
+
+Before `approve-commit`, identify files and folders created during the current session that are not part of the intended change (scratch paths, one-off build outputs, debug dumps, etc.). List them with staged paths and the draft message.
+
+- Do **not** delete or `git rm` any path until the user explicitly replies `delete-files`.
+- On `delete-files`: remove only the listed session temporaries (filesystem delete; unstage first if accidentally staged), then show updated `git status` and restage intentional files if needed.
+- If there are no session temporaries, say so briefly; do not ask for `delete-files`.
+
 ## Workflow
 
-1. Inspect: `git status`, `git diff` (staged + unstaged), `git log -2 --name-only` to look at the last two commits".
+1. Inspect: `git status`, `git diff` (staged + unstaged), `git log -2 --name-only` to look at the last two commits.
 2. Draft title and required body per Commit Policy (1–2 paras describing the changes -- hard limit of min 30 and max 500 words).
 Cover and explain all the changes as best as possible withing the word limits. Prefer bulleted list whenever appropriate.
 3. Stage relevant files. Do not stage secrets (`.env`, credentials, etc.); warn if asked to.
-4. List staged paths and the draft message. Ask to adjust staging or reply `approve-commit`.
+4. List staged paths, any session temporary paths (per **Session temporary files**), and the draft message. Ask to adjust staging, reply `delete-files` to remove listed temporaries, or `approve-commit`.
 5. Only `approve-commit` shall commit staged files via HEREDOC (`git commit -m "$(cat <<'EOF' ... EOF)"`). Then `git status` to verify.
-6. If a hook rejects the commit: fix, restage if needed, re-confirm, new commit (do not amend unless user rules allow).
+6. If a hook rejects the commit: fix, restage if needed, re-confirm (including temporaries and `delete-files` if applicable), new commit (do not amend unless user rules allow).
 
 ## Out of scope unless asked
 
