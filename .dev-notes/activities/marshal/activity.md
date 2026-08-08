@@ -32,7 +32,7 @@ Shipped: hard-link repair; per-machine `projects.txt` / `syncmap.txt` / `ignores
 | Target cwd | Sync current repo (`--project` required). |
 | `--machine` | `syncmap.txt` only. |
 
-- Hard links; `--force` for content conflicts; git-tracked target paths skipped.
+- Hard links; `--force` for content conflicts; git-tracked target paths skipped (warn only when not already hard-linked to playbook).
 - `.cursor/` one-way; `.dev-notes/` + guides bidirectional (except nested policy below).
 - New machine scaffold: `projects.txt`, `project-modules.txt`, `syncmap.txt`, `ignoresync.txt`.
 

@@ -31,3 +31,7 @@ Shipped nested guide handling in `sync-playbook.sh`, `tests/smoke-test-sync-subm
 ## Complete (nested guides extension)
 
 Status → Complete. Nested submodule guide sync + submodule smoke + docs; prior marshal behaviors unchanged. Resume Hint: `resume-work` on `marshal` for fixes; `replan-work` if scope grows materially.
+
+## Fix — git-tracked hard-link noise
+
+Re-sync warned on every git-tracked path even when target inode already matched playbook (`same_file`). Fixed via `playbook_src_for_managed_rel` + silent `EXISTING` when linked; marshal smoke extended. All three sync smokes green.

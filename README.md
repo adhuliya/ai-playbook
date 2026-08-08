@@ -44,7 +44,7 @@ Machine id = `hostname`, optional `machines/aliases.txt`. New host gets empty
 - Same inode: no-op. Same bytes, different inode: re-link. Different bytes: prompt or `--force`.
 - `.cursor/`: playbook → target only. `.dev-notes/` + project `dev-guide.md`: bidirectional.
 - Nested git under a target (submodules): `dev-guide.md` is not synced via the parent hub unless `machines/<id>/project-modules.txt` marks the nested path as the same project (`project:/abs/nested`). Otherwise match `project:/abs/path` in `machines/<id>/projects.txt` (many paths per project) or resolve interactively. Use `--ignore-submodules` to skip nested guides entirely.
-- Target git-tracked paths: warn, never touch.
+- Target git-tracked paths: warn when inode differs from playbook; already hard-linked copies are left silent.
 - Ignores: `ignoresync.txt` (global), `machines/<id>/ignoresync.txt`, `artifacts/live-notes/<project>/ignoresync.txt`. Full playbook-root paths; `!` unignore. Not applied to `--machine`.
 
 See `./scripts/sync-playbook.sh --help` and `.dev-notes/definition.md`.

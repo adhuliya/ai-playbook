@@ -57,7 +57,7 @@ Out of scope:
 - **Idempotent sync:** re-running is safe; correct hard links are no-ops; broken
   links with identical bytes are re-linked.
 - **Playbook wins on forced conflict:** divergent content prompts unless `--force`.
-- **Non-touch git-tracked targets:** warn and skip paths tracked in the target.
+- **Non-touch git-tracked targets:** warn and skip when inode/content differs from playbook; already hard-linked copies are silent.
 - **Cursor one-way:** `.cursor/` is playbook → target only; notes/guides stay
   bidirectional.
 - **Machine syncmap is explicit:** `--machine` only; never mixed into default

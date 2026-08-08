@@ -94,7 +94,7 @@ same_file "$TARGET/.cursor/rules/smoke.mdc" "$OVERLAY/rules/smoke.mdc" || fail "
 [[ "$(cat "$TARGET/.cursor/rules/smoke.mdc")" == "overlay rule" ]] || fail "force content wrong"
 pass "--force playbook wins"
 
-# 5) git-tracked: warn and never touch
+# 5) git-tracked: warn when diverged; silent when already hard-linked to playbook
 mkdir -p "$TARGET/.cursor/rules"
 printf '%s\n' 'tracked content' >"$TARGET/.cursor/rules/tracked.mdc"
 git -C "$TARGET" add -f .cursor/rules/tracked.mdc
@@ -105,6 +105,18 @@ log="$WORKDIR/tracked.log"
 ( cd "$PLAYBOOK_ROOT" && "$SYNC" --project "$PROJECT" --yes --force ) 2>&1 | tee "$log" || true
 grep -q 'git-tracked' "$log" || fail "expected git-tracked warning"
 [[ "$(cat "$TARGET/.cursor/rules/tracked.mdc")" == "tracked content" ]] || fail "git-tracked file was modified"
+
+rm -f "$TARGET/.cursor/rules/linked-tracked.mdc"
+printf '%s\n' 'linked tracked' >"$OVERLAY/rules/linked-tracked.mdc"
+ln "$OVERLAY/rules/linked-tracked.mdc" "$TARGET/.cursor/rules/linked-tracked.mdc"
+git -C "$TARGET" add -f .cursor/rules/linked-tracked.mdc
+git -C "$TARGET" commit -q -m "track hard-linked cursor file"
+log_linked="$WORKDIR/linked-tracked.log"
+( cd "$PLAYBOOK_ROOT" && "$SYNC" --project "$PROJECT" --yes ) 2>&1 | tee "$log_linked"
+grep -E 'warning:.*linked-tracked\.mdc.*git-tracked' "$log_linked" && \
+  fail "unexpected git-tracked warning for already-linked file"
+same_file "$TARGET/.cursor/rules/linked-tracked.mdc" "$OVERLAY/rules/linked-tracked.mdc" || \
+  fail "linked-tracked inode changed"
 pass "git-tracked warn and skip"
 
 # 6) bidirectional .dev-notes still pulls

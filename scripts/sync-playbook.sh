@@ -8,7 +8,8 @@
 #
 # .cursor/: playbook → target only. .dev-notes/ + project guides: bidirectional.
 # Same inode: no-op. Different inode, same bytes: re-link. Content conflict:
-# prompt (playbook wins) or --force. Target git-tracked paths: warn, never touch.
+# prompt (playbook wins) or --force. Target git-tracked paths: warn and skip when
+# content/inode differs from playbook; already hard-linked playbook copies are silent.
 set -euo pipefail
 
 SEP=$'\x1f'
@@ -602,6 +603,26 @@ resolve_both_sides() {
   esac
 }
 
+playbook_src_for_managed_rel() {
+  local rel="$1" dest_root="$2" playbook_prefix_for_ignore="${3:-}"
+  if [[ -n "$playbook_prefix_for_ignore" ]]; then
+    [[ -f "$LIVE_GUIDES/$rel" ]] && printf '%s' "$LIVE_GUIDES/$rel"
+    return 0
+  fi
+  if [[ "$dest_root" == "$TARGET_ROOT/.cursor" ]]; then
+    if [[ -f "$OVERLAY_ROOT/$rel" ]]; then
+      printf '%s' "$OVERLAY_ROOT/$rel"
+      return 0
+    fi
+    if [[ -f "$SHARED_CURSOR/$rel" ]]; then
+      printf '%s' "$SHARED_CURSOR/$rel"
+      return 0
+    fi
+  elif [[ "$dest_root" == "$DEVNOTES_DEST" ]]; then
+    [[ -f "$LIVE_NOTES/$rel" ]] && printf '%s' "$LIVE_NOTES/$rel"
+  fi
+}
+
 # allow_pull: 1 = bidirectional, 0 = one-way (cursor)
 # playbook_path_for_rel: function name or empty — for ignore checks on pull dest
 process_domain() {
@@ -615,15 +636,24 @@ process_domain() {
   LC_ALL=C sort -t "$SEP" -k1,1 "$forward_file" >"$sf"
   LC_ALL=C sort -t "$SEP" -k1,1 "$target_file" >"$tf"
 
-  local rel src tgt rel_full dest err pull_dest prel
+  local rel src tgt rel_full dest err pull_dest prel psrc
   while IFS="$SEP" read -r rel src tgt; do
     [[ -n "$rel" ]] || continue
     rel_full="${report_prefix}${rel}"
     dest="$dest_root/$rel"
 
     if is_git_tracked "$rel_full"; then
-      echo "warning: $rel_full is git-tracked in target — leaving untouched" >&2
-      EXCLUDED+=("$rel_full")
+      psrc="$src"
+      if [[ -z "$psrc" ]]; then
+        psrc="$(playbook_src_for_managed_rel "$rel" "$dest_root" "$playbook_prefix_for_ignore")"
+      fi
+      if [[ -n "$psrc" && -f "$dest" ]] && same_file "$dest" "$psrc"; then
+        EXISTING+=("$rel_full")
+        MANAGED+=("$rel_full")
+      else
+        echo "warning: $rel_full is git-tracked in target — leaving untouched" >&2
+        EXCLUDED+=("$rel_full")
+      fi
       continue
     fi
 
