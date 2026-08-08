@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Serve skillup knowledge as browsable HTML. Stdlib only, no dependencies.
+"""Serve a knowledge/ tree (or learning root) as browsable HTML. Stdlib only.
 
 Usage:
     python3 serve.py [ROOT] [--port N]
@@ -10,8 +10,8 @@ ROOT defaults to the current directory. Two modes, auto-detected:
   a generated global index linking every learning activity — title, status, and
   level parsed from each learning.md — with quick links to its knowledge index,
   essentials, and cheatsheets. Per-activity notes render under <slug>/knowledge/.
-- **Single knowledge folder** (has index.md, no activity children): serves that
-  folder with index.md as the home page (legacy behavior).
+- **Single knowledge folder** (has knowledge.md, no activity children): serves that
+  folder with knowledge.md as the home page.
 
 Renders .md to HTML on the fly: headings, fenced code, inline code, bold/italic,
 relative links (kept inside the server), lists, blockquotes, tables, and
@@ -29,6 +29,16 @@ import re
 import socketserver
 import sys
 import urllib.parse
+
+INDEX_NAMES = ("knowledge.md", "index.md")
+
+
+def _index_in_dir(dirpath: str):
+    for name in INDEX_NAMES:
+        p = os.path.join(dirpath, name)
+        if os.path.isfile(p):
+            return p
+    return None
 
 PAGE = """<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
@@ -227,10 +237,19 @@ def global_index_html(root: str) -> str:
     for a in acts:
         d = a["dir"]
         links = []
-        for label, rel in (("knowledge", f"{d}/knowledge/index.md"),
+        for label, base in (("knowledge", f"{d}/knowledge"),
                             ("essentials", f"{d}/knowledge/essentials.md"),
                             ("cheatsheets", f"{d}/knowledge/cheatsheets/")):
-            if os.path.exists(os.path.join(root, rel.rstrip("/"))):
+            if label == "knowledge":
+                rel = None
+                for name in INDEX_NAMES:
+                    candidate = f"{base}/{name}"
+                    if os.path.isfile(os.path.join(root, candidate)):
+                        rel = candidate
+                        break
+            else:
+                rel = base.rstrip("/") if label == "cheatsheets" else base
+            if rel and os.path.exists(os.path.join(root, rel.rstrip("/"))):
                 links.append(f'<a href="/{html.escape(rel)}">{label}</a>')
         rows.append(
             "<tr>"
@@ -259,17 +278,18 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self._send_html(global_index_html(self.directory), "Learning", "home")
             return
         if path in ("/", ""):
-            path = "/index.md"
+            idx = _index_in_dir(self.directory)
+            path = "/" + os.path.basename(idx) if idx else "/knowledge.md"
         rel = path.lstrip("/")
         fs = os.path.normpath(os.path.join(self.directory, rel))
         if not fs.startswith(os.path.abspath(self.directory)):
             self.send_error(403)
             return
         if os.path.isdir(fs):
-            idx = os.path.join(fs, "index.md")
-            if os.path.exists(idx):
+            idx = _index_in_dir(fs)
+            if idx:
                 fs = idx
-                rel = os.path.join(rel, "index.md")
+                rel = os.path.join(rel, os.path.basename(idx))
         if fs.endswith(".md") and os.path.exists(fs):
             with open(fs, encoding="utf-8") as f:
                 md = f.read()
@@ -290,9 +310,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 def main() -> int:
     ap = argparse.ArgumentParser(
-        description="Serve skillup knowledge (a learning root or one knowledge/ folder).")
+        description="Serve a knowledge tree or learning root as browsable HTML.")
     ap.add_argument("root", nargs="?", default=".",
-                    help="learning root (.dev-notes/learning) or a knowledge/ folder")
+                    help="knowledge/ folder or learning root (.dev-notes/learning)")
     ap.add_argument("--port", type=int, default=8800)
     args = ap.parse_args()
     root = os.path.abspath(args.root)

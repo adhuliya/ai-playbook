@@ -7,17 +7,16 @@
     learning.md
     journal.md
     notes.md                     # optional; complementary notes
-    knowledge/
-        index.md                 # home page
-        essentials.md            # daily-use 20%: top concepts/commands/args
-        <topic>/dev-guide.md     # subtree index: names + one-line summaries
-        <topic>/<concept>.md     # descriptive, greppable note file names
-        *.md                     # atomic, cross-linked notes
-        cheatsheets/<focus>.md   # focused cheatsheets (create-cheatsheet)
-    artifacts/
-        resources/               # books/docs/tools (learner + vetted)
-        quizzes/<date>-<topic>.md
-        sessions/<date>-<topic>.md
+    knowledge/                 # see `knowledge` skill + skillup Knowledge library
+        knowledge.md           # root index
+        essentials.md            # skillup: daily-use 20%
+        <topic>/knowledge.md   # optional subtree indexes
+        <topic>/<concept>.md
+        cheatsheets/<focus>.md
+        artifacts/
+            resources/
+            quizzes/<date>-<topic>.md
+            sessions/<date>-<topic>.md
     learning/<child>/            # optional children (max depth 2)
 ```
 
@@ -95,8 +94,8 @@ tools live here in service of the models.
 
 # References
 
-- resources: see `artifacts/resources/`
-- knowledge: `knowledge/index.md`
+- resources: see `knowledge/artifacts/resources/`
+- knowledge: `knowledge/knowledge.md`
 - <docs, courses, related slugs>
 ```
 
@@ -110,7 +109,7 @@ Append-only, **dated** entries. Concise; essentials only.
 ## YYYY-MM-DD — <session / quiz / review title>
 
 Covered: <topics>. Scores: <ex1 4/5, ex2 3/5>. Weak: <...>. Strong: <...>.
-Decisions: <...>. Next: <...>. Transcript: `artifacts/sessions/<date>-<topic>.md`.
+Decisions: <...>. Next: <...>. Transcript: `knowledge/artifacts/sessions/<date>-<topic>.md`.
 ```
 
 ### pause entry shape
@@ -148,10 +147,10 @@ attribution (learner: / agent:) when it helps.>
 - <idea to revisit>
 ```
 
-## knowledge/index.md
+## knowledge/knowledge.md
 
-Home page for browsing. Lay it out intuitively for revision, search, and quick
-reference.
+Root index for the tree (per [`knowledge`](../knowledge/SKILL.md) skill). Lay it out
+intuitively for revision, search, and quick reference.
 
 ```markdown
 # <Subject> — Knowledge
@@ -163,7 +162,7 @@ Browse map for the whole subject. Start here.
 - [<principle B>](foundations/principle-b.md)
 
 ## Topics
-- [<topic 1>](topic-1/index.md)
+- [<topic 1>](topic-1/knowledge.md)
 - [<topic 2>](topic-2.md)
 
 ## Daily use
@@ -173,10 +172,10 @@ Browse map for the whole subject. Start here.
 - [<focus>](cheatsheets/focus.md)
 
 ## Resources
-- see `../artifacts/resources/`
+- see `artifacts/resources/`
 
 ## How to browse
-Run `serve-knowledge`, then open the printed URL.
+Run `serve-knowledge` ([`knowledge`](../knowledge/SKILL.md) skill), then open the printed URL.
 ```
 
 ## knowledge/essentials.md (daily-use index)
@@ -219,14 +218,12 @@ Watch out: <common pitfalls>.
 
 See also: [<related note>](../topic/other.md) · [<foundation>](../foundations/x.md)
 
-Source: `../artifacts/resources/<file-or-link>`
+Source: `artifacts/resources/<file-or-link>`
 ```
 
-## knowledge/<topic>/dev-guide.md (subtree index)
+## knowledge/<topic>/knowledge.md (subtree index)
 
-One index per non-trivial subtree so the agent finds a note from names +
-summaries without reading the notes. List every file with a one-line summary
-and link child subtrees.
+Per-folder index: list notes with one-line summaries and link child subtrees.
 
 ```markdown
 # <Topic> — knowledge index
@@ -240,7 +237,7 @@ and link child subtrees.
 | [flags-register.md](flags-register.md) | RFLAGS bits and which instructions set them |
 
 ## Subtrees
-- [addressing/](addressing/dev-guide.md) — memory addressing modes
+- [addressing/](addressing/knowledge.md) — memory addressing modes
 ```
 
 ## knowledge/cheatsheets/<focus>.md (cheatsheet)
@@ -274,7 +271,7 @@ Focus: <what this covers>. Foundation: <the principle it rests on>.
 See also: [<fuller note>](../topic/concept.md)
 ```
 
-## artifacts/sessions/<date>-<topic>.md
+## knowledge/artifacts/sessions/<date>-<topic>.md
 
 Full session transcript; keep the learner's answers **verbatim**.
 
@@ -298,7 +295,7 @@ Grade: <n>/5 — <comment>
 Weak: <...>  Strong: <...>  Mastery update: <topic → level>  Next: <...>
 ```
 
-## artifacts/quizzes/<date>-<topic>.md
+## knowledge/artifacts/quizzes/<date>-<topic>.md
 
 ```markdown
 # <YYYY-MM-DD> — <Topic> quiz
