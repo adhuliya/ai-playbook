@@ -1,26 +1,33 @@
-# Review: [short title of the change]
+# Review: [short title]
 
-**Target:** [PR/MR #… / commit SHA / range / branch]  
+**Mode:** change | repo  
+**Target:** [PR/MR #… / commit SHA / range / branch | repository path]  
 **Repo:** [path or remote]  
-**Reviewer artifact:** local `review-details.md` (not for commit)
+**Reviewer artifact:** local `design-review.md` (not for commit)
 
 ## Abstract
 
-[≤ ~150 words: what changed, for whom, one-clause verdict preview]
+[≤ ~150 words: what is reviewed, for whom, one-clause verdict preview]
 
 ## Introduction
 
-[Problem/motivation for *this* change; scope in/out; contribution claim. No module tutorial.]
+[Problem/motivation; scope in/out; contribution claim.
+- change: claim is about *this* change
+- repo: claim is about understanding / assessing the system as built
+No module tutorial.]
 
 ## Background
 
-[Newcomer literacy: concepts and modules. Pre-feature behavior — how things work without this change.]
+[Newcomer literacy: concepts and modules.
+- change: how things work **without** this change
+- repo: domain + how the system is organized at a glance (pre-deep-dive)]
 
 ## Feature Design
+<!-- repo mode: rename this heading to "System Design" -->
 
 ### End-user observable behavior
 
-[Before → after; non-goals if clear]
+[change: before → after; repo: what users/operators get today. Non-goals if clear]
 
 ### Conceptual model
 
@@ -38,15 +45,17 @@ Figure N: [caption]. Summarizes `path:start-end`.
 
 ### Key types & APIs
 
-[New/changed public APIs and data structures in full. Cite each block.]
+[Public APIs and data structures in full. Cite each block.]
 
 ```language
 // path/to/file.ext:start-end
 ```
 
-### Integration with existing pieces
+### Integration / module boundaries
 
-[Only existing elements needed to understand the flow; cite `path:start-end`.]
+[change: existing pieces needed to understand the flow.
+repo: major packages, ownership boundaries, cross-module flows.
+Cite `path:start-end`.]
 
 ## Alternate Designs
 
@@ -61,11 +70,11 @@ Figure N: [caption]. Summarizes `path:start-end`.
 
 [Same shape]
 
-<!-- Or: one paragraph — no meaningful design fork for this change. -->
+<!-- Or: one paragraph — no meaningful design fork. -->
 
 ## Coverage
 
-### Tests that protect this change
+### Tests that protect this surface
 
 | Test | Location | Behavior guarded |
 |------|----------|------------------|
@@ -75,7 +84,7 @@ Figure N: [caption]. Summarizes `path:start-end`.
 
 - …
 
-### Stale or missing test updates
+### Stale, missing, or weak test areas
 
 - …
 
@@ -117,9 +126,11 @@ Figure N: [caption]. Summarizes `path:start-end`.
 
 ## Conclusion
 
-**Verdict:** Approve | Approve with nits | Request changes | Block
+**Verdict:**
+- change: Approve | Approve with nits | Request changes | Block
+- repo: Sound | Sound with nits | Needs redesign | Unsound
 
-[2–4 sentences tying Feature Design + Comments, especially Blockers/Majors]
+[2–4 sentences tying the design spine + Comments, especially Blockers/Majors]
 
 **Open questions:**
 
