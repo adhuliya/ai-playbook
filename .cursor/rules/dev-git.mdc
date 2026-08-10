@@ -1,7 +1,7 @@
 ---
 description: >-
   Git commit workflow: stage, list session temporaries, delete only on delete-files,
-  commit only on approve-commit. Use when the user asks to commit, create a git commit, stage for commit, etc.
+  commit only on approve-commit. Use when user asks to commit, stage, or create a git commit.
 alwaysApply: false
 ---
 
@@ -11,29 +11,28 @@ Apply when the user asks to commit.
 
 ## Commit Policy
 
-1. **Author:** Always the current user (repo/global git identity). Never set agent as author/co-author.
-2. **Title:** One line, ~50 characters. Prefix with 1–3 project-specific module tags in `[brackets]` (e.g. `[build]`, `[clang]`, `[proto]`). Tags name the broad areas changed, hence keep it general; pick from the diff, do not invent a fixed global list. No clutter.
-3. **Body:** MUST include a short paragraph or two describing the changes (what/why).
-4. **Gate:** After staging, stop and show staged files first. Wait for the user. Commit **only** when the user types `approve-commit`. Until then: add/remove/restage as they ask; do not commit.
+1. **Author:** Current user (repo/global git identity). Never agent as author/co-author.
+2. **Title:** One line, ~50 chars. Prefix 1–3 module tags in `[brackets]` from the diff (e.g. `[build]`, `[clang]`). General area names; no fixed global list.
+3. **Body:** Short paragraph or two (what/why). Hard limit 30–500 words. Cover all changes; bullets when appropriate.
+4. **Gate:** After staging, list staged files and stop. Commit only on `approve-commit`. Until then: restage per user; no commit.
 
 ## Session temporary files
 
-Before `approve-commit`, identify files and folders created during the current session that are not part of the intended change (scratch paths, one-off build outputs, debug dumps, etc.). List them with staged paths and the draft message.
+Before `approve-commit`, list scratch paths from this session (not part of intended change) with staged paths and draft message.
 
-- Do **not** delete or `git rm` any path until the user explicitly replies `delete-files`.
-- On `delete-files`: remove only the listed session temporaries (filesystem delete; unstage first if accidentally staged), then show updated `git status` and restage intentional files if needed.
-- If there are no session temporaries, say so briefly; do not ask for `delete-files`.
+- Do not delete or `git rm` until user replies `delete-files`.
+- On `delete-files`: remove only listed temporaries (unstage if staged), show `git status`, restage intentional files if needed.
+- No temporaries: say so briefly; do not ask for `delete-files`.
 
 ## Workflow
 
-1. Inspect: `git status`, `git diff` (staged + unstaged), `git log -2 --name-only` to look at the last two commits.
-2. Draft title and required body per Commit Policy (1–2 paras describing the changes -- hard limit of min 30 and max 500 words).
-Cover and explain all the changes as best as possible withing the word limits. Prefer bulleted list whenever appropriate.
-3. Stage relevant files. Do not stage secrets (`.env`, credentials, etc.); warn if asked to.
-4. List staged paths, any session temporary paths (per **Session temporary files**), and the draft message. Ask to adjust staging, reply `delete-files` to remove listed temporaries, or `approve-commit`.
-5. Only `approve-commit` shall commit staged files via HEREDOC (`git commit -m "$(cat <<'EOF' ... EOF)"`). Then `git status` to verify.
-6. If a hook rejects the commit: fix, restage if needed, re-confirm (including temporaries and `delete-files` if applicable), new commit (do not amend unless user rules allow).
+1. Inspect: `git status`, `git diff` (staged + unstaged), `git log -2 --name-only`.
+2. Draft title and body per Commit Policy.
+3. Stage relevant files. No secrets (`.env`, credentials); warn if asked.
+4. List staged paths, session temporaries (see **Session temporary files**), draft message. User may adjust staging, `delete-files`, or `approve-commit`.
+5. `approve-commit` only: commit staged via HEREDOC (`git commit -m "$(cat <<'EOF' ... EOF)"`), then `git status`.
+6. Hook reject: fix, restage, re-confirm (temporaries/`delete-files` if needed), new commit (amend only if user rules allow).
 
 ## Out of scope unless asked
 
-Push, amend, force, rebase, config changes — follow user git safety rules; never do these unprompted.
+Push, amend, force, rebase, config — per user git safety rules; never unprompted.

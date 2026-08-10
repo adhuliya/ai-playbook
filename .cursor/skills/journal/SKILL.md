@@ -9,8 +9,7 @@ disable-model-invocation: true
 
 # journal
 
-Update **only** `.dev-notes/journal.md` (project-global). Not activity journals
-under `.dev-notes/activities/`.
+Update **only** `.dev-notes/journal.md` (project-global). Not activity journals under `.dev-notes/activities/`.
 
 ## Rules
 
@@ -22,7 +21,7 @@ under `.dev-notes/activities/`.
 
 ## Entry shape
 
-Plain sentence or terse bullet-equivalent, one line:
+One plain line (prefer leading `- `):
 
 ```markdown
 - Replaced sync hard-link plan with final-source merge for idempotent re-runs.
@@ -32,5 +31,5 @@ Plain sentence or terse bullet-equivalent, one line:
 
 1. Read `.dev-notes/journal.md` (create if absent).
 2. Resolve the one-line text with the user if needed.
-3. Append that single line (prefer a leading `- `).
+3. Append that single line.
 4. Show the new line; do nothing else.
