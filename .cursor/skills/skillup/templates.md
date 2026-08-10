@@ -175,8 +175,9 @@ attribution (learner: / agent:) when it helps.>
 
 ## knowledge/knowledge.md
 
-Root index for the tree (per [`knowledge`](../knowledge/SKILL.md) skill). Lay it out
-intuitively for revision, search, and quick reference.
+Root index for the tree (per [`knowledge`](../knowledge/SKILL.md) skill): heading,
+fluid body (skillup sections below are conventional, not required by `knowledge`),
+trailing `## Index` (Name | Description | Link).
 
 ```markdown
 # <Subject> — Knowledge
@@ -200,11 +201,16 @@ Browse map for the whole subject. Start here.
 ## Cheatsheets
 - [<focus>](cheatsheets/focus.md)
 
-## Resources
-- see `artifacts/resources/`
-
 ## How to browse
 Run `serve-knowledge` ([`knowledge`](../knowledge/SKILL.md) skill), then open the printed URL.
+
+## Index
+
+| Name | Description | Link |
+|------|-------------|------|
+| essentials | Daily-use 20% | [essentials.md](essentials.md) |
+| Foundations | Core principles | [foundations/](foundations/knowledge.md) |
+| resources | Source materials | [artifacts/resources/](artifacts/resources/) |
 ```
 
 ## knowledge/lab-maps (optional, Project Lab)
@@ -270,21 +276,23 @@ Source: `artifacts/resources/<file-or-link>`
 
 ## knowledge/<topic>/knowledge.md (subtree index)
 
-Per-folder index: list notes with one-line summaries and link child subtrees.
+Per-folder index per [`knowledge`](../knowledge/SKILL.md): fluid body + trailing Index.
 
 ```markdown
-# <Topic> — knowledge index
+# <Topic>
 
 <One line: what this subtree covers.>
 
 ## Notes
-| File | Summary |
-|---|---|
-| [general-purpose-registers.md](general-purpose-registers.md) | RAX/RBX/... roles and calling-convention uses |
-| [flags-register.md](flags-register.md) | RFLAGS bits and which instructions set them |
+Brief pointers (optional prose); durable discovery is the Index below.
 
-## Subtrees
-- [addressing/](addressing/knowledge.md) — memory addressing modes
+## Index
+
+| Name | Description | Link |
+|------|-------------|------|
+| general-purpose-registers | RAX/RBX/... roles and calling-convention uses | [general-purpose-registers.md](general-purpose-registers.md) |
+| flags-register | RFLAGS bits and which instructions set them | [flags-register.md](flags-register.md) |
+| addressing | Memory addressing modes | [addressing/knowledge.md](addressing/knowledge.md) |
 ```
 
 ## knowledge/cheatsheets/<focus>.md (cheatsheet)

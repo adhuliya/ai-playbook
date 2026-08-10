@@ -2,12 +2,13 @@
 name: knowledge
 description: >-
   Navigate any `knowledge/` tree under `.dev-notes/` (repo, activity, learning,
-  etc.): each folder has `knowledge.md` (intro and index), one `knowledge/artifacts/`
-  at the tree root, atomic cross-linked markdown notes. Serve a browsable HTML
-  view via `serve-knowledge`. Use when locating domain knowledge, exploring
-  `.dev-notes/**/knowledge/`, following links between notes and artifacts, or
-  when the user asks to browse/serve knowledge. For creating or restructuring
-  notes, use `curate-knowledge`; sibling skills add their own extras on top.
+  etc.): each folder has `knowledge.md` (heading, fluid body, trailing Index
+  table), one `knowledge/artifacts/` at the tree root, atomic cross-linked
+  markdown notes. Serve a browsable HTML view via `serve-knowledge`. Use when
+  locating domain knowledge, exploring `.dev-notes/**/knowledge/`, following
+  links between notes and artifacts, or when the user asks to browse/serve
+  knowledge. For creating or restructuring notes, use `curate-knowledge`;
+  sibling skills add their own extras on top.
 ---
 
 # Knowledge (navigation)
@@ -16,14 +17,46 @@ description: >-
 
 ```text
 knowledge/
-    knowledge.md       # required in every folder, including this root
-    artifacts/         # only raw-file store for this tree (here only, not in subfolders)
+    knowledge.md       # required in every folder
+    note.md            # atomic notes
     <subdir>/
         knowledge.md
         ...
+    artifacts/         # sole raw/store root (here only, not in subfolders)
+        resources/     # original files / URL dumps (safe to link; avoid bulk-read)
 ```
 
-- Atomic `.md` notes: one concern each; link out instead of duplicating; indexes and notes cross-link each other and paths under `artifacts/`.
+- Atomic `.md` notes: one concern each; link out instead of duplicating.
+- Indexes and notes cross-link each other and paths under `artifacts/resources/` (and other non-ingest artifact stores sibling skills define).
+
+### `artifacts/ingest/` — out of scope (MUST)
+
+Do **not** read, search, Index-link, or otherwise treat `knowledge/artifacts/ingest/` as part of navigation. That subtree is owned exclusively by [`curate-knowledge`](../curate-knowledge/SKILL.md). If an Index row points there, ignore it for browse/answer paths and use notes + `resources/` instead.
+
+## `knowledge.md` contract (MUST)
+
+Every folder’s `knowledge.md` uses this shape:
+
+```markdown
+# <Folder title>
+
+<Fluid body: short intro and any sections that help humans/agents
+ (notes, child folders, see-alsos). No fixed subsection names here —
+ sibling skills MAY add conventional sections inside this body.>
+
+## Index
+
+| Name | Description | Link |
+|------|-------------|------|
+| <term or label> | One-line what it is / when to open it | [label](relative/path) |
+```
+
+Rules:
+
+1. **`## Index` is always last** (even if only a few rows, or one “none yet” row).
+2. Rows MAY point at notes, child `knowledge.md` folders, `artifacts/resources/` (or other non-ingest artifact paths), or terms (term → note).
+3. Do **not** inline large artifact contents — links + one-liners only.
+4. Do **not** put `artifacts/ingest/` links in Indexes for navigation; resume/staging is `curate-knowledge`’s concern.
 
 ## Where trees live
 
@@ -38,8 +71,8 @@ knowledge/
 ## Navigate (MUST)
 
 1. Start at that tree's `knowledge/knowledge.md`.
-2. Descend via each folder's `knowledge.md`; use paths, index entries, and links — not full-tree reads.
-3. Raw files: only `knowledge/artifacts/`; avoid opening these as they may be large text blobs. Use `rg` on these files if required to extract more information.
+2. Descend via each folder's `knowledge.md` (body + Index) — not full-tree reads.
+3. Raw files under `knowledge/artifacts/`: prefer `resources/` and skill-specific stores; avoid opening large blobs whole — use `rg` for a slice when needed. **Skip `artifacts/ingest/` entirely.**
 
 Do not read every note to answer a narrow question.
 
