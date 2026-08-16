@@ -1,0 +1,20 @@
+1.A: app is the consumer of greeter. The PRIVATE label means the consumer of app will not see greeter.
+1.B: Source tree contains the project source, the build tree contains artifacts generated like cache, build scripts and project build objects. The install tree contains the finally installed artifacts in a well defined location that the user uses in the long-term.
+
+3.1.1: We choose PUBLIC when we want the consumers of the target know about or use its dependency, e.g. if a include directory requirement for a target foo is PUBLIC, a bar target dependent on foo will also use the foo's PUBLIC include directory..
+3.1.2: A header only library uses INTERFACE to explicitly state no compilation is needed.
+
+3.2: In order, 'PUBLIC', 'PRIVATE', 'PRIVATE'.
+
+3.3.1: Yes the client compiles with access to internal/ headers as it is labeled PUBLIC in its assocition with secret target, and client target depends on secret target.
+3.3.2: Yes, because it is marked PUBLIC in association with secret, so when compiling client the cmake will pass the '-D SECRET_IMPL=1' along to it.
+3.3.3: Mark both the dependencies of secret as PRIVATE, as the client does not need them.
+
+3.4: I would use the following:
+add_library(engine STATIC engine.cpp)
+target_link_libraries(engine PRIVATE zlib::zlib)
+target_link_libraries(engine PUBLIC glm::glm)
+add_library(stb_image INTERFACE stb_image.h)
+target_link_libraries(engine PRIVATE stb_image)
+
+END
