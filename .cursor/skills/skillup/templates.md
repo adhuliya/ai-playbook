@@ -17,7 +17,9 @@
         artifacts/
             resources/
             quizzes/<date>-<topic>.md
+            quizzes/<date>-<topic>-worksheet.md
             sessions/<date>-<topic>.md
+            sessions/<date>-<topic>-worksheet.md
     learning/<child>/            # optional children (max depth 2)
 ```
 
@@ -326,12 +328,88 @@ Focus: <what this covers>. Foundation: <the principle it rests on>.
 See also: [<fuller note>](../topic/concept.md)
 ```
 
+## knowledge/artifacts/sessions/<date>-<topic>-worksheet.md
+
+Pre-written prompts for `learn-session` graded practice (and foundations recall
+when included). Learner fills **Your answer:** blocks; agent grades from this file.
+
+```markdown
+# Worksheet — <Topic>
+
+| Key | Value |
+|---|---|
+| activity | cmake-cpp |
+| type | learn-session |
+| date | YYYY-MM-DD |
+| curriculum step | <n> — <short title> |
+| status | open \| filled |
+| graded artifact | [sessions/<date>-<topic>.md](<date>-<topic>.md) |
+
+**Instructions:** Fill each **Your answer:** block below. Save the file, then tell
+the agent you are done. Do not peek at graded artifacts until after submit.
+
+---
+
+## 1. Foundations recall
+
+### 1.A — <short label>
+
+<prompt text>
+
+**Your answer:**
+
+
+
+### 1.B — <short label>
+
+<prompt text>
+
+**Your answer:**
+
+
+
+---
+
+## 3. Graded practice
+
+### 3.1 — <exercise type> — <short label>
+
+<prompt text>
+
+**Your answer:**
+
+
+
+### 3.2 — complete-the-code
+
+<prompt + starter fence if any>
+
+**Your answer:**
+
+
+
+---
+
+## Hands-on (optional)
+
+If this step edits code under `practice/<step-slug>/`, note paths here:
+
+- Code: `practice/<step-slug>/…`
+- Build oracle: <command or (conceptual only)>
+```
+
+Same shape for quizzes at `knowledge/artifacts/quizzes/<date>-<topic>-worksheet.md`
+(`type: quiz-me`; omit curriculum step).
+
 ## knowledge/artifacts/sessions/<date>-<topic>.md
 
-Full session transcript; keep the learner's answers **verbatim**.
+Full session transcript; keep the learner's answers **verbatim** (source:
+linked worksheet).
 
 ```markdown
 # <YYYY-MM-DD> — <Topic> session
+
+**Worksheet:** [sessions/<date>-<topic>-worksheet.md](<date>-<topic>-worksheet.md)
 
 ## Foundations recall
 Q: <...>  A (learner): <verbatim>  — <grade + comment>
@@ -363,6 +441,8 @@ Lab: paths/symbols opened: <...>; guides touched: <...>; guide factual fixes: <n
 
 ```markdown
 # <YYYY-MM-DD> — <Topic> quiz
+
+**Worksheet:** [quizzes/<date>-<topic>-worksheet.md](<date>-<topic>-worksheet.md)
 
 Scope: <...>  Result: <total>/<max>
 

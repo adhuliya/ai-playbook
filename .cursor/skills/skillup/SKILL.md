@@ -78,6 +78,10 @@ never decoration.
 - **Save the learner's work.** Archive each session (exercises, the learner's
   verbatim answers, grade + comments, mental model + projection offered) so they
   can revisit it.
+- **Answer worksheets (MUST).** Before collecting graded answers in
+  `learn-session` or `quiz-me`, write a pre-filled prompt worksheet (see
+  **Answer worksheets** below). Do not ask the learner to invent a blank file or
+  paste long answers only in chat.
 - **No micro-edits**: update `learning.md` at meaningful checkpoints, not on
   every step. `notes.md` is exempt (free scratch).
 - **Project Lab is optional.** Only when the learner names a repo/path (or
@@ -126,8 +130,8 @@ never decoration.
         cheatsheets/*.md
         artifacts/             # sole raw-file store for this tree
             resources/         # books, docs, tool refs
-            quizzes/           # <date>-<topic>.md
-            sessions/          # <date>-<topic>.md
+            quizzes/           # <date>-<topic>.md (+ <date>-<topic>-worksheet.md)
+            sessions/          # <date>-<topic>.md (+ <date>-<topic>-worksheet.md)
     scripts/                 # optional per-activity helpers
     learning/<child>/        # optional child sub-journey (max depth 2)
 ```
@@ -394,18 +398,22 @@ Fixed shape (rough budget within the box):
 3. **Graded practice** (~8 min) — pose mixed exercises (complete-the-code,
    complete-the-command, explain-a-concept, predict-output, from-scratch; with a
    Project Lab also `locate-and-explain`, `trace-path`, `patch-and-verify`). Pick
-   types that fit the topic. **At most one** heavy lab task per session. Learner
-   answers; do not reveal answers first. For lab types: navigate via
+   types that fit the topic. **At most one** heavy lab task per session.
+   **Before collecting answers:** create
+   `knowledge/artifacts/sessions/<date>-<topic>-worksheet.md` with every prompt
+   and stable item IDs (`1.A`, `3.2`, …) plus empty **Your answer:** blocks (see
+   **Answer worksheets**). Tell the learner the path; they fill the worksheet and
+   reply when done — do not reveal solutions first. For code edits, also point at
+   files under `practice/` when applicable. For lab types: navigate via
    learning-relevant `dev-guide.md` + step tour; enforce guide-spine gate; for
    patches use lesson branch + oracle (see Project Lab).
-4. **Grade + review** (~3 min) — score each exercise 0–5 with a short comment;
+4. **Grade + review** (~3 min) — score each worksheet item 0–5 with a short comment;
    call out a weak point and a strong point; update `# Mastery` (evidence-gated).
 5. **Record** — append a **dated** `journal.md` entry (concise: covered,
-   scores, weak/strong, next). Save the full transcript (exercises, the
-   learner's verbatim answers, grades + comments, projections/mnemonics; for lab
-   work: paths/symbols, branch name, oracle + runner, diff summary) to
-   `knowledge/artifacts/sessions/<date>-<topic>.md`. Capture the mental model in
-   `# Mental Models`. For the durable `knowledge/` note + index updates, follow
+   scores, weak/strong, next). Save the graded transcript to
+   `knowledge/artifacts/sessions/<date>-<topic>.md` (link the worksheet path;
+   copy or quote verbatim answers from the filled worksheet). Capture the mental
+   model in `# Mental Models`. For the durable `knowledge/` note + index updates,
    [`curate-knowledge`](../curate-knowledge/SKILL.md) (`add-knowledge`). Grow thin
    lab-map notes when new entry points were taught. If the step introduced a
    heavily-used construct/command/arg combo, add it to `knowledge/essentials.md`.
@@ -422,9 +430,12 @@ Standalone graded quiz (broader than one session).
 
 1. Ask scope (topic(s) / whole curriculum / weak spots / `essentials.md` drill)
    and length.
-2. Pose questions; collect answers without revealing solutions first.
+2. Create `knowledge/artifacts/quizzes/<date>-<topic>-worksheet.md` with prompts
+   and **Your answer:** blocks (see **Answer worksheets**); tell the learner the
+   path. Collect answers from the filled worksheet — do not reveal solutions first.
 3. Grade with the rubric; comment on each; summarize weak/strong.
-4. Save quiz + answers + grades to `knowledge/artifacts/quizzes/<date>-<topic>.md`.
+4. Save quiz + grades to `knowledge/artifacts/quizzes/<date>-<topic>.md` (link the
+   worksheet; quote verbatim answers from it).
 5. Update `# Mastery` (evidence-gated) and append a dated journal line.
 
 ## `review-progress`
@@ -500,9 +511,40 @@ Browse via [`knowledge`](../knowledge/SKILL.md) `serve-knowledge` (prefer
 
 - `resources/` — chosen books/docs/tools (learner-supplied + agent-vetted);
   large sources distilled into `knowledge/`, not read wholesale each time.
-- `sessions/<date>-<topic>.md` — full session transcript incl. verbatim answers.
-- `quizzes/<date>-<topic>.md` — quiz, answers, grades, comments.
+- `sessions/<date>-<topic>-worksheet.md` — session prompts + learner answers
+  (filled before grade; canonical verbatim source).
+- `sessions/<date>-<topic>.md` — graded session transcript (links worksheet;
+  grades, comments, mental model, lab metadata).
+- `quizzes/<date>-<topic>-worksheet.md` — quiz prompts + learner answers.
+- `quizzes/<date>-<topic>.md` — graded quiz (links worksheet).
 - Keep the learner's answers verbatim so they can revisit and self-assess later.
+
+## Answer worksheets
+
+Pre-written markdown files for graded `learn-session` and `quiz-me` work. The agent
+writes prompts; the learner fills **Your answer:** blocks.
+
+**Paths (MUST):**
+
+| Kind | Worksheet | Graded artifact |
+|------|-----------|-----------------|
+| Session | `knowledge/artifacts/sessions/<YYYY-MM-DD>-<topic>-worksheet.md` | `…/<YYYY-MM-DD>-<topic>.md` |
+| Quiz | `knowledge/artifacts/quizzes/<YYYY-MM-DD>-<topic>-worksheet.md` | `…/<YYYY-MM-DD>-<topic>.md` |
+
+**Workflow (MUST):**
+
+1. After teaching the mental model (session) or scoping the quiz, write the
+   worksheet with stable item IDs matching the grade table.
+2. Tell the learner the repo-relative path; they edit the file and reply when done.
+3. Grade from the filled worksheet; record scores in the graded artifact.
+4. Do **not** ask for a blank file the learner invents, and do **not** rely on
+   chat-only answers for multi-item graded work.
+
+**Hands-on code:** pair the worksheet with `practice/<step-slug>/` when the step
+includes `complete-the-code` or `from-scratch` builds; prose answers stay in the
+worksheet.
+
+Template: [`templates.md`](templates.md) — `*-worksheet.md`.
 
 ## Portability
 
