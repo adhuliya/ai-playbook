@@ -369,5 +369,5 @@ _agent_bind_shortcuts
 alias sonnetagent='agent --model claude-sonnet-5-medium'
 alias opusagent='agent --model claude-opus-4-8-high'
 alias composeragent='agent --model composer-2.5'
-alias grokagent='agent --model cursor-grok-4.5-high'
+alias grokagent='agent --model cursor-grok-4.6-high'
 
