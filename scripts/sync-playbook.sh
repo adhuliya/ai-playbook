@@ -50,8 +50,9 @@ Files:
   artifacts/live-notes/<p>/ignoresync.txt  per-project ignores
   machines/aliases.txt                 hostname machine-id
 
-Ignores: playbook-root paths only (no globs); ! unignore; last match wins
-(global → machine → project). Ignores do not apply to --machine syncmap.
+Ignores: playbook-root paths, basename/dir names (e.g. __pycache__/), and
+simple globs (e.g. *.pyc); ! unignore; last match wins (global → machine →
+project). Ignores do not apply to --machine syncmap.
 EOF
 }
 
@@ -111,6 +112,8 @@ FAILURES=()
 MANAGED=()
 IGNORED=()
 IGNORE_PATTERNS=()
+EXCLUDE_LINES=()
+GIT_TRACKED_FILE=""
 
 HOSTNAME_KEY="${SYNC_PLAYBOOK_HOSTNAME:-$(hostname)}"
 MACHINE_ID=""
@@ -483,10 +486,124 @@ resolve_machine() {
 }
 
 # --- ignores ---
+# Pattern subset (gitignore-like): exact playbook prefix (contains /), anywhere
+# dir basename (name/), anywhere file basename or simple glob (*.pyc). ! unignore.
+
+ignore_pattern_body() {
+  local pat="$1"
+  [[ "$pat" == !* ]] && pat="${pat#!}"
+  printf '%s' "$pat"
+}
+
+is_concrete_ignore_path() {
+  # Exact playbook path (has /); no glob metacharacters.
+  local pat
+  pat="$(ignore_pattern_body "$1")"
+  pat="${pat%/}"
+  [[ "$pat" == */* && "$pat" != *[\*\?\[]* ]]
+}
+
+is_anywhere_dir_pattern() {
+  # e.g. __pycache__/  (trailing slash, no other slashes)
+  local pat
+  pat="$(ignore_pattern_body "$1")"
+  [[ "$pat" == */ && "$pat" != */*/* && "$pat" != /* ]]
+}
 
 path_matches_ignore() {
-  local path="$1" pat="${2%/}"
-  [[ "$path" == "$pat" || "$path" == "$pat"/* ]]
+  local path="$1" pat="$2"
+  local bare="${pat%/}"
+  local is_dir=0
+  [[ "$pat" == */ ]] && is_dir=1
+
+  if [[ "$bare" == */* ]]; then
+    [[ "$path" == "$bare" || "$path" == "$bare"/* ]]
+    return
+  fi
+
+  if [[ "$is_dir" -eq 1 ]]; then
+    [[ "$path" == "$bare" || "$path" == "$bare"/* || "$path" == */"$bare" || "$path" == */"$bare"/* ]]
+    return
+  fi
+
+  local base
+  base="${path##*/}"
+  case "$base" in
+    $bare) return 0 ;;
+  esac
+  return 1
+}
+
+last_matching_ignore_pattern() {
+  # Prints the last matching pattern body (no leading !) if path is ignored.
+  local path="$1"
+  local state=0 pat body="" last=""
+  for pat in "${IGNORE_PATTERNS[@]+"${IGNORE_PATTERNS[@]}"}"; do
+    body="$(ignore_pattern_body "$pat")"
+    if path_matches_ignore "$path" "$body"; then
+      if [[ "$pat" == !* ]]; then
+        state=0
+        last=""
+      else
+        state=1
+        last="$body"
+      fi
+    fi
+  done
+  [[ "$state" -eq 1 && -n "$last" ]] || return 1
+  printf '%s' "$last"
+}
+
+sync_ignored_display_path() {
+  # Prefer anywhere-dir collapse when such a pattern contributes to the ignore.
+  local prel="$1" trel="$2"
+  local state=0 pat body dirpat="" name prefix
+  for pat in "${IGNORE_PATTERNS[@]+"${IGNORE_PATTERNS[@]}"}"; do
+    body="$(ignore_pattern_body "$pat")"
+    if path_matches_ignore "$prel" "$body"; then
+      if [[ "$pat" == !* ]]; then
+        state=0
+        dirpat=""
+      else
+        state=1
+        if is_anywhere_dir_pattern "$body"; then
+          dirpat="$body"
+        fi
+      fi
+    fi
+  done
+  [[ "$state" -eq 1 ]] || {
+    printf '%s' "$trel"
+    return 0
+  }
+  if [[ -n "$dirpat" ]]; then
+    name="${dirpat%/}"
+    if [[ "$trel" == "$name" || "$trel" == "$name"/* ]]; then
+      printf '%s/' "$name"
+      return 0
+    fi
+    if [[ "$trel" == */"$name" ]]; then
+      printf '%s/' "$trel"
+      return 0
+    fi
+    if [[ "$trel" == */"$name"/* ]]; then
+      prefix="${trel%%/"$name"/*}"
+      printf '%s/%s/' "$prefix" "$name"
+      return 0
+    fi
+  fi
+  printf '%s' "$trel"
+}
+
+record_sync_ignored() {
+  local prel="$1" trel="$2"
+  local display
+  display="$(sync_ignored_display_path "$prel" "$trel")"
+  EXCLUDE_LINES+=("SYNC_IGNORED: $display")
+}
+
+record_tgit_tracked() {
+  EXCLUDE_LINES+=("TGIT_TRACKED: $1")
 }
 
 load_ignore_file() {
@@ -496,15 +613,13 @@ load_ignore_file() {
   while IFS= read -r line || [[ -n "$line" ]]; do
     [[ -z "$line" || "$line" == \#* ]] && continue
     IGNORE_PATTERNS+=("$line")
-    if [[ "$line" == !* ]]; then
-      pat="${line#!}"
+    if is_concrete_ignore_path "$line"; then
+      pat="$(ignore_pattern_body "$line")"
       pat="${pat%/}"
-    else
-      pat="${line%/}"
-    fi
-    check="$PLAYBOOK_ROOT/$pat"
-    if [[ ! -e "$check" ]]; then
-      echo "warning: ignoresync path not found in playbook: $pat (from $file)" >&2
+      check="$PLAYBOOK_ROOT/$pat"
+      if [[ ! -e "$check" ]]; then
+        echo "warning: ignoresync path not found in playbook: $pat (from $file)" >&2
+      fi
     fi
   done <"$file"
 }
@@ -519,25 +634,25 @@ load_ignores_for_project() {
 
 is_ignored() {
   local path="$1"
-  local state=0 pat
-  for pat in "${IGNORE_PATTERNS[@]+"${IGNORE_PATTERNS[@]}"}"; do
-    if [[ "$pat" == !* ]]; then
-      path_matches_ignore "$path" "${pat#!}" && state=0
-    else
-      path_matches_ignore "$path" "$pat" && state=1
-    fi
-  done
-  [[ "$state" -eq 1 ]]
+  last_matching_ignore_pattern "$path" >/dev/null
+}
+
+note_ignored() {
+  local prel="$1" trel="$2"
+  IGNORED+=("$prel")
+  record_sync_ignored "$prel" "$trel"
 }
 
 filter_forward_ignored() {
+  # $1 = target path prefix (e.g. .cursor/ or .dev-notes/ or "")
   # stdin/stdout: rel<SEP>abs ; drop lines whose playbook-rel abs is ignored
+  local target_prefix="$1"
   local rel abs prel
   while IFS="$SEP" read -r rel abs; do
     [[ -n "$rel" ]] || continue
     prel="$(rel_under "$PLAYBOOK_ROOT" "$abs")"
     if is_ignored "$prel"; then
-      IGNORED+=("$prel")
+      note_ignored "$prel" "${target_prefix}${rel}"
       continue
     fi
     printf '%s%s%s\n' "$rel" "$SEP" "$abs"
@@ -653,6 +768,7 @@ process_domain() {
       else
         echo "warning: $rel_full is git-tracked in target — leaving untouched" >&2
         EXCLUDED+=("$rel_full")
+        record_tgit_tracked "$rel_full"
       fi
       continue
     fi
@@ -660,7 +776,7 @@ process_domain() {
     if [[ -n "$src" ]]; then
       prel="$(rel_under "$PLAYBOOK_ROOT" "$src")"
       if is_ignored "$prel"; then
-        IGNORED+=("$prel")
+        note_ignored "$prel" "$rel_full"
         continue
       fi
     fi
@@ -681,7 +797,7 @@ process_domain() {
       if [[ -n "$playbook_prefix_for_ignore" ]]; then
         prel="${playbook_prefix_for_ignore}${rel}"
         if is_ignored "$prel"; then
-          IGNORED+=("$prel")
+          note_ignored "$prel" "$rel_full"
           continue
         fi
       fi
@@ -697,7 +813,6 @@ process_domain() {
 
 # --- project sync ---
 
-EXCLUDE_FILE=""
 TARGET_ROOT=""
 LIVE_NOTES=""
 LIVE_GUIDES=""
@@ -707,18 +822,37 @@ DEVNOTES_DEST=""
 
 is_git_tracked() {
   local rel="$1"
-  [[ -f "$EXCLUDE_FILE" ]] || return 1
-  grep -qxF "$rel" "$EXCLUDE_FILE"
+  [[ -n "$GIT_TRACKED_FILE" && -f "$GIT_TRACKED_FILE" ]] || return 1
+  grep -qxF "$rel" "$GIT_TRACKED_FILE"
 }
 
 compute_git_tracked() {
-  mkdir -p "$TARGET_ROOT/.cursor"
-  EXCLUDE_FILE="$TARGET_ROOT/.cursor/.sync-playbook-excluded"
-  if git -C "$TARGET_ROOT" rev-parse --git-dir >/dev/null 2>&1; then
-    git -C "$TARGET_ROOT" ls-files | LC_ALL=C sort -u >"$EXCLUDE_FILE"
-  else
-    : >"$EXCLUDE_FILE"
+  # In-memory (temp file): sync-root paths only. Not written to the exclude file.
+  if [[ -n "$GIT_TRACKED_FILE" && -f "$GIT_TRACKED_FILE" ]]; then
+    rm -f "$GIT_TRACKED_FILE"
   fi
+  GIT_TRACKED_FILE="$(mktemp)"
+  if git -C "$TARGET_ROOT" rev-parse --git-dir >/dev/null 2>&1; then
+    git -C "$TARGET_ROOT" ls-files | awk '
+      $0 == "dev-guide.md" ||
+      index($0, ".cursor/") == 1 ||
+      index($0, ".dev-notes/") == 1 ||
+      $0 ~ /\/dev-guide\.md$/ { print }
+    ' | LC_ALL=C sort -u >"$GIT_TRACKED_FILE"
+  else
+    : >"$GIT_TRACKED_FILE"
+  fi
+}
+
+write_exclude_file() {
+  mkdir -p "$TARGET_ROOT/.cursor"
+  local out="$TARGET_ROOT/.cursor/.sync-playbook-excluded"
+  {
+    echo "# sync-playbook exclusions (regenerated each sync)"
+    if [[ ${#EXCLUDE_LINES[@]} -gt 0 ]]; then
+      printf '%s\n' "${EXCLUDE_LINES[@]}" | LC_ALL=C sort -u
+    fi
+  } >"$out"
 }
 
 ensure_project_known() {
@@ -793,9 +927,9 @@ sync_cursor_domain() {
   target_file="$(mktemp)"
   filtered="$(mktemp)"
   build_cursor_forward_file "$forward_file"
-  filter_forward_ignored <"$forward_file" >"$filtered"
+  filter_forward_ignored ".cursor/" <"$forward_file" >"$filtered"
   collect_files "$TARGET_ROOT/.cursor" |
-    awk -F "$SEP" -v skip="$(basename "$EXCLUDE_FILE")" '$1 != skip' >"$target_file"
+    awk -F "$SEP" -v skip=".sync-playbook-excluded" '$1 != skip' >"$target_file"
   process_domain "$filtered" "$target_file" "$TARGET_ROOT/.cursor" \
     "$OVERLAY_ROOT" ".cursor/" 0
   rm -f "$forward_file" "$target_file" "$filtered"
@@ -815,7 +949,7 @@ sync_devnotes_domain() {
   target_file="$(mktemp)"
   filtered="$(mktemp)"
   collect_devnotes_files "$LIVE_NOTES" >"$forward_file"
-  filter_forward_ignored <"$forward_file" >"$filtered"
+  filter_forward_ignored ".dev-notes/" <"$forward_file" >"$filtered"
   collect_devnotes_files "$DEVNOTES_DEST" >"$target_file"
   process_domain "$filtered" "$target_file" "$DEVNOTES_DEST" \
     "$LIVE_NOTES" ".dev-notes/" 1 "artifacts/live-notes/${PROJECT}/dev-notes/"
@@ -868,7 +1002,7 @@ sync_guides_domain_core() {
   target_file="$(mktemp)"
   filtered="$(mktemp)"
   collect_live_guides_forward "$LIVE_GUIDES" >"$forward_file"
-  filter_forward_ignored <"$forward_file" >"$filtered"
+  filter_forward_ignored "" <"$forward_file" >"$filtered"
   collect_project_guides_files_filtered "$TARGET_ROOT" >"$target_file"
   filter_guides_nested_policy "$TARGET_ROOT" "$filtered"
   filter_guides_nested_policy "$TARGET_ROOT" "$target_file"
@@ -882,17 +1016,22 @@ sync_guides_domain_at() {
   local save_project="$PROJECT" save_target="$TARGET_ROOT"
   local save_live="$LIVE_NOTES" save_guides="$LIVE_GUIDES"
   local save_devnotes="$DEVNOTES_DEST" save_overlay="$OVERLAY_ROOT"
-  local save_exclude="$EXCLUDE_FILE"
+  local save_git_tracked="$GIT_TRACKED_FILE"
+  local save_exclude_lines=("${EXCLUDE_LINES[@]+"${EXCLUDE_LINES[@]}"}")
 
   PROJECT="$project"
   TARGET_ROOT="$target"
   LIVE_NOTES="$PLAYBOOK_ROOT/artifacts/live-notes/$PROJECT/dev-notes"
   LIVE_GUIDES="$LIVE_NOTES/dev-guides"
+  GIT_TRACKED_FILE=""
+  EXCLUDE_LINES=()
   load_ignores_for_project "$PROJECT"
   ensure_project_known "$PROJECT"
   scaffold_live_notes_if_needed
   compute_git_tracked
   sync_guides_domain_core
+  write_exclude_file
+  [[ -n "$GIT_TRACKED_FILE" ]] && rm -f "$GIT_TRACKED_FILE"
 
   PROJECT="$save_project"
   TARGET_ROOT="$save_target"
@@ -900,7 +1039,8 @@ sync_guides_domain_at() {
   LIVE_GUIDES="$save_guides"
   DEVNOTES_DEST="$save_devnotes"
   OVERLAY_ROOT="$save_overlay"
-  EXCLUDE_FILE="$save_exclude"
+  GIT_TRACKED_FILE="$save_git_tracked"
+  EXCLUDE_LINES=("${save_exclude_lines[@]+"${save_exclude_lines[@]}"}")
 }
 
 run_queued_nested_guide_syncs() {
@@ -932,6 +1072,7 @@ reset_report_arrays() {
   FAILURES=()
   MANAGED=()
   IGNORED=()
+  EXCLUDE_LINES=()
 }
 
 print_report() {
@@ -999,6 +1140,10 @@ sync_one_target() {
   sync_devnotes_domain
   warn_legacy_devnotes_devguides
   sync_guides_domain
+
+  write_exclude_file
+  [[ -n "$GIT_TRACKED_FILE" ]] && rm -f "$GIT_TRACKED_FILE"
+  GIT_TRACKED_FILE=""
 
   print_report "$PROJECT @ $TARGET_ROOT"
 

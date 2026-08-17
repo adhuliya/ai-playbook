@@ -1,2 +1,21 @@
-# Paths relative to playbook root. No globs. `!` unignores (last match wins).
-# Folder path ignores that tree. Missing paths warn at sync time.
+# Global ignoresync — playbook-relative patterns skipped during project sync.
+# Not used by --machine (syncmap only).
+#
+# Patterns (gitignore-like subset):
+#   path/to/file or path/to/dir/   exact playbook prefix (folder ignores that tree)
+#   __pycache__/                  that directory name anywhere under the playbook
+#   *.pyc  /  .DS_Store           basename or simple glob anywhere
+#   !pattern                      unignore (last match wins)
+#
+# Layers (later overrides earlier):
+#   1) ignoresync.txt                                      ← this file (global)
+#   2) machines/<id>/ignoresync.txt                        machine
+#   3) artifacts/live-notes/<project>/ignoresync.txt       per project
+# Put shared defaults here; host-specific lines in (2); one-target lines in (3).
+# Concrete exact paths missing from the playbook warn at sync time.
+
+__pycache__/
+*.pyc
+*.tmp.txt
+*.tmp.md
+.DS_Store

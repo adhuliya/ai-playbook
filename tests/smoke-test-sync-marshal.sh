@@ -105,6 +105,8 @@ log="$WORKDIR/tracked.log"
 ( cd "$PLAYBOOK_ROOT" && "$SYNC" --project "$PROJECT" --yes --force ) 2>&1 | tee "$log" || true
 grep -q 'git-tracked' "$log" || fail "expected git-tracked warning"
 [[ "$(cat "$TARGET/.cursor/rules/tracked.mdc")" == "tracked content" ]] || fail "git-tracked file was modified"
+grep -qxF "TGIT_TRACKED: .cursor/rules/tracked.mdc" "$TARGET/.cursor/.sync-playbook-excluded" || \
+  fail "expected TGIT_TRACKED line in exclude file"
 
 rm -f "$TARGET/.cursor/rules/linked-tracked.mdc"
 printf '%s\n' 'linked tracked' >"$OVERLAY/rules/linked-tracked.mdc"
@@ -118,6 +120,26 @@ grep -E 'warning:.*linked-tracked\.mdc.*git-tracked' "$log_linked" && \
 same_file "$TARGET/.cursor/rules/linked-tracked.mdc" "$OVERLAY/rules/linked-tracked.mdc" || \
   fail "linked-tracked inode changed"
 pass "git-tracked warn and skip"
+
+# 5b) anywhere-dir ignore (__pycache__) + exclude file SYNC_IGNORED dir form
+mkdir -p "$OVERLAY/skills/demo/scripts/__pycache__"
+printf '%s\n' 'bytecode' >"$OVERLAY/skills/demo/scripts/__pycache__/mod.pyc"
+printf '%s\n' 'ok' >"$OVERLAY/skills/demo/scripts/mod.py"
+printf '%s\n' 'noise' >"$OVERLAY/skills/demo/scripts/.DS_Store"
+( cd "$PLAYBOOK_ROOT" && "$SYNC" --project "$PROJECT" --yes ) || fail "pycache ignore sync"
+[[ ! -e "$TARGET/.cursor/skills/demo/scripts/__pycache__" ]] || fail "__pycache__ was synced"
+[[ ! -e "$TARGET/.cursor/skills/demo/scripts/.DS_Store" ]] || fail ".DS_Store was synced"
+same_file "$TARGET/.cursor/skills/demo/scripts/mod.py" "$OVERLAY/skills/demo/scripts/mod.py" || \
+  fail "non-ignored script not linked"
+grep -qxF "SYNC_IGNORED: .cursor/skills/demo/scripts/__pycache__/" \
+  "$TARGET/.cursor/.sync-playbook-excluded" || fail "expected SYNC_IGNORED __pycache__/ dir line"
+grep -qxF "SYNC_IGNORED: .cursor/skills/demo/scripts/.DS_Store" \
+  "$TARGET/.cursor/.sync-playbook-excluded" || fail "expected SYNC_IGNORED .DS_Store line"
+# exclude file must not dump unrelated git-tracked trees
+grep -E '^(TGIT_TRACKED|SYNC_IGNORED): ' "$TARGET/.cursor/.sync-playbook-excluded" >/dev/null
+grep -Ev '^(#|TGIT_TRACKED: |SYNC_IGNORED: |$)' "$TARGET/.cursor/.sync-playbook-excluded" && \
+  fail "exclude file has unexpected lines"
+pass "anywhere ignores + exclude file format"
 
 # 6) bidirectional .dev-notes still pulls
 printf '%s\n' 'from target' >"$TARGET/.dev-notes/from-target.md"

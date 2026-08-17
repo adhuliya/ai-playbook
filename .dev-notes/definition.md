@@ -49,7 +49,7 @@ Out of scope:
 | Machine | Host identity (`hostname` / `machines/aliases.txt`) with path + syncmap files. |
 | Project modules | `machines/<id>/project-modules.txt` — `project:/abs/nested` treats nested repo guides as that project on this machine. |
 | Syncmap | `machines/<id>/syncmap.txt` — playbook path → absolute dest (via `--machine`). |
-| Ignoresync | Playbook-root paths excluded from project sync (`!` unignore). |
+| Ignoresync | Playbook-root paths / basename-dir / simple globs excluded from project sync (`!` unignore). |
 
 ## Principles
 

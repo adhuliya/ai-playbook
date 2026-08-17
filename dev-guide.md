@@ -23,7 +23,7 @@ Shared Cursor rules/skills, per-project overlays, and sync into target repos.
 | `.dev-notes/seed-prompt.md` | Recreate playbook from scratch (`seed-prompt` skill) |
 | `projects.txt` | Registered target project keys |
 | `machines/` | Per-machine `projects.txt`, `project-modules.txt`, `syncmap.txt`, `ignoresync.txt`, `aliases.txt` |
-| `ignoresync.txt` | Global sync ignore paths |
+| `ignoresync.txt` | Global sync ignores (paths, `__pycache__/`, `*.pyc`, …) |
 | `scripts/sync-playbook.sh` | Hard-link sync into targets + `--machine` syncmap |
 | `tests/smoke-test-sync-guides.sh` | Smoke test for in-tree guide sync |
 | `tests/smoke-test-sync-submodule-guides.sh` | Smoke test for nested-git dev-guide sync |

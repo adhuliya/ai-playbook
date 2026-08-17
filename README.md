@@ -45,7 +45,8 @@ Machine id = `hostname`, optional `machines/aliases.txt`. New host gets empty
 - `.cursor/`: playbook → target only. `.dev-notes/` + project `dev-guide.md`: bidirectional.
 - Nested git under a target (submodules): `dev-guide.md` is not synced via the parent hub unless `machines/<id>/project-modules.txt` marks the nested path as the same project (`project:/abs/nested`). Otherwise match `project:/abs/path` in `machines/<id>/projects.txt` (many paths per project) or resolve interactively. Use `--ignore-submodules` to skip nested guides entirely.
 - Target git-tracked paths: warn when inode differs from playbook; already hard-linked copies are left silent.
-- Ignores: `ignoresync.txt` (global), `machines/<id>/ignoresync.txt`, `artifacts/live-notes/<project>/ignoresync.txt`. Full playbook-root paths; `!` unignore. Not applied to `--machine`.
+- Ignores: `ignoresync.txt` (global), `machines/<id>/ignoresync.txt`, `artifacts/live-notes/<project>/ignoresync.txt`. Playbook-root paths, anywhere dir/basename patterns (`__pycache__/`, `.DS_Store`), and simple globs (`*.pyc`); `!` unignore. Not applied to `--machine`.
+- Target `.cursor/.sync-playbook-excluded`: regenerated each sync; `TGIT_TRACKED:` / `SYNC_IGNORED:` lines for playbook-managed paths skipped (target-git-tracked or ignoresync).
 
 See `./scripts/sync-playbook.sh --help` and `.dev-notes/definition.md`.
 
