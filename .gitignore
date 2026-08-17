@@ -7,8 +7,6 @@
 !.dev-notes/**
 !dev-guide.md
 
-build/
-
 __pycache__/
 *.pyc
 *.swp
