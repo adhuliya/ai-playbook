@@ -10,6 +10,8 @@ ROOT defaults to the current directory. Two modes, auto-detected:
   a generated global index linking every learning activity — title, status, and
   level parsed from each learning.md — with quick links to its knowledge index,
   essentials, and cheatsheets. Per-activity notes render under <slug>/knowledge/.
+  If ROOT contains skillup.dir.txt, follow that relative path (one hop) to the
+  actual learning root.
 - **Single knowledge folder** (has knowledge.md, no activity children): serves that
   folder with knowledge.md as the home page.
 
@@ -31,6 +33,36 @@ import sys
 import urllib.parse
 
 INDEX_NAMES = ("knowledge.md", "index.md")
+SKILLUP_DIR_FILE = "skillup.dir.txt"
+
+
+def resolve_skillup_root(root: str):
+    """Follow skillup.dir.txt (one hop). Returns (path, error_or_None)."""
+    pointer = os.path.join(root, SKILLUP_DIR_FILE)
+    if not os.path.isfile(pointer):
+        return root, None
+    rel = ""
+    with open(pointer, encoding="utf-8") as f:
+        for line in f:
+            s = line.strip()
+            if s:
+                rel = s.rstrip("/")
+                break
+    if not rel:
+        return root, f"{SKILLUP_DIR_FILE} is empty"
+    if os.path.isabs(rel) or rel.startswith("~"):
+        return root, f"{SKILLUP_DIR_FILE} must be a relative path, got {rel!r}"
+    resolved = os.path.abspath(os.path.normpath(os.path.join(root, rel)))
+    notes_dir = os.path.dirname(os.path.abspath(root))
+    if os.path.basename(notes_dir) == ".dev-notes":
+        repo = os.path.dirname(notes_dir)
+        try:
+            inside = os.path.commonpath([resolved, repo]) == repo
+        except ValueError:
+            inside = False
+        if not inside:
+            return root, f"{SKILLUP_DIR_FILE} resolves outside the repo: {resolved}"
+    return resolved, None
 
 
 def _index_in_dir(dirpath: str):
@@ -312,10 +344,15 @@ def main() -> int:
     ap = argparse.ArgumentParser(
         description="Serve a knowledge tree or learning root as browsable HTML.")
     ap.add_argument("root", nargs="?", default=".",
-                    help="knowledge/ folder or learning root (.dev-notes/learning)")
+                    help="knowledge/ folder or learning root (default .dev-notes/learning)")
     ap.add_argument("--port", type=int, default=8800)
     args = ap.parse_args()
     root = os.path.abspath(args.root)
+    if os.path.isdir(root):
+        root, err = resolve_skillup_root(root)
+        if err:
+            print(f"error: {err}", file=sys.stderr)
+            return 1
     if not os.path.isdir(root):
         print(f"error: not a directory: {root}", file=sys.stderr)
         return 1

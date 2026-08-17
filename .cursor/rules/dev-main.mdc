@@ -43,7 +43,7 @@ If present, use for context. Do not invent policy. Do not bulk-read.
 | `knowledge/` | Domain knowledge trees; navigate via `knowledge` skill |
 | `artifacts/` | Stored artifacts (cited from docs) |
 | `activities/` | `workon` context |
-| `learning/` | `skillup` context |
+| `learning/` | `skillup` context; if `learning/skillup.dir.txt` exists, that relative path is the actual learning root |
 | `seed-prompt.md` | Recreate-from-scratch DNA (update only via `seed-prompt` skill) |
 
 `journal.md`: append only via `journal` when asked. Guide create/rewrite/audit/delete: `dev-guides` skill only (explicit request).

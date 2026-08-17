@@ -1,14 +1,14 @@
 ---
 name: knowledge
 description: >-
-  Navigate any `knowledge/` tree under `.dev-notes/` (repo, activity, learning,
-  etc.): each folder has `knowledge.md` (heading, fluid body, trailing Index
-  table), one `knowledge/artifacts/` at the tree root, atomic cross-linked
-  markdown notes. Serve a browsable HTML view via `serve-knowledge`. Use when
-  locating domain knowledge, exploring `.dev-notes/**/knowledge/`, following
-  links between notes and artifacts, or when the user asks to browse/serve
-  knowledge. For creating or restructuring notes, use `curate-knowledge`;
-  sibling skills add their own extras on top.
+  Navigate any `knowledge/` tree under `.dev-notes/` (repo, activity) or the
+  skillup learning root: each folder has `knowledge.md` (heading, fluid body,
+  trailing Index table), one `knowledge/artifacts/` at the tree root, atomic
+  cross-linked markdown notes. Serve a browsable HTML view via `serve-knowledge`.
+  Use when locating domain knowledge, exploring `.dev-notes/**/knowledge/` or
+  skillup learning trees, following links between notes and artifacts, or when
+  the user asks to browse/serve knowledge. For creating or restructuring notes,
+  use `curate-knowledge`; sibling skills add their own extras on top.
 ---
 
 # Knowledge (navigation)
@@ -64,7 +64,7 @@ Rules:
 |--------|------|
 | Repo | `.dev-notes/knowledge/` |
 | Activity | `.dev-notes/activities/<slug>/knowledge/` |
-| Learning | `.dev-notes/learning/<slug>/knowledge/` |
+| Learning | `<learning-root>/<slug>/knowledge/` (default `.dev-notes/learning/`; if `.dev-notes/learning/skillup.dir.txt` exists, resolve per [`skillup`](../skillup/SKILL.md)) |
 
 `workon`, `skillup`, and other skills that use `knowledge/` MUST follow this skill for layout and navigation; they document only their add-ons (e.g. skillup `essentials.md`, lab-maps). Writes/restructures: [`curate-knowledge`](../curate-knowledge/SKILL.md).
 
@@ -85,6 +85,8 @@ When the user asks to serve/browse knowledge, run the local server and tell them
 python3 .cursor/skills/knowledge/scripts/serve.py path/to/knowledge
 
 # Learning root: global index of all learning activities
+# Resolve per skillup first; if you pass .dev-notes/learning and
+# skillup.dir.txt is present, serve.py follows it.
 python3 .cursor/skills/knowledge/scripts/serve.py .dev-notes/learning
 ```
 

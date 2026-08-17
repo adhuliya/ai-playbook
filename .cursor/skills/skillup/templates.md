@@ -2,8 +2,12 @@
 
 ## Directory layout
 
+Default learning root: `.dev-notes/learning/`. If
+`.dev-notes/learning/skillup.dir.txt` exists, resolve that relative path first
+(see skillup Storage). Layout below is under the resolved **learning root**.
+
 ```text
-.dev-notes/learning/<slug>/
+<learning-root>/<slug>/
     learning.md
     journal.md
     notes.md                     # optional; complementary notes

@@ -3,7 +3,8 @@ name: skillup
 description: >-
   Structured learn-by-practice coach for any subject (assembly, data structures
   & algorithms, OS/atomics theory, tools, Morse, Spanish, ...). Sets up a durable
-  learning activity under .dev-notes/learning/<slug>/, plans an incremental
+  learning activity under the learning root (default .dev-notes/learning/<slug>/;
+  override with .dev-notes/learning/skillup.dir.txt), plans an incremental
   curriculum, runs graded practice sessions with quizzes and agent review
   comments, tracks dated progress and weak/strong points, and builds a browsable
   knowledge/ library. Optionally binds a Project Lab (in-repo, submodule, or
@@ -86,9 +87,9 @@ never decoration.
   every step. `notes.md` is exempt (free scratch).
 - **Project Lab is optional.** Only when the learner names a repo/path (or
   attaches one later). Non-code subjects stay unchanged.
-- **Lab records stay in the notes home.** Never auto-create
-  `.dev-notes/learning/` inside a third-party lab tree. Mode `in-repo` means
-  exercises use that project as lab root/cwd only.
+- **Lab records stay in the notes home.** Never auto-create the learning root
+  inside a third-party lab tree. Mode `in-repo` means exercises use that project
+  as lab root/cwd only.
 - **Guides for relevant subtrees only (MUST).** When a Project Lab is bound,
   `dev-guide.md` files SHALL exist only for **learning-relevant** paths (see
   `# Project Lab` `relevant-paths`), created/audited via [`dev-guides`](../dev-guides/SKILL.md).
@@ -116,8 +117,27 @@ never decoration.
 
 ## Storage and identity
 
+**Learning root (MUST resolve first).** Default: `.dev-notes/learning/`. If
+`.dev-notes/learning/skillup.dir.txt` exists, that file names the actual learning
+root. Resolve it before listing, creating, or opening any learning activity:
+
+1. Read the file. Use the first non-empty line; ignore the rest.
+2. Strip surrounding whitespace and at most one trailing `/`.
+3. The line MUST be a relative path (no leading `/`, no `~`). Resolve it against
+   the directory that contains the file (`.dev-notes/learning/`). Example:
+   `../../learning` (trailing slash optional) → repo-root `learning/`.
+4. Normalize `..`. The result MUST stay inside the repository (the directory that
+   contains `.dev-notes/`). If it would escape, stop and ask.
+5. That directory is the **learning root**. Do not mix slugs from
+   `.dev-notes/learning/` with the redirected root. `skillup.dir.txt` is a
+   pointer, not an activity; the learner places it — do not create it unasked.
+6. If the file exists but the line is empty or absolute, or the resolved
+   directory is missing when listing/resuming, stop and tell the learner — do not
+   silently fall back to the default. Create the resolved directory when creating
+   a new activity if it is missing.
+
 ```text
-.dev-notes/learning/<slug>/
+<learning-root>/<slug>/
     learning.md              # current truth (rewritable)
     journal.md               # append-only, dated history
     notes.md                 # optional complementary notes (learner + agent)
@@ -136,14 +156,16 @@ never decoration.
     learning/<child>/        # optional child sub-journey (max depth 2)
 ```
 
-- Slug: kebab-case, top-level at `.dev-notes/learning/<slug>/`.
+- Slug: kebab-case, top-level at `<learning-root>/<slug>/`.
 - Child ref: `parent-slug/child-slug` → `.../<parent>/learning/<child>/`. Max depth 2.
-- Commit `.dev-notes/learning/` (including useful `knowledge/`). Do not assume a
-  huge lab checkout under the notes home is committed — learner owns submodule
-  / ignore choices.
+- Commit the learning root (including useful `knowledge/`) and
+  `.dev-notes/learning/skillup.dir.txt` when present. Do not assume a huge lab
+  checkout under the notes home is committed — learner owns submodule / ignore
+  choices.
 - Ambiguous slug: list matches and ask; never guess.
 - Browse knowledge via the [`knowledge`](../knowledge/SKILL.md) skill
-  (`serve-knowledge`). Per-activity `scripts/` is optional.
+  (`serve-knowledge`), passing the resolved learning root. Per-activity
+  `scripts/` is optional.
 
 ## Reserved lifecycle commands
 
@@ -273,7 +295,7 @@ activity's `knowledge/`; guides live **in the lab repo** (owned by
 
 | Kind | Meaning |
 |---|---|
-| `in-repo` | Exercises use the project as lab root/cwd. Skillup records stay in the **notes home**; do not auto-write `.dev-notes/learning/` into the lab. |
+| `in-repo` | Exercises use the project as lab root/cwd. Skillup records stay in the **notes home**; do not auto-write the learning root into the lab. |
 | `submodule` | Lab is (or will be) a **git submodule of the notes-home** repo at a **user-chosen** path. Ask for the location; do not surprise-`git submodule add`. Record relative path + remote URL. |
 | `path` | **External checkout** (not necessarily a submodule of notes-home). Record portable clone recipe; keep absolute path in `notes.md` only. |
 
@@ -492,8 +514,8 @@ Build a focused cheatsheet for the content the user describes, saved in
    refresh it as understanding grows. Append a dated journal line.
 6. Add any new mental models/projections to `learning.md` `# Mental Models`.
 
-Browse via [`knowledge`](../knowledge/SKILL.md) `serve-knowledge` (prefer
-`.dev-notes/learning` for a global index across activities).
+Browse via [`knowledge`](../knowledge/SKILL.md) `serve-knowledge` (prefer the
+resolved learning root for a global index across activities).
 
 ## `journal.md` contract (history)
 
@@ -659,7 +681,7 @@ Adopt a `learning.md` + `journal.md` brought from elsewhere.
    note drift between claimed mastery and demonstrated mastery.
 4. Orientation summary: goal, foundations, claimed vs verified mastery, covered
    vs remaining, gaps, safest next action.
-5. Place files under `.dev-notes/learning/<slug>/`, reconcile drift, set
+5. Place files under `<learning-root>/<slug>/`, reconcile drift, set
    `status` to `Planning` (or `Approved` if approved now). Append a dated import
    journal entry. Do not run a session until `approve-plan`.
 
