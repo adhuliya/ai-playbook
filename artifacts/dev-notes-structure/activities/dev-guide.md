@@ -11,3 +11,4 @@
 | Name | Description |
 |------|-------------|
 | `.dev-notes/activities/` | Per-activity working context |
+| `.dev-notes/activities/activities.md` | High-level catalog (heading + short para per activity); create lazily via `workon` |
