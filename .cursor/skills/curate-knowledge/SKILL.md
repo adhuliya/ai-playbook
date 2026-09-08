@@ -8,7 +8,7 @@ description: >-
   integrate-knowledge, refine-structure, curate knowledge, or asks to capture,
   reorganize, or improve a knowledge folder. Layout: `knowledge` skill.
   Browse/serve: `knowledge` skill (`serve-knowledge`). Exclusive owner of write/
-  restructure of knowledge trees; sibling skills (skillup, workon) invoke this.
+  restructure of knowledge trees; sibling skills (skillup) invoke this.
 disable-model-invocation: true
 ---
 
@@ -29,7 +29,7 @@ Infer when intent is clear; prefer the keyword when resuming across chats.
 
 ## Target tree
 
-Infer from context (active **workon** / **skillup** / named path). If ambiguous: list matches and ask — never guess.
+Infer from context (active **skillup** / named path). If ambiguous: list matches and ask — never guess.
 
 Bootstrap: `knowledge/knowledge.md` (per `knowledge` skill contract) + `knowledge/artifacts/`.
 
@@ -154,5 +154,5 @@ Standalone reshape — also the **style** of the integrate placement gate (witho
 
 ## Sibling skills
 
-- **skillup** / **workon**: invoke this skill for knowledge write/restructure; they only add extras.
+- **skillup**: invoke this skill for knowledge write/restructure; it only adds extras.
 - **knowledge**: navigation + `serve-knowledge` only.

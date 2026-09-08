@@ -4,16 +4,16 @@
 
 ```text
 .dev-notes/activities/
-    activities.md           # high-level catalog (heading + short para)
+    activities.md           # high-level catalog (one-liner per activity)
     <slug>/
         activity.md
         journal.md
-        notes.md                # SRD + design decisions + user notes
-        knowledge/              # optional; see `knowledge` skill
+        notes.md                # requirement definition + design decisions + user notes
+        artifacts/              # optional; flat snapshots/excerpts
         activities/<child>/     # optional children
 ```
 
-**`knowledge/`:** see [`knowledge`](../knowledge/SKILL.md) skill (optional; lazy-create).
+**`artifacts/`:** `.dev-notes/activities/<slug>/artifacts/` — flat; whole copies and `<stem>-excerpt.md` files the user chose.
 
 ## activity.md
 
@@ -32,7 +32,7 @@ Keep the metadata table in the **first ~10 lines** (title + table) so listing st
 
 # Goal
 
-<Short summary of notes.md Software Requirement Definition. SRD is authoritative.>
+<Short summary of notes.md Requirement Definition. SRD is authoritative.>
 
 # Scope
 
@@ -44,8 +44,6 @@ the project. Set after initial grilling; near-fixed afterward. Major change =
 
 <Context plus durable global notes. Lifecycle and resume hints live here or in
 `# Next Steps`, not in `journal.md`.>
-
-<Knowledge plan: what lives under `knowledge/` (and `knowledge/artifacts/`) vs pointers elsewhere.>
 
 # Current Design
 
@@ -77,6 +75,8 @@ Up to ~10 short lines per milestone.
 # References
 
 - <docs, specs, commits, issues, related slugs, …>
+- `path/to/input` — context-only | copied (`artifacts/<name>`) | excerpt (`artifacts/<stem>-excerpt.md`)
+  Learned: <1–3 sentences of what this file contributed to define/design/plan>
 ```
 
 ## journal.md
@@ -113,14 +113,11 @@ Put in derived `activity.md` `# References`:
 `derived-from: <slug>` — non-load-bearing; journal stays scaffold until first
 `complete-work` on the derived activity.
 
-## knowledge.md (inside `knowledge/`)
-
-Per [`knowledge`](../knowledge/SKILL.md) skill. Not a substitute for `activity.md` handoff truth.
-
 ## activities.md
 
 `.dev-notes/activities/activities.md`. Create lazily. Append-only for new
-activities; never bulk-read — `rg '^## <slug>:'`. No tables.
+activities; never bulk-read — `rg '^## <slug>:'`. No tables. One-liner per
+activity.
 
 ```markdown
 # Activities
@@ -144,21 +141,21 @@ printf '\n## %s: %s\n\n%s\n' "$slug" "$title" "$para" >> .dev-notes/activities/a
 
 ## notes.md
 
-Required. Exact headings in this order. SRD is the activity definition (agent
-keeps it current for review before `approve-plan`). Software Design Decisions
-is the source other skills use for design docs. **User Notes** is user-owned —
-do not overwrite.
+Required. Exact headings in this order. **SRD** (`## Requirement Definition`) is
+the activity definition (keep current for review before `approve-plan`).
+**Design Decisions** is the decision log. **User Notes** is user-owned — do not
+overwrite.
 
 ```markdown
 # Notes
 
-## Software Requirement Definition
+## Requirement Definition
 
 ### <title>
 - kind: end-user-interface | internal-behavior | external-interface
 - <description>
 
-## Software Design Decisions
+## Design Decisions
 
 ### <decision title>
 - chosen: <what>
@@ -180,7 +177,15 @@ the old entry unchanged. Omit `replaces:` on a first decision.
 
 Create at activity birth (empty sections are fine until grill fills SRD).
 If an older activity has unstructured `notes.md`, add the three headings and
-move leftover body under **User Notes**.
+move leftover body under **User Notes**. Rename `## Software Requirement
+Definition` / `## Software Design Decisions` in place if those old headings
+remain.
+
+## artifacts/
+
+`.dev-notes/activities/<slug>/artifacts/` — flat, lazy. Whole copy:
+`<basename>`. Portion: `<stem>-excerpt.md` (header = source path + what was
+kept; then the pieces).
 
 ## List output (agent → user)
 
@@ -188,10 +193,10 @@ Present a markdown table, one row per activity (from first ~10 lines of each
 `activity.md`), e.g.:
 
 ```markdown
-| status | slug | branch | notes |
-|---|---|---|---|
-| Active | add-export-endpoint | feature/add-export-endpoint | waiting on API review |
-| Paused | parent/child | none | blocked on fixture data |
+| title | status | slug | branch | notes |
+|---|---|---|---|---|
+| Add export endpoint | Active | add-export-endpoint | feature/add-export-endpoint | waiting on API review |
+| Child title | Paused | parent/child | none | blocked on fixture data |
 ```
 
 ## Details output (no resume)

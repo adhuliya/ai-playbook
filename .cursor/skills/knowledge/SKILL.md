@@ -1,9 +1,9 @@
 ---
 name: knowledge
 description: >-
-  Navigate any `knowledge/` tree under `.dev-notes/` (repo, activity) or the
-  skillup learning root: each folder has `knowledge.md` (heading, fluid body,
-  trailing Index table), one `knowledge/artifacts/` at the tree root, atomic
+  Navigate any `knowledge/` tree under `.dev-notes/` (repo) or the skillup
+  learning root: each folder has `knowledge.md` (heading, fluid body, trailing
+  Index table), one `knowledge/artifacts/` at the tree root, atomic
   cross-linked markdown notes. Serve a browsable HTML view via `serve-knowledge`.
   Use when locating domain knowledge, exploring `.dev-notes/**/knowledge/` or
   skillup learning trees, following links between notes and artifacts, or when
@@ -63,10 +63,11 @@ Rules:
 | Parent | Path |
 |--------|------|
 | Repo | `.dev-notes/knowledge/` |
-| Activity | `.dev-notes/activities/<slug>/knowledge/` |
 | Learning | `<learning-root>/<slug>/knowledge/` (default `.dev-notes/learning/`; if `.dev-notes/learning/skillup.dir.txt` exists, resolve per [`skillup`](../skillup/SKILL.md)) |
 
-`workon`, `skillup`, and other skills that use `knowledge/` MUST follow this skill for layout and navigation; they document only their add-ons (e.g. skillup `essentials.md`, lab-maps). Writes/restructures: [`curate-knowledge`](../curate-knowledge/SKILL.md).
+`skillup` and other skills **MAY** keep a `knowledge/` folder. If that folder
+exists, layout and navigation follow this skill; writes follow
+[`curate-knowledge`](../curate-knowledge/SKILL.md).
 
 ## Navigate (MUST)
 

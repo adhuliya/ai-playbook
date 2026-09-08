@@ -1,20 +1,16 @@
 ---
 name: workon
 description: >-
-  Manage durable, portable engineering activities under .dev-notes/activities/
-  using self-contained activity.md + journal.md lifecycle workflows
-  (create/derive/list/resume/replan/self-review/import and reserved lifecycle
-  commands), plus notes.md (requirements, design decisions, user notes) and a
-  high-level activities.md catalog. Use when the user manages activities,
-  imports an activity from another system/session, or issues workon
-  lifecycle keywords.
+  Manage durable, portable activities under .dev-notes/activities/ (activity.md,
+  journal.md, notes.md, activities.md catalog, optional artifacts/). Use when
+  the user manages activities, imports an activity, or issues workon lifecycle
+  keywords.
 disable-model-invocation: true
 ---
 
 # workon
 
-Activity manager for software engineering work.
-Documentation is part of the deliverable: keep records resumable months later.
+Activity manager. Records must stay resumable months later.
 
 ## Hard constraints
 
@@ -23,19 +19,17 @@ Documentation is part of the deliverable: keep records resumable months later.
 - New chat without a named activity: list activities and ask.
 - Honor only reserved lifecycle commands (exact keywords).
 - No dates in `activity.md` / `journal.md` unless user explicitly asks.
-- `activity.md` is current execution truth (rewrite stale sections); `notes.md`
-  **Software Requirement Definition** is the activity definition. `journal.md`
-  records **completed project work** only — append **one** entry at
-  **`complete-work`**, at the **end** of the file; prior journal entries are
+- `activity.md` is current execution truth (rewrite stale sections).
+  `journal.md` records **completed project work** only — append **one** entry
+  at **`complete-work`**, at the **end** of the file; prior entries are
   **read-only**.
-- `notes.md` has three fixed sections (exact headings). **Software Requirement
-  Definition** is the activity definition — keep it current for user review
-  before `approve-plan`. **Software Design Decisions** records chosen design
-  plus compelling alternatives. **User Notes** is the user's free-form area;
-  do not overwrite it.
+- `notes.md` three exact headings: `## Requirement Definition` (**SRD** —
+  activity definition; keep current for review before `approve-plan`),
+  `## Design Decisions` (chosen + alternatives), `## User Notes` (user-owned;
+  do not overwrite).
 - No engineering until plan is approved and user starts execution.
 - **Portable by default**: `activity.md` + `journal.md` + `notes.md` (SRD and
-  Software Design Decisions) must let another system or agent session assess
+  Design Decisions) must let another system or agent session assess
   and continue the task with no host-specific context (no chat memory,
   absolute host paths, tool state, or local-only assumptions).
 - **No micro-edits**: update files at meaningful checkpoints, not on every minor
@@ -66,26 +60,25 @@ Documentation is part of the deliverable: keep records resumable months later.
 
 ```text
 .dev-notes/activities/
-    activities.md        # high-level catalog (heading + short para per activity)
+    activities.md        # high-level catalog (one-liner per activity)
     <slug>/
         activity.md          # current execution truth (rewritable)
         journal.md           # completed project-work log (`complete-work` only)
-        notes.md             # SRD + design decisions + user notes
-        knowledge/           # optional activity knowledge tree (see below)
+        notes.md             # requirement definition + design decisions + user notes
+        artifacts/           # optional; flat snapshots/excerpts of cited context
         activities/<child>/  # optional child (max depth 2)
 ```
 
-**`knowledge/`:** optional activity tree — layout and navigation per the
-[`knowledge`](../knowledge/SKILL.md) skill. Create lazily when first needed.
-Durable activity knowledge and files: commit under `knowledge/`; avoid huge
-generated trees better kept outside the repo.
+**`artifacts/`:** optional flat dump at
+`.dev-notes/activities/<slug>/artifacts/` (see Context files).
 - Slug: kebab-case, top-level at `.dev-notes/activities/<slug>/`.
 - Child ref: `parent-slug/child-slug` maps to
   `.../<parent-slug>/activities/<child-slug>/`.
 - Filesystem hierarchy only (no parent/children metadata rows).
 - Max depth 2 (top-level → child only).
 - Keep durable activity context in repo; commit `.dev-notes/activities/`
-  (including useful `knowledge/`).
+  (including useful `artifacts/`). Avoid huge generated trees better kept
+  outside the repo.
 - Ambiguous slug: list matches and ask; never guess.
 
 ## Reserved lifecycle commands
@@ -101,21 +94,38 @@ trigger them):
 | `resume-work` | Resume protocol. |
 | `complete-work` | Completion protocol. |
 | `replan-work` | Re-open scope: re-run project-fit + scope grill on a major change. |
+| `create-sibling` | Derive a top-level sibling (`Planning`). |
+| `create-child` | Derive a child under `activities/` (`Planning`; max depth 2). |
 | `self-review` | Review plan + notes + verified progress; grill as needed and update `activity.md`. |
 | `query-work` | Enter read-only query mode (no changes) until `no-query-work`. |
 | `no-query-work` | Exit query mode; changes allowed again. |
-| `imported-activity` | Adopt `activity.md` + `journal.md` (+ `notes.md` if present) from another system/session and orient. |
+| `import-activity` | Adopt `activity.md` + `journal.md` (+ `notes.md` if present) from another system/session and orient. |
 
-Natural language initiates create/switch/list/details (create still runs its
-gated flow). Gated transitions (derive, replan, execution) require their reserved
-keywords per the Gating policy.
+Natural language: create, switch, list, details (create runs the Planning
+quality bar — not a keyword). Every keyword in the table is gated (exact
+spelling; detect intent → prompt the keyword → do not silent-transition).
 
-**Execution gate** (referenced elsewhere): `approve-plan`, then `start-building`;
-no engineering before it.
+**Execution gate:** `approve-plan`, then `start-building`; no engineering before it.
 
-**Material-change choice set** (gated): `create-sibling`, `create-child` (derive
-keywords), or `replan-work` (reserved lifecycle command). On a material change,
-prompt the user to write one of these to proceed.
+**Material-change choice set** (gated): `create-sibling`, `create-child`, or
+`replan-work`. On a material change, prompt the user to write one of these.
+
+## Command map
+
+| Do | How | Typical status / files |
+|---|---|---|
+| New activity | natural language | `Planning`; write `activity.md`, `journal.md`, `notes.md`; append `activities.md` |
+| Cited context files | list-ask (Context files) | `<slug>/artifacts/` only for files they choose |
+| `approve-plan` | gated | `Planning` → `Approved` |
+| `start-building` | gated | `Approved` → `Active` |
+| `pause-work` | gated | → `Paused` |
+| `resume-work` | gated | resume; never `Complete` → `Active` |
+| `complete-work` | gated | → `Complete` + one journal entry |
+| `replan-work` | gated | → `Planning` |
+| `create-sibling` / `create-child` | gated | new `Planning` activity |
+| `self-review` | gated | no status change |
+| `query-work` / `no-query-work` | gated | session guard, not a status |
+| `import-activity` | gated | adopt files; this host starts in `Planning` |
 
 ## State model and activity lifecycle
 
@@ -126,7 +136,8 @@ Preferred lifecycle:
 
 `Planning → Approved → Active → Complete`
 
-with optional `Paused` / `Blocked`.
+with optional `Paused` / `Blocked`. `query-work` is a session flag, not a
+status.
 
 `Complete` does not go directly to `Active`; reopen to `Planning`
 first when new work is needed.
@@ -137,9 +148,11 @@ first when new work is needed.
 
 1. Remind strong model.
 2. Project-fit-first, then intake prompt (see Planning quality bar).
-3. Discovery/grill until scope and evidence are clear. Actively maintain
-   `notes.md` **Software Requirement Definition** as requirements emerge;
-   invite the user to challenge each one.
+3. Discovery: run Planning grill until scope and evidence are clear. Actively
+   maintain the SRD as requirements emerge (`kind:` on each item); invite the
+   user to challenge each one. If they cited context files, run Context files →
+   activity artifacts (list-ask: whole copy / excerpt / skip; still use
+   unsaved files this session).
 4. Draft + self-review `activity.md`, including the human-readable `# Scope`
    paragraph(s), with `# Goal` summarizing the SRD.
 5. Write `activity.md` + `journal.md` scaffold (`# Journal` only; no entries yet)
@@ -192,7 +205,7 @@ Required sections (order):
 7. `# Next Steps`
 8. `# References`
 
-- **Goal** is a short summary of `notes.md` **Software Requirement Definition**
+- **Goal** is a short summary of `notes.md` **Requirement Definition**
   (SRD). SRD is the activity definition; on conflict, SRD wins and `# Goal` /
   `# Scope` refresh at the next checkpoint.
 - **Scope** is one or two human-readable paragraphs explaining the whole
@@ -201,15 +214,17 @@ Required sections (order):
   `replan-work` (re-run project-fit and scope questions) and an SRD rewrite.
 - **Current Design** is a compact execution handoff: invariants, conventions,
   boundaries, edge cases, acceptance signals. Chosen-vs-alternatives history
-  lives only in `notes.md` **Software Design Decisions** — do not duplicate
+  lives only in `notes.md` **Design Decisions** — do not duplicate
   that log here.
 - **Milestones** must be MECE outcomes with concrete evidence checks.
+- `# References` includes one bullet per user-cited planning input file
+  (source path, `copied` / `excerpt` / `context-only`, 1–3 sentences learned).
 - `branch` is a hint only; do not auto-create/check out branches.
 - Template: [`templates.md`](templates.md)
 
 ## `activities.md` (high-level catalog)
 
-Path: `.dev-notes/activities/activities.md`. One heading + short paragraph per
+Path: `.dev-notes/activities/activities.md`. One heading + one-liner per
 activity folder. Not a substitute for `activity.md`. Details live in that
 activity folder.
 
@@ -225,13 +240,12 @@ user asks. If `rg` finds no heading for the focused slug, append one.
 <paragraph>
 ```
 
-A para of about 100 words or less explaining the activity. A one liner summary
-is the best for brevity and searches. Details can always be discovered in that
-particular activity folder.
+One **one-liner** explaining the activity (high-level; searches). Details live
+in that activity folder.
 
-Child slug in the heading: `parent-slug/child-slug`. Keep the paragraph
-high-level enough that minor design choices do not require an update. Update
-the description over time if the activity **Goal** changes.
+Child slug in the heading: `parent-slug/child-slug`. Keep the line high-level
+enough that minor design choices do not require an update. Update it only if
+the activity **Goal** changes.
 
 ### When to write
 
@@ -275,24 +289,51 @@ and complete: do not open `activities.md` unless appending or the Goal changed.
 - Resume must not depend on opening source activity (derive: provenance in
   `activity.md` `# References`, not journal).
 
-## Activity `knowledge/`
+## Context files → activity artifacts
 
-- Follow the [`knowledge`](../knowledge/SKILL.md) skill for structure and navigation.
-- Complements `activity.md` (handoff truth); deep reference stays in the tree.
-- Create/maintain notes via [`curate-knowledge`](../curate-knowledge/SKILL.md).
+When the user points at files as **initial context** or later **definition
+updates** (create, derive, `replan-work`, SRD changes — not every source file
+touched while building):
+
+1. Use every cited file as context **this session** to define, design, and
+   plan — whether or not it is saved.
+2. Ask **once**, crisply, with a list. For each file: tracked-in-repo or not,
+   and a hint (whole copy vs excerpt of a named portion). Do **not** copy
+   until they choose. A subset is OK. Example:
+
+   > Cited as context. Which should I save under `artifacts/` (whole copy or
+   > excerpt)? I'll still use the others to define/design/plan.
+   > - `docs/spec.md` (tracked) — suggest excerpt of the linking contract; or whole copy
+   > - `~/notes.pdf` (not in repo) — whole copy
+   > Reply with files to keep, and whole vs excerpt.
+
+3. On **whole copy**: create `<slug>/artifacts/` if needed; copy as
+   `artifacts/<basename>` (snapshot). If that name exists, ask before
+   overwriting. Do not copy secrets. Huge generated trees: excerpt or skip.
+4. On **excerpt**: write a **new** file `artifacts/<stem>-excerpt.md` (do not
+   edit the original). Header: source path + what was kept; then only those
+   pieces. Binary/unexcerptable: markdown excerpt of what mattered, or whole
+   copy if they asked for the file.
+5. For **every** cited file (copied, excerpted, or context-only), add one
+   `# References` bullet: source path, `copied` / `excerpt` / `context-only`,
+   and 1–3 sentences of what was learned. That summary is the durable residue.
+   On `replan-work`, append or refresh those bullets if the same files return.
 
 ## `notes.md` contract
 
 Required file (create at activity birth). Exact headings, this order:
 
-1. `## Software Requirement Definition`
-2. `## Software Design Decisions`
+1. `## Requirement Definition`
+2. `## Design Decisions`
 3. `## User Notes`
 
 If missing on a later planning pass, create it and seed SRD from `# Goal` /
 `# Scope` for user review. Template: [`templates.md`](templates.md).
+If an existing file still has `## Software Requirement Definition` or
+`## Software Design Decisions`, rename those headings in place (content
+unchanged).
 
-### Software Requirement Definition
+### Requirement Definition
 
 Authoritative **goal/definition** of the activity. The skill MUST keep this
 list current as grilling and work reveal requirements, so the user can review
@@ -317,12 +358,11 @@ A list (not a table). Each item:
 Drop or reword items when the user challenges them. A material SRD change
 after approval follows the material-change choice set / `replan-work`.
 
-### Software Design Decisions
+### Design Decisions
 
 Important design choices with the **compelling alternatives** weighed before
-selecting one. Later reference, and the source other skills MUST use when
-writing design documents (big and little choices plus reasoning). Do not keep
-a parallel decision log elsewhere.
+selecting one. Later reference for design write-ups. Do not keep a parallel
+decision log in `activity.md`.
 
 Detailed but crisp — no bloat; skip micro-choices that a reader can rediscover
 from the code.
@@ -346,21 +386,23 @@ nothing to point at. Do not rename an old heading after it has been cited.
 
 The user's free-form area for information useful to the activity. Do **not**
 overwrite or prune it. Read it for intake; promote load-bearing bits into SRD
-or Software Design Decisions instead of editing the user's text away. Agent
+or Design Decisions instead of editing the user's text away. Agent
 may append a short `agent:` line only when the user asked to capture something
 here.
 
 ## Portability
 
-`activity.md` + `journal.md` + `notes.md` (SRD and Software Design Decisions)
+`activity.md` + `journal.md` + `notes.md` (SRD and Design Decisions)
 are the handoff. Assume the next reader is a fresh agent on a different
 machine with no memory of this chat. **User Notes** is extra — the handoff
 must not depend on it.
 
-- Self-contained: inline the context needed to assess and continue. No reliance
-  on chat history, tool state, or "as discussed".
+- Self-contained: inline load-bearing facts in `activity.md` and SRD / Design
+  Decisions. No reliance on chat history, tool state, or "as discussed".
+- Cite files from `# References` and `artifacts/`. No absolute host paths in
+  Goal / Scope / Plan (a source path in `# References` is OK for untracked files).
 - System-agnostic references: repo-relative paths, commands, commit/PR/ticket
-  IDs, and links. No absolute host paths or machine-local assumptions.
+  IDs, and links. No machine-local assumptions.
 - Verifiable progress: milestone evidence must be commands/checks a new session
   can run to confirm state itself (do not trust prose alone).
 - `# Next Steps` names the safest first action a newcomer should take.
@@ -373,9 +415,9 @@ Write files for durability and handoff, not as a live log.
 
 - Update `activity.md` at meaningful checkpoints: scope/design/plan change,
   milestone reached, blocker found, or before pausing/completing.
-- Update `notes.md` **Software Requirement Definition** whenever requirements
+- Update `notes.md` **Requirement Definition** whenever requirements
   are added, dropped, or restated; it must be current before `approve-plan`.
-- Update `notes.md` **Software Design Decisions** when an important design
+- Update `notes.md` **Design Decisions** when an important design
   choice is made (chosen + why + compelling alternatives).
 - Update `activities.md` only when the **Goal** (high-level purpose) changes;
   skip it for minor design/plan edits (see `activities.md`).
@@ -403,6 +445,23 @@ Write files for durability and handoff, not as a live log.
 
 (applies to create, derive, material replan)
 
+### Planning grill
+
+Interview the user relentlessly about every aspect of this plan until reaching
+shared understanding. Walk down each branch of the design tree, resolving
+dependencies between decisions one-by-one. For each question, provide your
+recommended answer.
+
+Ask the questions one at a time.
+
+If a question can be answered by exploring the codebase, explore the codebase
+instead.
+
+After project-fit and intake, run this grill on remaining branches. Do not skip
+it to draft files.
+
+### Required order
+
 - Project-fit-first rule (mandatory, highest priority): before any specific
   grill question, ask how this activity fits the larger project. The user must
   state the problem against the project scope in `.dev-notes/definition.md`.
@@ -410,16 +469,17 @@ Write files for durability and handoff, not as a live log.
   otherwise.
 - Intake rule (mandatory): after project fit, ask for a free-text activity
   scope definition before other detailed grilling.
-- Grill vague/conflicting input: goal, success, scope in/out, constraints,
-  assumptions, risks, interfaces, non-goals, artifacts. Classify each
-  requirement (`end-user-interface` / `internal-behavior` /
-  `external-interface`) and write it into the SRD as it becomes clear.
-- Use `grill-me` skill when attached or when user wants a full design grill.
+- Then Planning grill: goal, success, scope in/out, constraints, assumptions,
+  risks, interfaces, non-goals. Classify each requirement
+  (`end-user-interface` / `internal-behavior` / `external-interface`) and
+  write it into the SRD as it becomes clear.
 - Draft explicit Goal (SRD summary) / Design / Plan / MECE milestones /
-  evidence / Next Steps / References. Record important choices in Software
-  Design Decisions as they are made.
+  evidence / Next Steps / References. Record important choices in Design
+  Decisions as they are made.
 - Capture execution-critical invariants and guardrails in planning.
-- Define knowledge/artifact expectations up front (`knowledge/` tree vs pointers elsewhere).
+- If they pointed at files for context or definition updates, run Context
+  files → activity artifacts (crisp list; they choose; still use uncopied
+  files this session).
 - Self-review for ambiguity and missing evidence before user review.
 
 Required first prompt (project fit, or equivalent wording):
@@ -433,7 +493,7 @@ Required intake prompt (after project fit, or equivalent wording):
 > out-of-scope boundaries, constraints, and what "done" looks like.
 
 If the user already provided equivalent project-fit and scope text in the
-current message, acknowledge it and continue with detailed grill questions.
+current message, acknowledge it and continue with Planning grill.
 
 ## `replan-work`
 
@@ -441,10 +501,11 @@ Use when a major scope change is needed (minor scope edits do not need it).
 
 1. Remind strong model.
 2. Re-run Planning quality bar from the top: project-fit question first, then
-   free-text scope, then detailed grill.
+   free-text scope, then detailed grill. If they cited context files, run
+   Context files → activity artifacts.
 3. Rewrite SRD for the new definition; rewrite `# Scope` and affected
    `activity.md` sections; keep completion/decision history (append new
-   Software Design Decisions; do not delete old ones).
+   Design Decisions; do not delete old ones).
    If the **Goal** / high-level purpose changed, update that one `activities.md`
    entry via `rg` (do not bulk-read the catalog).
 4. If status is not `Planning`, reopen to `Planning` and record the reason in
@@ -463,22 +524,22 @@ Not a replan: this fixes drift within the existing scope. If review surfaces a
 (`create-sibling` / `create-child` / `replan-work`) per the Gating policy.
 
 1. Gather inputs (read-only first):
-   - `activity.md` (full), `notes.md` SRD + Software Design Decisions,
-     enough recent `journal.md`, and **User Notes** if useful.
+   - `activity.md` (full), `notes.md` SRD + Design Decisions, and **User Notes**
+     if useful. Open `journal.md` only if status is `Complete` or the file has
+     entries past `# Journal`.
    - Verify progress independently: run milestone evidence commands/checks and
      inspect repo state. Do not trust prose alone.
 2. Surface findings: claimed vs verified status, done vs remaining milestones,
    drift between files and repo, stale plan/next steps, SRD vs shipped
    behavior, and any open questions in **User Notes**.
 3. Grill only where it helps: if the review finds ambiguity, conflicts, or
-   decisions the user must make, grill the user to resolve them (use `grill-me`
-   when a fuller design grill is warranted). Skip grilling when the picture is
-   already clear.
+   decisions the user must make, grill to resolve them. Skip grilling when the
+   picture is already clear.
 4. Update `activity.md` accordingly: refresh `# Current Design`, `# Current
    Plan`, `# Milestones` (tick/untick with evidence), and `# Next Steps`.
    Sync `# Goal` / `# Scope` from SRD if they drifted. Promote load-bearing
-   **User Notes** into SRD or Software Design Decisions; do not prune SRD,
-   Software Design Decisions, or the user's text.
+   **User Notes** into SRD or Design Decisions; do not prune SRD,
+   Design Decisions, or the user's text.
 5. Do not silently expand scope. For a material change, require the user's
    choice from the material-change choice set before rewriting scope.
    (No `journal.md` update — `self-review` does not append journal.)
@@ -501,19 +562,19 @@ Soft safeguard so nothing changes accidentally while inspecting activity state.
 
 Self-contained rule (mandatory):
 
-Derived `activity.md` + `notes.md` (SRD + Software Design Decisions) must be
+Derived `activity.md` + `notes.md` (SRD + Design Decisions) must be
 resumable without opening source.
 No "see parent" or "continues from" dependency language.
 
 1. Remind strong model.
-2. Read source `activity.md` and its SRD / Software Design Decisions once as
-   input (plus recent journal only if needed).
+2. Read source `activity.md` and its SRD / Design Decisions once as
+   input (plus `journal.md` only if it has entries past `# Journal`).
 3. Project-fit-first, then fresh free-text scope for the derived activity
    (see Planning quality bar).
 4. Run full discovery/grill for new scope (do not inherit fuzziness).
 5. Rewrite all required `activity.md` sections and a fresh `notes.md` SRD for
    the new task; inline required context (no load-bearing source dependency).
-   Software Design Decisions only for this activity (copy a still-applicable
+   Design Decisions only for this activity (copy a still-applicable
    choice inline, not as a pointer).
 6. Fresh `journal.md` scaffold only (`# Journal`); reset metadata
    (`status: Planning`, new slug, ticket/notes/branch). Provenance in
@@ -531,7 +592,7 @@ Optional provenance reference in `# References`:
 
 `derived-from: <slug>` (non-load-bearing only).
 
-## `imported-activity`
+## `import-activity`
 
 Use in a new session when the user brings an `activity.md` + `journal.md`
 (and `notes.md` if present) from another system or agent. Assume no prior
@@ -539,9 +600,10 @@ chat context.
 
 1. Locate the files the user points to; if the slug/path is ambiguous, ask.
    Do not assume they live under this repo's `.dev-notes/activities/`.
-2. Read `activity.md` fully, `notes.md` SRD + Software Design Decisions if
-   present, then enough recent `journal.md` for context.
-   Treat these files as the source of truth (no host-specific assumptions).
+2. Read `activity.md` fully, `notes.md` SRD + Design Decisions if
+   present, and `journal.md` only if it has entries past `# Journal`.
+   Treat these files as the source of **content** (no host-specific assumptions).
+   Do not treat imported `status` as executable on this host.
 3. Independently verify progress against the repo: run milestone evidence
    commands/checks; do not trust prose alone. Note any drift between files and
    actual repo state.
@@ -550,11 +612,13 @@ chat context.
    gaps/drift, and the proposed safest next action from `# Next Steps`.
 5. Set up the activity for this session: place the files under this repo's
    `.dev-notes/activities/<slug>/` if not already there, reconcile any drift
-   into `activity.md` / SRD, and set `status` to `Planning` (or `Approved` if
-   the user immediately approves). Do not append import notes to `journal.md`.
+   into `activity.md` / SRD, and set `status` to `Planning` (this host always
+   re-enters Planning; the user may then `approve-plan`). Do not append import
+   notes to `journal.md`.
    If `notes.md` is missing, create the three sections and seed SRD from
    `# Goal` / `# Scope`. If it exists without the three headings, add them and
-   move leftover body under **User Notes**.
+   move leftover body under **User Notes**. Rename old `## Software …`
+   headings in place if present.
    If `activities.md` has no heading for the slug, append one entry.
 6. Do not start engineering. Wait for `approve-plan`, then `start-building`
    (Execution gate); only then set `status` to `Active` and begin work.
@@ -563,9 +627,10 @@ chat context.
 
 ## Resume protocol (`resume-work`)
 
-1. Read this activity's `activity.md` and `notes.md` SRD + Software Design
-   Decisions (do not auto-open parent/sibling/source or `activities.md`), then
-   enough recent `journal.md` for context. **User Notes** only if needed.
+1. Read this activity's `activity.md` and `notes.md` SRD + Design
+   Decisions (do not auto-open parent/sibling/source or `activities.md`).
+   Open `journal.md` only if status is `Complete` or the file has entries past
+   `# Journal`. **User Notes** only if needed.
 
 2. Output concise resume summary:
    - objective
@@ -615,9 +680,11 @@ Status-specific reminders:
 ## Engineering while focused
 
 - Follow the Update cadence: edit at checkpoints, not on every minor step.
+- If the user points at new files as definition context, run Context files →
+  activity artifacts (ask before copying).
 - If execution reveals a missing invariant/convention that would mislead a
   fresh reader, update `activity.md` before continuing. If it reveals a
-  requirement or an important design choice, update SRD / Software Design
+  requirement or an important design choice, update SRD / Design
   Decisions the same way (material new requirements → material-change choice
   set).
 - Replan anytime:
@@ -649,7 +716,7 @@ Status-specific reminders:
 ## `pause-work`
 
 1. Sync `activity.md` current truth (Design / Plan / Milestones / Next Steps)
-   and `notes.md` SRD / Software Design Decisions if they changed.
+   and `notes.md` SRD / Design Decisions if they changed.
 2. Set `status` to `Paused`.
 3. Put resume context in `activity.md` `# Next Steps` (and `notes` if needed).
 4. Present concise pause summary.
@@ -681,7 +748,7 @@ Status-specific reminders:
      validation commands, safest first edit targets).
 
 5. Set `status` to `Complete`; keep maintenance context needed for future fixes.
-   Keep SRD and Software Design Decisions as-is (later reference / design docs).
+   Keep SRD and Design Decisions as-is (later reference / design docs).
    Do not prune **User Notes**.
 
 6. Append **one** journal entry at the **end** of `journal.md`: project work
@@ -694,9 +761,10 @@ Status-specific reminders:
 
 ## Token economy
 
-- Keep `activity.md`, `journal.md`, and `notes.md` SRD / Software Design
+- Keep `activity.md`, `journal.md`, and `notes.md` SRD / Design
   Decisions lean; they are loaded during resume.
-- Prefer concise bullets; avoid narrative dumps; link paths/artifacts instead.
+- Prefer concise bullets; avoid narrative dumps. Inline load-bearing facts;
+  link `artifacts/` and `# References` for cited files.
 - Delete stale prose when rewriting `activity.md`.
 - Do not load `activities.md` on resume; `rg` one heading if a catalog
   update is required.
