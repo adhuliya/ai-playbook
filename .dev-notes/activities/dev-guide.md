@@ -1,12 +1,14 @@
 # .dev-notes/activities -- Dev-Guide
 
-`workon` activity folders and context for agent sessions.
+`workon` activity folders and context for agent sessions. Top-level siblings
+only (no `activities/<child>/`).
 
 ## Notes
 
 - `activities.md` is a high-level catalog. Slice with `rg '^## <slug>:'`; do not bulk-read. One-liner per activity.
 - Per-activity `notes.md`: `Requirement Definition` (activity definition), `Design Decisions` (chosen + alternatives), `User Notes` (user-owned).
 - Cited context files: ask with a list (whole copy vs excerpt); chosen files go in `<slug>/artifacts/` (flat). Uncopied files still inform define/design/plan; every cited file gets a `# References` learned bullet.
+- Activity `journal.md` (`<slug>/journal.md`): append on `pause-work` / `resume-work` / `mark-completed`. Compact with `compact-journal`.
 
 ## Artifacts
 

@@ -4,20 +4,22 @@
 
 ```text
 .dev-notes/activities/
-    activities.md           # high-level catalog (one-liner per activity)
+    activities.md
     <slug>/
         activity.md
         journal.md
-        notes.md                # requirement definition + design decisions + user notes
-        artifacts/              # optional; flat snapshots/excerpts
-        activities/<child>/     # optional children
+        notes.md
+        artifacts/              # optional; flat
 ```
 
-**`artifacts/`:** `.dev-notes/activities/<slug>/artifacts/` — flat; whole copies and `<stem>-excerpt.md` files the user chose.
+No child activity directories. Siblings are top-level slugs.
+
+**`artifacts/`:** whole copies as `<basename>`; excerpts as `<stem>-excerpt.md`
+(header = source path + what was kept).
 
 ## activity.md
 
-Keep the metadata table in the **first ~10 lines** (title + table) so listing stays greppable.
+Metadata table in the **first ~10 lines** (title + table) so listing stays greppable.
 
 ```markdown
 # <Human Title>
@@ -36,32 +38,30 @@ Keep the metadata table in the **first ~10 lines** (title + table) so listing st
 
 # Scope
 
-<One or two human-readable paragraphs: the whole activity scope and how it fits
-the project. Set after initial grilling; near-fixed afterward. Major change =
-`replan-work`.>
+<One or two paragraphs: whole activity scope and how it fits the project.
+Set after initial grilling; near-fixed. Major in-flight change = `replan-work`.>
 
 # Background and Special Notes
 
-<Context plus durable global notes. Lifecycle and resume hints live here or in
-`# Next Steps`, not in `journal.md`.>
+<Context plus durable global notes.>
 
 # Current Design
 
-<Latest agreed design only.>
+<Latest agreed design only. After `mark-completed`, shipped handoff.>
 
 # Current Plan
 
-<Approach currently believed correct. Rewrite as understanding evolves.>
+<Approach currently believed correct. On Complete-reopen: legacy verify, then
+delta steps starting at the new requirement.>
 
 # Milestones
 
-MECE outcomes. Each embeds concrete evidence (one or more commands/checks).
-Up to ~10 short lines per milestone.
+MECE outcomes. Each embeds concrete evidence. Keep checked rows on reopen;
+append new; mark removed work `superseded`.
 
 1. [ ] <Outcome A>
    - evidence:
      - `<command or check>`
-     - `<optional second command>`
 
 2. [ ] <Outcome B>
    - evidence:
@@ -76,48 +76,69 @@ Up to ~10 short lines per milestone.
 
 - <docs, specs, commits, issues, related slugs, …>
 - `path/to/input` — context-only | copied (`artifacts/<name>`) | excerpt (`artifacts/<stem>-excerpt.md`)
-  Learned: <1–3 sentences of what this file contributed to define/design/plan>
+  Learned: <1–3 sentences>
+- `derived-from: <parent-slug>` — siblings only; non-load-bearing
 ```
 
 ## journal.md
 
-Written **only** on `complete-work`: append **one** entry at the **end** of the
-file after `status` → `Complete`. Prior entries are **read-only**. No dates.
+This activity's `<slug>/journal.md` only. Write on `pause-work`, `resume-work`,
+and `mark-completed`. Append at end. Read-only except `compact-journal`.
+No dates unless asked. Recap cap ~8–12 lines.
 
-**Content:** project/engineering work only (what shipped, paths, behavior,
-decisions, tradeoffs, lessons, accepted gaps). **Not** activity status or
-lifecycle (no approvals, pauses, reopens, resume hints — use `activity.md` and
-`notes.md`).
-
-Until the first `complete-work`, the file is only:
+Until the first `pause-work` / `resume-work` / `mark-completed`:
 
 ```markdown
 # Journal
 ```
 
-### `complete-work` entry shape
-
-Heading names the **work slice** (not the command or status).
+### Pause / resume recap (~8–12 lines)
 
 ```markdown
-## <Short work title>
+## Pause (Active → Paused)
 
-<Shipped outcomes, technical decisions, discoveries, accepted gaps. Repo paths
-and evidence pointers; no status narration.>
+- why: <one line>
+- done: <1–3 bullets>
+- next: <single start step>
+- watch: <one blocker or risk>
 ```
 
-### derive provenance (not journal)
+```markdown
+## Resume (Paused → Active)
 
-Put in derived `activity.md` `# References`:
+- done: <1–3 bullets>
+- next: <single start step>
+```
 
-`derived-from: <slug>` — non-load-bearing; journal stays scaffold until first
-`complete-work` on the derived activity.
+```markdown
+## Resume (Complete → Planning)
+
+- why: <the understood issue>
+- done: <what the delta is>
+- next: <start step of new implementation>
+- watch: <legacy verify, or omit>
+```
+
+### `mark-completed` entry
+
+Heading names the **work slice**. Body is shipped outcomes, paths, decisions,
+lessons, accepted gaps — plus the tick `→ Complete`.
+
+```markdown
+## <Short work title> (Active → Complete)
+
+<Shipped outcomes, technical decisions, discoveries, accepted gaps.
+Repo paths and evidence pointers.>
+```
+
+### Sibling provenance (not journal)
+
+In derived `activity.md` `# References`: `derived-from: <slug>`.
+Parent gets no sibling pointer. Sibling journal starts as `# Journal` only.
 
 ## activities.md
 
-`.dev-notes/activities/activities.md`. Create lazily. Append-only for new
-activities; never bulk-read — `rg '^## <slug>:'`. No tables. One-liner per
-activity.
+Create lazily. Append-only for new activities. Never bulk-read — `rg '^## <slug>:'`.
 
 ```markdown
 # Activities
@@ -127,13 +148,9 @@ High-level catalog. Details live in each activity folder.
 ## marshal: Marshal playbook sync gaps
 
 Harden playbook/target sync for machine registry, ignores, syncmap, and nested-git guide handling.
-
-## parent-slug/child-slug: Child title
-
-One-liner high-level purpose. Update only if the Goal changes.
 ```
 
-On create/derive/import, append (do not Read the whole file):
+On create / derive / import (do not Read the whole file):
 
 ```bash
 printf '\n## %s: %s\n\n%s\n' "$slug" "$title" "$para" >> .dev-notes/activities/activities.md
@@ -141,21 +158,18 @@ printf '\n## %s: %s\n\n%s\n' "$slug" "$title" "$para" >> .dev-notes/activities/a
 
 ## notes.md
 
-Required. Exact headings in this order. **SRD** (`## Requirement Definition`) is
-the activity definition (keep current for review before `approve-plan`).
-**Design Decisions** is the decision log. **User Notes** is user-owned — do not
-overwrite.
+Exact headings, this order.
 
 ```markdown
 # Notes
 
-## Requirement Definition
+## Activity Requirement Definition
 
 ### <title>
 - kind: end-user-interface | internal-behavior | external-interface
 - <description>
 
-## Design Decisions
+## Activity Design Decisions
 
 ### <decision title>
 - chosen: <what>
@@ -170,37 +184,18 @@ overwrite.
 ```
 
 `kind` is exactly one of `end-user-interface`, `internal-behavior`,
-`external-interface` (contracts with other software — API/ABI/link/protocol).
-
-On a superseding design choice, set `replaces:` to the old `###` title and leave
-the old entry unchanged. Omit `replaces:` on a first decision.
-
-Create at activity birth (empty sections are fine until grill fills SRD).
-If an older activity has unstructured `notes.md`, add the three headings and
-move leftover body under **User Notes**. Rename `## Software Requirement
-Definition` / `## Software Design Decisions` in place if those old headings
-remain.
-
-## artifacts/
-
-`.dev-notes/activities/<slug>/artifacts/` — flat, lazy. Whole copy:
-`<basename>`. Portion: `<stem>-excerpt.md` (header = source path + what was
-kept; then the pieces).
+`external-interface`. Omit `replaces:` on a first decision.
 
 ## List output (agent → user)
-
-Present a markdown table, one row per activity (from first ~10 lines of each
-`activity.md`), e.g.:
 
 ```markdown
 | title | status | slug | branch | notes |
 |---|---|---|---|---|
 | Add export endpoint | Active | add-export-endpoint | feature/add-export-endpoint | waiting on API review |
-| Child title | Paused | parent/child | none | blocked on fixture data |
 ```
 
 ## Details output (no resume)
 
 1. Full path to `activity.md`
 2. First ~20 lines of that file
-3. Stop — user opens the file for the rest
+3. Stop

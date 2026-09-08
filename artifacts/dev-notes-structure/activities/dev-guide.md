@@ -1,10 +1,12 @@
 # .dev-notes/activities -- Dev-Guide
 
-`workon` activity folders for a synced project.
+`workon` activity folders for a synced project. Top-level siblings only
+(no `activities/<child>/`).
 
 ## Notes
 
-- (none yet)
+- Catalog: `activities.md` — `rg '^## <slug>:'`; do not bulk-read.
+- Activity `journal.md` lives at `<slug>/journal.md`.
 
 ## Artifacts
 
