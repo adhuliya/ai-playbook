@@ -435,6 +435,9 @@ Parent stays `Complete` until the choice is clear. **Do not journal yet.**
 ## Engineering while focused
 
 - Checkpoints only (Update cadence).
+- Planning vocabulary stays out of shipped work: no `DC1`/`DC2`-style labels,
+  milestone IDs, or the activity slug in implementation code, comments, or
+  identifiers. Such labels are meaningless outside the activity files.
 - New definition files → Context files (ask before copy).
 - Missing invariant that would mislead a fresh reader → update `activity.md`.
   New requirement or important choice → ARD / Design Decisions. Material new
