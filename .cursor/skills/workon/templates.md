@@ -34,7 +34,7 @@ Metadata table in the **first ~10 lines** (title + table) so listing stays grepp
 
 # Goal
 
-<Short summary of notes.md Requirement Definition. SRD is authoritative.>
+<Short summary of notes.md Requirement Definition. ARD is authoritative.>
 
 # Scope
 
@@ -56,7 +56,7 @@ delta steps starting at the new requirement.>
 
 # Milestones
 
-MECE outcomes. Each embeds concrete evidence. Keep checked rows on reopen;
+MECE outcomes. Each embeds concrete evidence. Keep checked items on reopen;
 append new; mark removed work `superseded`.
 
 1. [ ] <Outcome A>
@@ -114,15 +114,16 @@ Until the first `pause-work` / `resume-work` / `mark-completed`:
 ## Resume (Complete → Planning)
 
 - why: <the understood issue>
-- done: <what the delta is>
+- delta: <what the new work is>
 - next: <start step of new implementation>
 - watch: <legacy verify, or omit>
 ```
 
 ### `mark-completed` entry
 
-Heading names the **work slice**. Body is shipped outcomes, paths, decisions,
-lessons, accepted gaps — plus the tick `→ Complete`.
+Heading names the **work slice** and carries the transition tick
+(`(<from> → Complete)`). Body is shipped outcomes, paths, decisions,
+lessons, accepted gaps — no separate tick line.
 
 ```markdown
 ## <Short work title> (Active → Complete)
@@ -163,13 +164,13 @@ Exact headings, this order.
 ```markdown
 # Notes
 
-## Activity Requirement Definition
+## Requirement Definition
 
 ### <title>
 - kind: end-user-interface | internal-behavior | external-interface
 - <description>
 
-## Activity Design Decisions
+## Design Decisions
 
 ### <decision title>
 - chosen: <what>
@@ -193,6 +194,8 @@ Exact headings, this order.
 |---|---|---|---|---|
 | Add export endpoint | Active | add-export-endpoint | feature/add-export-endpoint | waiting on API review |
 ```
+
+`ticket` is omitted on purpose (token economy); include it if the user asks.
 
 ## Details output (no resume)
 

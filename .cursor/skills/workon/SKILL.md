@@ -33,7 +33,8 @@ only — no child activities.
   paths, tool state, or local-only assumptions.
 - **No micro-edits:** update at checkpoints (see Update cadence).
 - Do **not** bulk-read `activities.md`; `rg '^## <slug>:'`. Update that catalog
-  only when the activity **Goal** changes.
+  by appending on create / derive / import and by editing only when the
+  activity **Goal** changes.
 
 ## Gating policy
 
@@ -111,7 +112,8 @@ Resume headings use `Resume (<from> → <to>)`. No dates unless asked. No
 milestone tables, ARD dumps, or plan copies.
 
 **`mark-completed`:** thicker **project-work** write-up (what shipped, paths,
-decisions, gaps) plus the completion tick (`<from> → Complete`). Not lifecycle
+decisions, gaps). The heading carries the completion tick
+(`## <work title> (<from> → Complete)`); no separate tick line. Not lifecycle
 novels.
 
 **`resume-work` after `Complete`:** understand the issue first (see Resume).
@@ -129,13 +131,13 @@ Until the first journal write, the file is `# Journal` only.
 | `approve-plan` | Lock planning; no engineering yet. |
 | `start-building` | Begin implementation from `Approved`. |
 | `pause-work` | Pause protocol (allowed in Planning). |
-| `resume-work` | Unpause, or reopen `Complete` (see Resume). |
+| `resume-work` | Unpause / unblock, or reopen `Complete` (see Resume). |
 | `mark-completed` | Completion handoff + journal + cleanup confirm. |
 | `replan-work` | In-flight major scope change (same slug). |
 | `create-sibling` | New top-level sibling (`Planning`). |
 | `self-review` | Reconcile plan vs repo; no status change. |
 | `query-work` / `no-query-work` | Session read-only guard (not a status). |
-| `import-activity` | Adopt files; this host starts in `Planning`. |
+| `import-activity` | Adopt files; this host starts in `Planning` (imported `Complete` stays `Complete`). |
 | `compact-journal` | Rewrite journal to ~12 headings (confirm first). |
 
 ## Command map
@@ -153,7 +155,7 @@ Until the first journal write, the file is `# Journal` only.
 | `create-sibling` | gated | new `Planning` sibling |
 | `self-review` | gated | files updated, status unchanged |
 | `query-work` / `no-query-work` | gated | session flag |
-| `import-activity` | gated | adopt files; `Planning` |
+| `import-activity` | gated | adopt files; `Planning` (`Complete` kept) |
 | `compact-journal` | gated | journal rewritten in place |
 
 Preferred lifecycle: `Planning → Approved → Active → Complete`, with optional
@@ -179,7 +181,7 @@ Design, Current Plan, Milestones, Next Steps, References.
 - **Current Design:** execution handoff (invariants, boundaries, evidence
   signals). Chosen-vs-alternatives live only in Design Decisions.
 - **Milestones:** MECE outcomes with concrete evidence checks. On reopen, keep
-  checked rows; append new ones; mark removed work `superseded` — do not delete.
+  checked items; append new ones; mark removed work `superseded` — do not delete.
 - **References:** one bullet per cited planning file (source path, `copied` /
   `excerpt` / `context-only`, 1–3 sentences learned).
 
@@ -386,7 +388,8 @@ No prior chat context. Do not journal the import.
 4. Orientation: ARD, Scope, design, claimed vs verified, remaining work, safest
    next action from `# Next Steps`.
 5. Place under `.dev-notes/activities/<slug>/` if needed. Reconcile drift into
-   `activity.md` / ARD. Set `status` to `Planning`. Seed `notes.md` if missing.
+   `activity.md` / ARD. Set `status` to `Planning` — unless the imported status
+   is `Complete`, which stays `Complete`. Seed `notes.md` if missing.
    Append catalog entry if no heading.
 6. Wait for Execution gate. If import is `Complete` and they want new work,
    apply Resume (`Complete`) before engineering.
@@ -404,7 +407,8 @@ No prior chat context. Do not journal the import.
 3. Wait for explicit confirmation before engineering.
 4. Then append the resume recap (Journal policy).
 5. Reminders: `Planning` / replan → strong model; `Approved` → ask
-   `start-building`; `Blocked` → restate blocker.
+   `start-building`; `Blocked` → restate the blocker and confirm it is
+   resolved before clearing back to the prior status.
 
 ### `Complete`
 
@@ -463,9 +467,12 @@ If `Complete`: no-op (see Resume). Otherwise:
 
 ## `Blocked` vs `Paused`
 
-- `Paused`: intentional stop.
-- `Blocked`: cannot continue; one-line blocker in `notes`, details in
-  `activity.md` / User Notes.
+- `Paused`: intentional stop via `pause-work`. `resume-work` restores the
+  pre-pause status (recorded in the pause recap heading).
+- `Blocked`: cannot continue. The agent MAY set it at a checkpoint when work
+  is stuck; record a one-line blocker **and the prior status** in `notes`,
+  details in `activity.md` / User Notes. No journal write on entering
+  `Blocked`. `resume-work` clears it back to that prior status.
 
 ## `mark-completed`
 
