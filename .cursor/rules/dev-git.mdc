@@ -13,7 +13,7 @@ Apply when the user asks to commit.
 
 1. **Author:** Current user (repo/global git identity). Never agent as author/co-author.
 2. **Title:** One line, ~50 chars. Prefix 1–3 module tags in `[brackets]` from the diff (e.g. `[build]`, `[clang]`). General area names; no fixed global list.
-3. **Body:** Short paragraph or two (what/why). Hard limit 30–500 words. Cover all changes; bullets when appropriate.
+3. **Body:** Short paragraph or two (what/why). Target ≤200 words; hard limit 30–250. Cover all changes concisely; bullets when appropriate. Prefer brevity over exhaustive detail.
 4. **Gate:** After staging, list staged files and stop. Commit only on `approve-commit`. Until then: restage per user; no commit.
 
 ## Session temporary files
