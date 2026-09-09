@@ -231,6 +231,24 @@ Append when a real choice is made. Do not delete or rewrite history. Supersede
 with a new entry and `replaces: <old heading title>`. Do not rename a cited
 heading. Skip micro-choices recoverable from code.
 
+Keep each entry under ~200 words wherever possible; go longer only when the
+reasoning genuinely needs it.
+
+Every entry carries a `level:` — exactly one of:
+
+- `design-choice`: affects the user interface or externally visible behavior
+  (anything an ARD `kind` of `end-user-interface` / `external-interface` would
+  cover). These are the entries a future design document is built from.
+- `major-implementation-detail`: internal, but gets individual mention in that
+  design document (internals section). Test: a fresh maintainer would make a
+  costly mistake without knowing it, or reversing it would ripple across
+  multiple components.
+- `implementation-detail`: internal choice; summarized (not copied) when that
+  design document is written.
+
+When unsure between adjacent levels, default to the higher one and let the
+user downgrade.
+
 ### User Notes
 
 Do not overwrite or prune. Read for intake; promote load-bearing bits into ARD

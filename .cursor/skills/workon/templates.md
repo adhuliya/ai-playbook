@@ -173,6 +173,7 @@ Exact headings, this order.
 ## Design Decisions
 
 ### <decision title>
+- level: design-choice | major-implementation-detail | implementation-detail
 - chosen: <what>
 - why: <compelling reason>
 - alternatives:
@@ -185,7 +186,13 @@ Exact headings, this order.
 ```
 
 `kind` is exactly one of `end-user-interface`, `internal-behavior`,
-`external-interface`. Omit `replaces:` on a first decision.
+`external-interface`. `level` is exactly one of `design-choice`
+(affects user interface or external behavior; feeds a future design document),
+`major-implementation-detail` (internal but individually mentioned in that
+document — costly to not know, or reversal ripples across components), or
+`implementation-detail` (internal; summarized when that document is written).
+Keep each decision entry under ~200 words wherever possible. Omit
+`replaces:` on a first decision.
 
 ## List output (agent → user)
 
