@@ -7,6 +7,8 @@
 
 - Catalog: `activities.md` — `rg '^## <slug>:'`; do not bulk-read.
 - Activity `journal.md` lives at `<slug>/journal.md`.
+- Per-activity `notes.md` headings: Requirement Definition, Design Decisions, Conventions, User Notes.
+- Never `git add` or commit `<slug>/artifacts/verify-plan/` or `<slug>/artifacts/bg/`.
 
 ## Artifacts
 
@@ -14,4 +16,4 @@
 |------|-------------|
 | `.dev-notes/activities/` | Per-activity working context |
 | `.dev-notes/activities/activities.md` | High-level catalog (heading + short para per activity); create lazily via `workon` |
-| `.dev-notes/activities/<slug>/artifacts/` | Optional flat context snapshots/excerpts |
+| `.dev-notes/activities/<slug>/artifacts/` | Context copies at the root; ephemeral `verify-plan/` and `bg/` |

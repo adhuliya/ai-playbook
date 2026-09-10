@@ -9,13 +9,15 @@
         activity.md
         journal.md
         notes.md
-        artifacts/              # optional; flat
+        artifacts/              # optional; copies flat; verify-plan/ and bg/ reserved
 ```
 
 No child activity directories. Siblings are top-level slugs.
 
-**`artifacts/`:** whole copies as `<basename>`; excerpts as `<stem>-excerpt.md`
-(header = source path + what was kept).
+**`artifacts/`:** whole copies as `<basename>` at the root; excerpts as
+`<stem>-excerpt.md` (header = source path + what was kept). Reserved
+subdirs (ephemeral, never git-add): `verify-plan/` (`critic-a.md`,
+`critic-b.md`, `synthesis.md`) and `bg/`.
 
 ## activity.md
 
@@ -167,7 +169,7 @@ Exact headings, this order.
 ## Requirement Definition
 
 ### <title>
-- kind: end-user-interface | internal-behavior | external-interface
+- kind: end-user-interface | software-interface | internal-behavior
 - <description>
 
 ## Design Decisions
@@ -180,19 +182,35 @@ Exact headings, this order.
   - <alt>: <why not>
 - replaces: <old decision title>
 
+## Conventions
+
+### <short title>
+- <2–5 bullets: the rule>
+
 ## User Notes
 
 <User free-form information for this activity.>
 ```
 
-`kind` is exactly one of `end-user-interface`, `internal-behavior`,
-`external-interface`. `level` is exactly one of `design-choice`
-(affects user interface or external behavior; feeds a future design document),
+`kind` is exactly one of `end-user-interface` (humans), `software-interface`
+(contract other software must honor: in-repo modules/libraries, API, ABI, FFI,
+protocol; old notes may still say `external-interface`), or
+`internal-behavior`. `level` is exactly one of `design-choice`
+(affects user interface or a software-facing contract; feeds a future design document),
 `major-implementation-detail` (internal but individually mentioned in that
 document — costly to not know, or reversal ripples across components), or
 `implementation-detail` (internal; summarized when that document is written).
-Keep each decision entry under ~200 words wherever possible. Omit
-`replaces:` on a first decision.
+Keep each decision entry under ~200 words as a hard max; prefer a few short
+bullets. Omit `replaces:` on a first decision.
+
+Conventions are binding and living: 2–5 short bullets per named rule. They
+take precedence over project/repo conventions and rules for this activity
+(workon hard constraints, safety, and git safety still win). Rewrite in place
+when the user asks or a newly confirmed rule contradicts or tightens that
+entry. Mark `superseded` to drop; do not delete. Write only user-stated or
+confirmed rules. `replaces:` only when splitting or renaming.
+
+Agent-written sections use the **Prose density** bar in `SKILL.md` (not User Notes).
 
 ## List output (agent → user)
 
