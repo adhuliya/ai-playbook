@@ -8,6 +8,7 @@
 - Catalog: `activities.md` — `rg '^## <slug>:'`; do not bulk-read.
 - Activity `journal.md` lives at `<slug>/journal.md`.
 - Per-activity `notes.md` headings: Requirement Definition, Design Decisions, Conventions, User Notes.
+- Milestone evidence includes focused tests per outcome and e2e on the last milestone.
 - Never `git add` or commit `<slug>/artifacts/verify-plan/` or `<slug>/artifacts/bg/`.
 
 ## Artifacts

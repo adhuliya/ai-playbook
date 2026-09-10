@@ -58,16 +58,21 @@ delta steps starting at the new requirement.>
 
 # Milestones
 
-MECE outcomes. Each embeds concrete evidence. Keep checked items on reopen;
-append new; mark removed work `superseded`.
+MECE outcomes. Apply **Test evidence** in `SKILL.md`. Keep checked items on
+reopen; append new; mark removed work `superseded`.
 
 1. [ ] <Outcome A>
+   - tests:
+     - <case>: <what it asserts>
    - evidence:
-     - `<command or check>`
+     - `<test command>`
 
-2. [ ] <Outcome B>
+2. [ ] <Outcome B — last is e2e confirmation of the Goal>
+   - tests:
+     - e2e <path>: <what it asserts>
    - evidence:
-     - `<command or check>`
+     - `<e2e command>`
+     - fake (if `software-interface` peer is not live): `<test-double path>`
 
 # Next Steps
 

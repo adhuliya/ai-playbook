@@ -82,7 +82,9 @@ not journal. You MAY Read a path the plan cites. No extra repo walk.
 
 **Rubric:** contradictions; missing evidence; over/under-scope; unmade
 decisions; fresh-agent resume holes; steps that cannot run as written;
-conventions the plan ignores or fights.
+conventions the plan ignores or fights; milestone without focused test
+cases; last milestone without e2e; `software-interface` with no test double
+when the peer cannot run live.
 
 Return **only** this file body:
 

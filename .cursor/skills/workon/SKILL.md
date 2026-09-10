@@ -32,6 +32,7 @@ Activity manager. Records must stay resumable months later.
   Decisions + Conventions) must let a fresh agent continue with no chat
   memory, absolute host paths, tool state, or local-only assumptions.
 - Agent-written activity prose: apply **Prose density**.
+- Milestone tests and completion e2e: apply **Test evidence**.
 - Sub-agents: apply **Background sub-agents**. Never block on a Task.
 - **No micro-edits:** update at checkpoints (see Update cadence).
 - Do **not** bulk-read `activities.md`; `rg '^## <slug>:'`. Update that catalog
@@ -193,7 +194,7 @@ Design, Current Plan, Milestones, Next Steps, References.
   Major in-flight change → `replan-work` and ARD rewrite.
 - **Current Design:** execution handoff (invariants, boundaries, evidence
   signals). Chosen-vs-alternatives live only in Design Decisions.
-- **Milestones:** MECE outcomes with concrete evidence checks. On reopen, keep
+- **Milestones:** MECE outcomes. Apply **Test evidence**. On reopen, keep
   checked items; append new ones; mark removed work `superseded` — do not delete.
 - **References:** one bullet per cited planning file (source path, `copied` /
   `excerpt` / `context-only`, 1–3 sentences learned).
@@ -320,9 +321,29 @@ Conventions. User Notes are extra — handoff must not depend on them.
 - Inline load-bearing facts. No "as discussed".
 - Repo-relative paths, commands, commit/PR/ticket IDs. No host paths in Goal /
   Scope / Plan (source path in References is OK for untracked files).
-- Milestone evidence must be commands/checks a new session can run.
+- Milestone evidence must be commands/checks a new session can run. Apply
+  **Test evidence**.
 - `# Next Steps` names the safest first action.
 - Prefer rediscovering fine-grained progress from repo, tests, and evidence.
+
+## Test evidence
+
+Planning, building, `self-review`, `verify-plan`, `mark-completed`.
+
+- **Per milestone:** focused tests for that outcome only. List cases neatly
+  (happy path, edges, errors that belong here). Do not hang the whole suite
+  off every milestone.
+- **Last milestone** (or a dedicated final one): one or more **end-to-end**
+  tests that confirm the Goal as a whole. `mark-completed` MUST NOT proceed
+  without that e2e evidence unless the user explicitly drops it (reason in
+  `activity.md`).
+- **`software-interface` peers you cannot run live:** emulate. Smallest
+  in-repo test double / throwaway fake that implements the concerned
+  interface. Reuse the repo's test-double pattern if one exists. Ship it
+  with the tests so a fresh agent can run e2e. Not activity `artifacts/`
+  only. Not a second product.
+- Evidence bullets name the runnable command and the case list (**Prose
+  density**). Write tests as each milestone is implemented.
 
 ## Prose density
 
@@ -339,7 +360,8 @@ full sentences.
   normal sentence.
 - ARD: title + `kind` + 1–3 short bullets.
 - Design Decision: required fields + short bullets (~200 words hard max).
-- Plan / milestones: numbered outcomes and checks, not paragraphs.
+- Plan / milestones: numbered outcomes, focused test cases, and checks — not
+  paragraphs.
 - Conventions: 2–5 short bullets per named rule.
 
 ## Background sub-agents
@@ -392,7 +414,8 @@ answer, explore the repo instead of asking. Do not skip grilling to draft files.
    interview here).
 4. If they cited files, run Context files.
 5. Draft Goal (ARD summary) / Design / Plan / MECE milestones / evidence /
-   Next Steps / References. Self-review before user review.
+   Next Steps / References. Each milestone lists focused test cases; the last
+   names e2e (and any interface fake). Self-review before user review.
 
 Required project-fit prompt (or equivalent):
 
@@ -457,7 +480,8 @@ found → stop and apply **Material-change**. No journal write.
 1. Read `activity.md`, ARD + Design Decisions + Conventions; User Notes if
    useful. Open `journal.md` only if it has entries past `# Journal`. Insert
    `## Conventions` before `## User Notes` if missing.
-2. Verify progress with milestone evidence / repo inspection. Do not trust prose.
+2. Verify progress with milestone evidence / repo inspection. Apply **Test
+   evidence**. Do not trust prose.
 3. Grill only where findings are ambiguous.
 4. Refresh Design / Plan / Milestones / Next Steps; sync Goal / Scope from ARD.
    Promote load-bearing User Notes; do not prune ARD, decisions, conventions,
@@ -576,6 +600,8 @@ Parent stays `Complete` until the choice is clear. **Do not journal yet.**
 - In-flight material change: require `replan-work` or `create-sibling` before
   state changes. Engineer only after reviewed planning + Execution gate.
 - Suggest `create-sibling` when work is independently durable.
+- Apply **Test evidence** while building (focused tests per milestone; e2e
+  before `mark-completed`; interface fakes in the test tree).
 
 ## `start-building`
 
@@ -594,7 +620,9 @@ Parent stays `Complete` until the choice is clear. **Do not journal yet.**
 ## `approve-plan`
 
 1. Planning outputs written and reviewed; ARD current and challengeable. Empty,
-   stale, or unreviewed ARD → back to file review; do not approve.
+   stale, or unreviewed ARD → back to file review; do not approve. Last
+   milestone must name e2e (and any interface fake) per **Test evidence**;
+   missing → back to file review.
 2. If this session has not run `verify-plan`, remind once that it is available;
    then honor `approve-plan`. Do not require it.
 3. Set `status` to `Approved`.
@@ -645,7 +673,8 @@ If `Complete`: no-op (see Resume). Otherwise:
 ## `mark-completed`
 
 1. Milestones complete or explicitly dropped (reason in `activity.md`). Verify
-   evidence when possible, or ask the user to confirm.
+   evidence when possible, or ask the user to confirm. Apply **Test evidence**:
+   no `Complete` without named, runnable e2e unless the user drops it.
 2. Rewrite `activity.md` as a maintenance handoff:
    - **Current Design:** shipped behavior, touched paths, must-not-break invariants.
    - **Milestones:** checked/dropped with evidence commands or artifact pointers.

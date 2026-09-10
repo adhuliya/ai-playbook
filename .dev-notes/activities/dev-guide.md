@@ -9,6 +9,7 @@ only (no `activities/<child>/`).
 - Per-activity `notes.md`: `Requirement Definition` (activity definition), `Design Decisions` (chosen + alternatives), `Conventions` (binding, living), `User Notes` (user-owned).
 - Cited context files: ask with a list (whole copy vs excerpt); chosen files go in `<slug>/artifacts/` (flat root). Uncopied files still inform define/design/plan; every cited file gets a `# References` learned bullet. Ephemeral `verify-plan/` and `bg/` subdirs are not context copies. Never `git add` or commit those two subdirs.
 - Activity `journal.md` (`<slug>/journal.md`): append on `pause-work` / `resume-work` / `mark-completed`. Compact with `compact-journal`.
+- Milestone evidence: focused tests per outcome; last milestone has runnable e2e. `software-interface` peers that cannot run live get an in-repo test double.
 
 ## Artifacts
 
