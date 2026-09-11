@@ -7,9 +7,9 @@
 
 - Catalog: `activities.md` — `rg '^## <slug>:'`; do not bulk-read.
 - Activity `journal.md` lives at `<slug>/journal.md`.
-- Per-activity `notes.md` headings: Requirement Definition, Design Decisions, Conventions, User Notes.
+- Per-activity notes: `requirements.md`, `design-choices.md`, `conventions.md` (rules + Setup), `user-notes.md`. Legacy `notes.md` splits on first `workon` touch.
 - Milestone evidence includes focused tests per outcome and e2e on the last milestone.
-- Never `git add` or commit `<slug>/artifacts/verify-plan/` or `<slug>/artifacts/bg/`.
+- Reserved artifacts `verify-plan/` (`critic-negative.md`, `critic-positive.md`, `synthesis.md`; optional slices), `bg/`, `self-review/`, `self-review.md` are committable; default-delete at `mark-completed` after confirm.
 
 ## Artifacts
 
@@ -17,4 +17,4 @@
 |------|-------------|
 | `.dev-notes/activities/` | Per-activity working context |
 | `.dev-notes/activities/activities.md` | High-level catalog (heading + short para per activity); create lazily via `workon` |
-| `.dev-notes/activities/<slug>/artifacts/` | Context copies at the root; ephemeral `verify-plan/` and `bg/` |
+| `.dev-notes/activities/<slug>/artifacts/` | Context copies at the root; reserved `verify-plan/`, `bg/`, `self-review/`, `self-review.md` |

@@ -1,5 +1,8 @@
 # workon templates
 
+Shapes only. Policy: [`SKILL.md`](SKILL.md) (**Named policy** headings).
+Sequences: [`commands.md`](commands.md). Do not copy policy here.
+
 ## Directory layout
 
 ```text
@@ -8,16 +11,24 @@
     <slug>/
         activity.md
         journal.md
-        notes.md
-        artifacts/              # optional; copies flat; verify-plan/ and bg/ reserved
+        requirements.md
+        design-choices.md
+        conventions.md
+        user-notes.md
+        artifacts/              # copies flat; reserved: verify-plan/, bg/, self-review/
 ```
 
 No child activity directories. Siblings are top-level slugs.
 
 **`artifacts/`:** whole copies as `<basename>` at the root; excerpts as
 `<stem>-excerpt.md` (header = source path + what was kept). Reserved
-subdirs (ephemeral, never git-add): `verify-plan/` (`critic-a.md`,
-`critic-b.md`, `synthesis.md`) and `bg/`.
+(committable; delete only at `mark-completed` cleanup after confirm):
+`verify-plan/` (`critic-negative.md`, `critic-positive.md`, `synthesis.md`;
+optional `negative/`, `positive/`, `synth/` slices), `bg/` (optional
+`<stem>/` slices next to `<stem>.md`), `self-review/` (`env.md`,
+`milestone-<n>.md`, `critic-a.md`, `critic-b.md`; optional `env/`,
+`milestone-<n>/`, `a/`, `b/`, `synth/` slices), and `self-review.md`. Do
+not use `self-review.md` as a cited-copy name.
 
 ## activity.md
 
@@ -36,7 +47,7 @@ Metadata table in the **first ~10 lines** (title + table) so listing stays grepp
 
 # Goal
 
-<Short summary of notes.md Requirement Definition. ARD is authoritative.>
+<Short summary of requirements.md. ARD is authoritative.>
 
 # Scope
 
@@ -89,11 +100,7 @@ reopen; append new; mark removed work `superseded`.
 
 ## journal.md
 
-This activity's `<slug>/journal.md` only. Write on `pause-work`, `resume-work`,
-and `mark-completed`. Append at end. Read-only except `compact-journal`.
-No dates unless asked. Recap cap ~8–12 lines.
-
-Until the first `pause-work` / `resume-work` / `mark-completed`:
+Write-on and caps: **Journal policy** in `SKILL.md`. Until the first write:
 
 ```markdown
 # Journal
@@ -139,14 +146,14 @@ lessons, accepted gaps — no separate tick line.
 Repo paths and evidence pointers.>
 ```
 
-### Sibling provenance (not journal)
-
-In derived `activity.md` `# References`: `derived-from: <slug>`.
-Parent gets no sibling pointer. Sibling journal starts as `# Journal` only.
+Sibling provenance lives in derived `activity.md` `# References`
+(`derived-from: <slug>`), not in the journal. Sibling journal starts as
+`# Journal` only.
 
 ## activities.md
 
-Create lazily. Append-only for new activities. Never bulk-read — `rg '^## <slug>:'`.
+Create lazily. Append-only for new activities. Never bulk-read —
+**Catalog** in `SKILL.md`.
 
 ```markdown
 # Activities
@@ -158,64 +165,64 @@ High-level catalog. Details live in each activity folder.
 Harden playbook/target sync for machine registry, ignores, syncmap, and nested-git guide handling.
 ```
 
-On create / derive / import (do not Read the whole file):
+## Notes files
 
-```bash
-printf '\n## %s: %s\n\n%s\n' "$slug" "$title" "$para" >> .dev-notes/activities/activities.md
-```
+Legacy split, Repair, enums, precedence: **Notes files** in `SKILL.md`.
+Agent best-effort drafts all except `user-notes.md`. Bullets. Promote old
+`###` entries to `##`. Agent-written files use **Prose density**.
 
-## notes.md
-
-Exact headings, this order.
+### requirements.md
 
 ```markdown
-# Notes
+# Requirement Definition
 
-## Requirement Definition
-
-### <title>
+## <title>
 - kind: end-user-interface | software-interface | internal-behavior
 - <description>
+```
 
-## Design Decisions
+### design-choices.md
 
-### <decision title>
+```markdown
+# Design Decisions
+
+## <decision title>
 - level: design-choice | major-implementation-detail | implementation-detail
 - chosen: <what>
 - why: <compelling reason>
 - alternatives:
   - <alt>: <why not>
 - replaces: <old decision title>
+```
 
-## Conventions
+Omit `replaces:` on a first decision.
 
-### <short title>
+### conventions.md
+
+Target ≤ ~500 words.
+
+```markdown
+# Conventions
+
+## <short title>
 - <2–5 bullets: the rule>
 
-## User Notes
+## Setup, build, test and install notes
+- setup: `<command>`
+- build: `<command>`
+- test: `<command>`
+- install: `<command>`
+```
+
+### user-notes.md
+
+Aim ≤ ~500 words. User-owned; do not prune.
+
+```markdown
+# User Notes
 
 <User free-form information for this activity.>
 ```
-
-`kind` is exactly one of `end-user-interface` (humans), `software-interface`
-(contract other software must honor: in-repo modules/libraries, API, ABI, FFI,
-protocol; old notes may still say `external-interface`), or
-`internal-behavior`. `level` is exactly one of `design-choice`
-(affects user interface or a software-facing contract; feeds a future design document),
-`major-implementation-detail` (internal but individually mentioned in that
-document — costly to not know, or reversal ripples across components), or
-`implementation-detail` (internal; summarized when that document is written).
-Keep each decision entry under ~200 words as a hard max; prefer a few short
-bullets. Omit `replaces:` on a first decision.
-
-Conventions are binding and living: 2–5 short bullets per named rule. They
-take precedence over project/repo conventions and rules for this activity
-(workon hard constraints, safety, and git safety still win). Rewrite in place
-when the user asks or a newly confirmed rule contradicts or tightens that
-entry. Mark `superseded` to drop; do not delete. Write only user-stated or
-confirmed rules. `replaces:` only when splitting or renaming.
-
-Agent-written sections use the **Prose density** bar in `SKILL.md` (not User Notes).
 
 ## List output (agent → user)
 
