@@ -8,8 +8,10 @@
 #
 # .cursor/: playbook → target only. .dev-notes/ + project guides: bidirectional.
 # Same inode: no-op. Different inode, same bytes: re-link. Content conflict:
-# prompt (playbook wins) or --force. Target git-tracked paths: warn and skip when
-# content/inode differs from playbook; already hard-linked playbook copies are silent.
+# .dev-notes/ and project guides prompt [p]laybook / [t]arget / skip; --force ⇒
+# playbook. .cursor/ and --machine: playbook-only prompt or --force. Target
+# git-tracked paths: warn and skip when content/inode differs from playbook;
+# already hard-linked playbook copies are silent.
 set -euo pipefail
 
 SEP=$'\x1f'
@@ -38,6 +40,9 @@ Flags:
                     Does NOT answer nested-submodule guide prompts (use --ignore-submodules).
   --ignore-submodules  Skip dev-guide.md under nested .git (no prompts).
   --force           On content conflict, playbook wins without prompting (re-link dest).
+                    Bidirectional paths (.dev-notes/, project dev-guide.md) otherwise
+                    prompt [p]laybook / [t]arget / skip. .cursor/ and --machine stay
+                    playbook-only ([y/N]).
   -h, --help        Show this help.
 
 Files:
@@ -675,23 +680,24 @@ hardlink_to() {
   return 1
 }
 
-relink_playbook_wins() {
-  local src="$1" dest="$2" rel_full="$3" err
-  rm -f "$dest"
-  err="$(hardlink_to "$src" "$dest")" && return 0
+relink_over() {
+  # keep's inode/content survives; replace is removed then hard-linked to keep
+  local keep="$1" replace="$2" rel_full="$3" err
+  rm -f "$replace"
+  err="$(hardlink_to "$keep" "$replace")" && return 0
   FAILURES+=("$rel_full ($err)")
   return 1
 }
 
 resolve_both_sides() {
-  local src="$1" dest="$2" rel_full="$3"
+  local src="$1" dest="$2" rel_full="$3" allow_pull="${4:-0}"
   if same_file "$dest" "$src"; then
     EXISTING+=("$rel_full")
     MANAGED+=("$rel_full")
     return 0
   fi
   if same_bytes "$src" "$dest"; then
-    if relink_playbook_wins "$src" "$dest" "$rel_full"; then
+    if relink_over "$src" "$dest" "$rel_full"; then
       REPAIRED+=("$rel_full")
       MANAGED+=("$rel_full")
     fi
@@ -700,14 +706,27 @@ resolve_both_sides() {
   # content conflict
   local ans=n
   if [[ "$FORCE" -eq 1 ]]; then
-    ans=y
+    ans=p
+  elif [[ "$allow_pull" -eq 1 && -n "${SYNC_PLAYBOOK_CONFLICT:-}" ]]; then
+    ans="$SYNC_PLAYBOOK_CONFLICT"
+  elif [[ "$allow_pull" -eq 1 ]]; then
+    printf "Conflict %s: different content (inode differs). [p]laybook wins / [t]arget wins / [N] skip? " "$rel_full" >&2
+    read_tty ans
   else
     printf "Conflict %s: different content (inode differs). Replace dest with playbook hard link? [y/N] " "$rel_full" >&2
     read_tty ans
   fi
   case "$ans" in
-    y|Y|yes|YES)
-      if relink_playbook_wins "$src" "$dest" "$rel_full"; then
+    p|P|playbook|y|Y|yes|YES)
+      if relink_over "$src" "$dest" "$rel_full"; then
+        REPAIRED+=("$rel_full")
+        MANAGED+=("$rel_full")
+      fi
+      ;;
+    t|T|target)
+      if [[ "$allow_pull" -ne 1 ]]; then
+        CONFLICTS+=("$rel_full")
+      elif relink_over "$dest" "$src" "$rel_full"; then
         REPAIRED+=("$rel_full")
         MANAGED+=("$rel_full")
       fi
@@ -782,7 +801,7 @@ process_domain() {
     fi
 
     if [[ -n "$src" && -n "$tgt" ]]; then
-      resolve_both_sides "$src" "$dest" "$rel_full"
+      resolve_both_sides "$src" "$dest" "$rel_full" "$allow_pull"
     elif [[ -n "$src" && -z "$tgt" ]]; then
       err="$(hardlink_to "$src" "$dest")" && {
         NEW_TO_TARGET+=("$rel_full")
@@ -1103,7 +1122,7 @@ print_report() {
   fi
   if [[ ${#REPAIRED[@]} -gt 0 ]]; then
     echo
-    echo "=== Re-linked (inode repair / playbook wins) ==="
+    echo "=== Re-linked (inode repair / conflict resolved) ==="
     printf '%s\n' "${REPAIRED[@]}" | LC_ALL=C sort -u | sed 's/^/  /'
   fi
   if [[ ${#NEW_TO_TARGET[@]} -gt 0 ]]; then

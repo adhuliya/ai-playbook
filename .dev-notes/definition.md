@@ -56,7 +56,7 @@ Out of scope:
 - **Thin:** source assets plus one sync script; add nothing that isn't required.
 - **Idempotent sync:** re-running is safe; correct hard links are no-ops; broken
   links with identical bytes are re-linked.
-- **Playbook wins on forced conflict:** divergent content prompts unless `--force`.
+- **Conflict direction:** `.dev-notes/` and project `dev-guide.md` prompt playbook vs target; `--force` ⇒ playbook wins. `.cursor/` and syncmap stay playbook-only.
 - **Non-touch git-tracked targets:** warn and skip when inode/content differs from playbook; already hard-linked copies are silent.
 - **Cursor one-way:** `.cursor/` is playbook → target only; notes/guides stay
   bidirectional.

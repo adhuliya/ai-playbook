@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Smoke-test marshal sync: repair, --force, ignores, git-tracked, one-way cursor, syncmap.
+# Smoke-test marshal sync: repair, --force, conflict direction, ignores, git-tracked, one-way cursor, syncmap.
 set -euo pipefail
 
 PLAYBOOK_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -146,6 +146,42 @@ printf '%s\n' 'from target' >"$TARGET/.dev-notes/from-target.md"
 ( cd "$PLAYBOOK_ROOT" && "$SYNC" --project "$PROJECT" --yes ) || fail "devnotes pull sync"
 same_file "$TARGET/.dev-notes/from-target.md" "$LIVE_NOTES/from-target.md" || fail "dev-notes pull failed"
 pass "dev-notes bidirectional pull"
+
+# 6b) content conflict: target wins (.dev-notes)
+rm -f "$TARGET/.dev-notes/definition.md"
+printf '%s\n' 'target latest notes' >"$TARGET/.dev-notes/definition.md"
+same_file "$TARGET/.dev-notes/definition.md" "$LIVE_NOTES/definition.md" && \
+  fail "expected notes conflict before target-wins"
+( cd "$PLAYBOOK_ROOT" && SYNC_PLAYBOOK_CONFLICT=t "$SYNC" --project "$PROJECT" --yes ) || \
+  fail "target-wins notes sync"
+[[ "$(cat "$LIVE_NOTES/definition.md")" == "target latest notes" ]] || fail "playbook notes not replaced"
+same_file "$TARGET/.dev-notes/definition.md" "$LIVE_NOTES/definition.md" || \
+  fail "notes not hard-linked after target wins"
+pass "dev-notes conflict target wins"
+
+# 6c) content conflict: target wins (project dev-guide.md)
+rm -f "$TARGET/dev-guide.md"
+printf '%s\n' 'target latest guide' >"$TARGET/dev-guide.md"
+same_file "$TARGET/dev-guide.md" "$LIVE_NOTES/dev-guides/dev-guide.md" && \
+  fail "expected guide conflict before target-wins"
+( cd "$PLAYBOOK_ROOT" && SYNC_PLAYBOOK_CONFLICT=t "$SYNC" --project "$PROJECT" --yes ) || \
+  fail "target-wins guide sync"
+[[ "$(cat "$LIVE_NOTES/dev-guides/dev-guide.md")" == "target latest guide" ]] || \
+  fail "playbook guide not replaced"
+same_file "$TARGET/dev-guide.md" "$LIVE_NOTES/dev-guides/dev-guide.md" || \
+  fail "guide not hard-linked after target wins"
+pass "dev-guide.md conflict target wins"
+
+# 6d) content conflict: playbook wins via p (.dev-notes)
+rm -f "$TARGET/.dev-notes/definition.md"
+printf '%s\n' 'target diverged again' >"$TARGET/.dev-notes/definition.md"
+( cd "$PLAYBOOK_ROOT" && SYNC_PLAYBOOK_CONFLICT=p "$SYNC" --project "$PROJECT" --yes ) || \
+  fail "playbook-wins notes sync"
+[[ "$(cat "$TARGET/.dev-notes/definition.md")" == "target latest notes" ]] || \
+  fail "target notes not replaced by playbook"
+same_file "$TARGET/.dev-notes/definition.md" "$LIVE_NOTES/definition.md" || \
+  fail "notes not hard-linked after playbook wins"
+pass "dev-notes conflict playbook wins"
 
 # 7) --machine syncmap file + dir
 mkdir -p "$PLAYBOOK_ROOT/scripts/_smoke_map_dir/nest"
