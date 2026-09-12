@@ -1,5 +1,5 @@
 ---
-description: Navigate .dev-notes; read dev-guides; disclose unstated assumptions.
+description: Navigate .dev-notes; read dev-guides; disclose unstated assumptions; prefer sub-agents for specialized work.
 alwaysApply: true
 ---
 
@@ -67,3 +67,7 @@ Open guides yourself — never invoke `dev-guides` only to read.
 # Keep guides fresh (MUST)
 
 If your change makes a `dev-guide.md` factually wrong — renamed/moved/deleted path in Notes or Artifacts, changed build command, stale table row — you MUST fix it in the same change. For material drift (placement, hierarchy, or what the guide is for), do not rewrite here: note it for the `dev-guides` skill.
+
+# Sub-agents (SHOULD)
+
+For specialized or parallel work, SHOULD launch Task sub-agents with a matching type and a self-contained prompt. Keep the parent for orchestration, synthesis, and user talk. MUST NOT spawn agents for a few local tool calls. MUST NOT let parallel sub-agents contend for the same resource.
