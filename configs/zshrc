@@ -1,6 +1,10 @@
 # REF: https://ianyepan.github.io/posts/moving-away-from-ohmyzsh/
 # REF: https://zsh.sourceforge.io/Doc/Release/Prompt-Expansion.html
 
+# Before the guards below so IDE env probes and non-interactive shells get it.
+export EDITOR=vim
+export VISUAL=vim
+
 # Skip heavy setup only when IDE probes shell environment.
 if [[ -n "$VSCODE_RESOLVING_ENVIRONMENT" ]]; then
   typeset -f dump_zsh_state >/dev/null 2>&1 || dump_zsh_state() { :; }
