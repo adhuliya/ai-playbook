@@ -23,14 +23,15 @@ In-flight major scope change. **Material-change.**
    Decisions. Update Conventions (rules + Setup) from observed facts and
    user-confirmed rules. If **Goal** changed, patch that one **Catalog** entry.
 4. If status is not `Planning`, reopen to `Planning` and record the reason in
-   `activity.md` (no journal).
+   `activity.md`. Append a `Replan` event: why, changed IDs (**Journal
+   policy**).
 5. File review + **Execution gate** before engineering.
 
 ## `self-review`
 
 Status: any. No status change. No journal. Activity files stay frozen.
 
-Turn-stage, paths, briefs: **Parent orchestration** in the contract.
+Turn-stage, paths, briefs: **Pipelines** in the contract.
 
 If `self-review.md` already exists, overwrite on re-run (working files too).
 Parent Reads **only** `self-review.md`. Show it. Stop. User may edit the file.
@@ -52,12 +53,14 @@ questions. **Apply timing.** **Journal policy.** **Complete stay-on-slug.**
 3. Apply the rest to `activity.md` and agent-drafted notes files as each
    proposal's `where` says. Record the cycle as `SR<n>` in `reviews.md`; add a
    review milestone if needed (**Reviews**).
-4. **Status / journal:**
+4. **Status / journal:** one entry only. With a status change, the resume
+   recap replaces the `Self review` event and cites `SR<n>`.
    - `Paused` / `Blocked`: restore `prior:` (**Paused vs Blocked**); append
      resume recap. Engineer this turn only if the restored status is `Active`.
    - `Complete`: stay-on-slug. `Complete` → `Planning`; append resume recap.
      Then **Execution gate** before engineering.
-   - `Planning` / `Approved` / `Active`: no status change; no journal.
+   - `Planning` / `Approved` / `Active`: no status change; append the
+     `Self review` event.
 5. Keep `self-review.md` and `artifacts/self-review/` (overwrite on next
    `self-review`). Delete only via `delete-tmp-files`.
 
@@ -80,7 +83,8 @@ kebab-case. Propose; user may override.
    decisions **and conventions** (rules + Setup) inline, not as pointers.
    User may drop or rewrite conventions on the sibling. Number **IDs** fresh
    from 1.
-5. Fresh `journal.md` and `notes-by-user.md` (H1 only). `status: Planning`,
+5. Fresh `notes-by-user.md` (H1 only). Fresh `journal.md` with one
+   `Created` event naming the parent slug. `status: Planning`,
    `conventions: pending`, new slug. Provenance: **Complete sibling**
    (`derived-from:` rule). Append one **Catalog** entry.
 6. **draft-check:** derived files stand if the source were deleted.
@@ -93,7 +97,7 @@ unchanged. If the parent Goal changes → **Material-change** (`replan-work`).
 
 Status: n/a (new session). The user brings `activity.md` + `journal.md`, plus
 notes files, `reviews.md`, `user-guide.md`, and `artifacts/` if present (or
-legacy `notes.md`). No prior chat context. Do not journal the import.
+legacy `notes.md`). No prior chat context.
 
 1. Locate files; ask if path/slug is ambiguous. Do not assume this repo's tree.
 2. Read `activity.md` fully, ARD / Design Decisions / Conventions if present,
@@ -104,7 +108,8 @@ legacy `notes.md`). No prior chat context. Do not journal the import.
 5. Place under `.dev-notes/activities/<slug>/`. Repair. Reconcile drift into
    `activity.md` / ARD / Conventions. Set `status` to `Planning` and
    `conventions: pending`, unless imported as `Complete` (keep both). Append a
-   **Catalog** entry if no heading.
+   **Catalog** entry if no heading. Append a `Created` event: source and
+   drift found.
 6. Wait for **Execution gate**. If `Complete` and new work is wanted: `resume-work`.
 
 ## `resume-work`
@@ -168,7 +173,7 @@ Status: `Approved` (`Planning`: require `approve-plan` first).
 
 1. Need `conventions: ok`. If `pending`, prompt `conventions-ok`; stop.
 2. **Optional-remind** `apply-review`.
-3. Set `status` to `Active`. Begin engineering.
+3. Set `status` to `Active`. Append a `Building` event. Begin engineering.
 
 ## `approve-plan`
 
@@ -178,12 +183,12 @@ Status: `Planning` (`Approved` / `Active`: report state; do not rewrite history)
    stale, or unreviewed ARD, or a last milestone without e2e (**Test
    evidence**) → back to file review; do not approve.
 2. **Optional-remind** `verify-plan` and `apply-review`.
-3. Set `status` to `Approved`.
+3. Set `status` to `Approved`. Append an `Approved` event (milestone count).
 4. One-time note: planning done; user may drop the strong model.
 5. Do not implement. Ask for `conventions-ok` if `pending`, then
    `start-building`.
 
-## `follow-convention`
+## `update-convention`
 
 Status: any (`Complete`: record only; new work still needs `resume-work`).
 
@@ -198,8 +203,7 @@ Status: any (`Complete`: record only; new work still needs `resume-work`).
 Status: `Planning`. Optional; not required for `approve-plan`. Isolated
 **negative** and **positive** critics (different briefs), then a synthesizer.
 
-Turn-stage, question gate, paths, briefs: **Parent orchestration** in the
-contract. Parent Reads **only** `synthesis.md` and filters **Stops**. Keep
+Turn-stage, question gate, paths, briefs: **Pipelines** in the contract. Parent Reads **only** `synthesis.md` and filters **Stops**. Keep
 assigned files and slice dirs (overwrite on re-run; wipe stale slices).
 Delete only via `delete-tmp-files`.
 
@@ -226,7 +230,7 @@ Status: `Active`.
    - **Next Steps:** minor-fix runway (small follow-ups, fastest checks, safest
      first edit targets).
 3. Set `status` to `Complete`. Handoff: **Portability**.
-4. Append the `mark-completed` journal entry (**Journal policy**).
+4. Append the `Complete` journal entry (**Journal policy**).
    **Optional-remind** `create-guide`.
 5. **Cleanup:** run the `delete-tmp-files` flow.
 6. Later fixes: `resume-work` (`Complete` path), then **Execution gate**, then
@@ -263,26 +267,14 @@ Status: any. Also run by `mark-completed`. No status change, no journal.
    paths allow `git rm`. No other `git rm`.
 3. Show what was deleted.
 
-## `sync-notes`
-
-Status: any. User-invoked, or agent-started (**Keyword gate**). No status
-change, no journal.
-
-1. Check `activity.md`, ARD, Design Decisions, Conventions, and `reviews.md`
-   against each other: broken or duplicate **IDs**, Goal vs ARD, Current
-   Design vs DCs, plan/milestones vs ARD, Setup vs rules.
-2. For each fix: ID or section, the smallest edit, why. Ask yes / no / mods.
-   Apply only confirmed fixes. Do not reword beyond the fix.
-3. A fix that changes Goal or Scope is **Material-change**: skip it and prompt.
-4. `notes-by-user.md` is input only. If it cites stale IDs or contradicts the
-   files, tell the user; do not edit it.
-
 ## `fix-notes`
 
-Status: any. No status change, no journal. Scope: `activity.md`, ARD, Design
-Decisions, Conventions, `reviews.md`. Not the journal (`compact-journal`) and
-not `notes-by-user.md`.
+Status: any. User-invoked only. No status change. Scope: `activity.md`, ARD,
+Design Decisions, Conventions, `reviews.md`. Not the journal
+(`compact-journal`) and not `notes-by-user.md`.
 
+0. **Consistency:** find the **Consistency check** issues. Add them to the
+   step 4 list as `fix:` items.
 1. **Prune:** find redundant entries, entries that fold into another, nits
    recoverable from code or covered elsewhere, superseded entries, and stale
    prose.
@@ -310,7 +302,7 @@ not `notes-by-user.md`.
    **Material-change**: skip it and prompt.
 6. Renumber each ID kind to close gaps. Update every reference in the scope
    files. Append the old → new map to `reviews.md` (**Reviews** renumber log)
-   and show it.
+   and show it. Append a one-line `Renumber` event pointing at that log.
 7. If `notes-by-user.md` cites removed or renumbered IDs or broken paths, tell
    the user and show the map; do not edit it.
 
@@ -318,10 +310,38 @@ not `notes-by-user.md`.
 
 Status: any; read-only; no focused activity needed.
 
-- `help`: print the **Command map** tables from `SKILL.md`. If an activity is
-  focused, mark the commands its status allows (`Status:` lines here).
+- `help`: tell the user what to do next in the current state. Cap ~5 lines:
+  one state line (slug, status, `conventions`), then 1–3 next actions from
+  the table below. Check rows top-down; the first match wins. End with one
+  line: `help intro` for basics, `help all` for every command.
+- `help intro`: teach the basic path in ≤ 8 lines. Name only these steps:
+  1. Describe the work in plain words (e.g. `workon add CSV export`).
+     Answer the questions, then review the drafted files.
+  2. `approve-plan` and `conventions-ok`: accept the plan and the rules.
+  3. `start-building`: the agent builds and tests.
+  4. `mark-completed`: close the work when the tests pass.
+
+  Add: type `help` at any time for the next step. Teach no other commands.
+- `help all`: print the **Command map** tables from `SKILL.md`. If an
+  activity is focused, mark the commands its status allows (`Status:` lines
+  here).
 - `help <command>`: explain that command in 2–5 sentences from its heading
   here: when to use it, what it changes, and what it needs first.
+
+| State | Next actions |
+|---|---|
+| Query mode on | Read and ask freely. `no-query-work` to allow edits. |
+| Pipeline in flight | Wait for the named pipeline, or ask to abandon it. |
+| No focused activity | Name an activity to switch to it, or describe new work to create one. |
+| `Planning` | Answer open questions; review the files and give feedback. Then `approve-plan` (and `conventions-ok` if `pending`). |
+| `Approved` | `conventions-ok` if `pending`; then `start-building`. |
+| `Active` | Give feedback or say continue. `mark-completed` when all milestones and the e2e pass. `pause-work` to stop. |
+| `Paused` | `resume-work`. |
+| `Blocked` | Resolve the blocker in `notes` (quote it); then `resume-work`. |
+| `Complete` | `resume-work` to fix or extend; `create-guide` if `user-guide.md` is missing. |
+
+Add one optional line when it applies: an unapplied `self-review.md` →
+`apply-review`; `Planning` with no `verify-plan` this session → `verify-plan`.
 
 ## `compact-journal`
 
@@ -330,10 +350,11 @@ say so and stop.
 
 1. Default budget **~12** `##` headings. User may name another number.
 2. Keep the **newest** entries **verbatim** (about half the budget: last ~7
-   when targeting ~12). Prefer recent pause/resume/`mark-completed` recaps.
+   when targeting ~12). Prefer recent `Complete`, `Replan`, and review events.
 3. Merge **older** entries into a few summary headings a future agent can use:
-   shipped outcomes (paths, behavior, decisions, accepted gaps) plus one line
-   `paused N, resumed N, completed N`. Drop plan/status prose that `activity.md`
-   already holds.
+   shipped outcomes (paths, behavior, decisions, accepted gaps); one line per
+   milestone or review cycle (`Milestone 2: <outcome>`, `UR3: 4 applied, 1
+   rejected`); one line `paused N, resumed N, completed N`. Drop plan/status
+   prose that `activity.md` already holds.
 4. Show the proposed compacted file. Write **in place** only after the user nods.
    Git is the archive unless the user asks for an `artifacts/` snapshot.

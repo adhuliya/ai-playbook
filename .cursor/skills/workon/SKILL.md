@@ -7,8 +7,8 @@ description: >-
   artifacts/). Use when the user manages activities, imports an activity, or
   issues workon keywords: help, approve-plan, conventions-ok, start-building,
   pause-work, resume-work, mark-completed, replan-work, create-sibling,
-  import-activity, self-review, apply-review, verify-plan, follow-convention,
-  sync-notes, fix-notes, compact-journal, create-guide, delete-tmp-files,
+  import-activity, self-review, apply-review, verify-plan, update-convention,
+  fix-notes, compact-journal, create-guide, delete-tmp-files,
   query-work, no-query-work.
 disable-model-invocation: true
 ---
@@ -40,7 +40,8 @@ heading. Do not restate it.
   blocked request, say query mode is on and ask for `no-query-work`.
 - **Pipeline in flight:** a `verify-plan`, `self-review`, or milestone
   pipeline runs from launch until the parent reads its final file
-  (`synthesis.md`, `self-review.md`, `collate.md`). While it runs, activity
+  (`synthesis.md`, `self-review.md`, `collate.md`, or the milestone critic
+  pair when it evaluates). While it runs, activity
   files are frozen and mutating keywords are refused (name the pipeline).
   `help`, `query-work`, and `no-query-work` stay allowed. New chat: a final
   file missing or older than its working files means in flight; ask to wait
@@ -52,7 +53,7 @@ Natural language is fine for discussion, create, switch, list, details.
 Gated transitions need the exact reserved keyword. On detected intent, do not
 silent-transition; prompt it, e.g. `If you want to replan, write \`replan-work\`.`
 
-Exceptions: the agent MAY start the `sync-notes` flow (**Update cadence**);
+Exceptions: the agent MAY run the **Consistency check** without a keyword;
 `mark-completed` runs the `delete-tmp-files` flow. Both confirm each item.
 
 ## Material-change
@@ -79,7 +80,7 @@ On a material change, prompt the matching choice; do not rewrite scope first.
   first.
 
 **Complete sibling:** prompt `create-sibling`. Parent stays `Complete`. No parent
-journal. Sibling `derived-from:` only; parent never points at the sibling.
+journal entry. Sibling `derived-from:` only; parent never points at the sibling.
 
 ## Execution gate
 
@@ -99,7 +100,7 @@ Both record `prior: <status>` in the `activity.md` `notes` row.
 - `Paused`: intentional stop via `pause-work`.
 - `Blocked`: cannot continue. The agent MAY set it at a checkpoint when work
   is stuck. Add a one-line blocker to `notes`; details in `activity.md`
-  `# Next Steps`. No journal write on entering `Blocked`.
+  `# Next Steps`. Append a `Blocked` event (**Journal policy**).
 
 ## Reminders
 
@@ -117,19 +118,42 @@ unapplied (`approve-plan`, `start-building`, `pause-work`, `resume-work`);
 
 File: `.dev-notes/activities/<slug>/journal.md` only. Shapes: `templates.md`.
 
-**Write only** on `pause-work`, `mark-completed`, and on `resume-work` /
-`apply-review` when status actually changes (from `Paused`, `Blocked`, or
-`Complete`). Append at end. Prior entries are **read-only** except
-`compact-journal` (the only rewrite). No other command writes the journal. A
-new activity or sibling starts with `# Journal` only.
+Purpose: the append-only **event timeline**. `activity.md` holds current
+state; `reviews.md` holds review detail. The journal records each event that
+changes direction or status: what happened, why, and pointers (IDs, paths,
+commands). A fresh agent reads it to learn how the activity got here.
 
-Pause / resume recap: cap **~10 lines**; omit empty fields. Headings:
-`## Pause (<from> → Paused)` / `## Resume (<from> → <to>)`. No dates unless
-asked. No milestone tables, ARD dumps, or plan copies.
+**Events** (one entry each, written in the same turn):
 
-**`mark-completed`:** thicker **project-work** write-up (what shipped, paths,
-decisions, gaps). Heading carries the tick (`## <work title> (<from> → Complete)`);
-no separate tick line. Not a lifecycle novel.
+| Event | Written by |
+|---|---|
+| `Created` | create, `create-sibling` (in the new activity), `import-activity` |
+| `Approved` / `Building` | `approve-plan` / `start-building` |
+| `Milestone` | checkpoint that checks a milestone |
+| `User review` | recording a `UR<n>` cycle in `reviews.md` |
+| `Self review` | recording an `SR<n>` cycle (`apply-review`, `verify-plan` apply) |
+| `Replan` | `replan-work` |
+| `Blocked` | entering `Blocked` |
+| `Pause` / `Resume` | `pause-work` / status change by `resume-work` or `apply-review` |
+| `Complete` | `mark-completed` |
+| `Renumber` | `fix-notes` renumber |
+
+No other change writes the journal: notes edits, **Consistency check**,
+`update-convention`, `conventions-ok`, `self-review`, `create-guide`,
+`delete-tmp-files`, list, details, `help`.
+
+**Entry:** `## <Event>: <short title> (<from> → <to>)`; omit the arrow when
+status is unchanged. Then ≤ 3 bullets: what happened, IDs / paths / evidence
+command, `next:` if not obvious. Point at IDs; do not copy ARD, plans, or
+review points. No dates unless asked; entry order is the timeline.
+
+Pause / resume recap: cap **~10 lines**; omit empty fields.
+
+**`Complete`:** the one thick entry. **Project-work** write-up (what shipped,
+paths, decisions, gaps). Not a lifecycle novel.
+
+Append at end. Prior entries are **read-only** except `compact-journal` (the
+only rewrite).
 
 ## Layout
 
@@ -204,6 +228,8 @@ Shape: `templates.md`. Not part of the handoff.
 - **Review milestone:** if a cycle needs product work (code, tests, docs),
   append milestone `Apply UR<n>` (or `SR<n>`) to `activity.md`. Its MECE
   steps cite the points. Notes-only edits need no milestone.
+- **Journal:** each recorded cycle appends one `User review` or `Self review`
+  event (**Journal policy**).
 - **Renumber log:** `fix-notes` appends `## Renumber <k>` with the
   old → new ID map. Journal entries before it use the old numbers.
 
@@ -256,8 +282,7 @@ Required at birth. Templates: `templates.md`.
 
 Agent **best-effort drafts** all except `notes-by-user.md` (repo + this
 activity; user reviews and corrects). Bullets wherever possible. What
-sub-agents may read or receive: contract **Shared bans** and **Pass
-`conventions.md`**.
+sub-agents may read or receive: contract **Every agent**.
 
 ### `requirements.md` (ARD)
 
@@ -311,7 +336,7 @@ without a keyword during the planning grill, `conventions-ok`, and for
 in-flight confirmed rules. Rewrite in place when the user asks, or when a
 newly confirmed rule contradicts or tightens an entry. No tighter than the
 user stated. Drop: mark `superseded` on request — do not delete (except
-`fix-notes`). Explicit user add/rewrite → `follow-convention`; on detected
+`fix-notes`). Explicit user add/rewrite → `update-convention`; on detected
 intent, prompt it. No forced conventions interview in Planning.
 
 **Setup:** always best-effort draft; user corrects. It is the env-agent
@@ -420,23 +445,43 @@ overlapping writes. Handoff is files.
 - **Planning:** background explores, then grill and end the turn.
 - **Milestone:** parent splits the milestone into MECE jobs with disjoint
   write paths. Workers write code and tests for their job. One **collator**
-  merges the job results and runs the milestone evidence. Parent reads only
-  the collator report, then updates activity files. Flow: **Milestone
-  pipeline** in the contract.
+  collects the job results and runs the milestone evidence. Parent reads only
+  the collator report, then updates activity files. Flow: **Milestone** in
+  the contract.
+- **Evaluate, do not just collect:** when the parent must judge results, use
+  the contract's **critic pair** (one praises what stands out, one criticizes
+  what it dislikes most, both with reasons), never a single agent.
 
 ## Update cadence
 
 Durability, not a live log.
 
 - `activity.md`: scope/design/plan change, milestone reached, blocker, before
-  pause / complete / handoff.
+  pause / complete / handoff. A checked milestone also appends a `Milestone`
+  event.
 - ARD whenever requirements change; must be current before `approve-plan`.
 - Design Decisions when an important choice is made.
 - Conventions (rules + Setup) when observed, confirmed, or tightened.
 - `activities.md`: **Catalog**. `journal.md`: **Journal policy**.
 - `reviews.md` at each user feedback round and each review apply.
 - Always sync before `pause-work`, `mark-completed`, or handoff.
-- If user edits leave activity files inconsistent, start `sync-notes`.
+- After user edits to activity files, run the **Consistency check**.
+
+## Consistency check
+
+Agent-run after user edits; also step 0 of `fix-notes`. No keyword, no status
+change, no journal.
+
+1. Check `activity.md`, ARD, Design Decisions, Conventions, and `reviews.md`
+   against each other: broken or duplicate **IDs**, Goal vs ARD, Current
+   Design vs DCs, plan/milestones vs ARD, Setup vs rules.
+2. For each issue: ID or section, the smallest edit, why. Ask yes / no / mods.
+   Apply only confirmed fixes. Do not reword beyond the fix.
+3. A fix that changes Goal or Scope is **Material-change**: skip it and prompt.
+4. `notes-by-user.md` is input only. If it cites stale IDs or contradicts the
+   files, tell the user; do not edit it.
+
+Never prune, rewrite, or renumber here; that needs `fix-notes`.
 
 ## Apply timing
 
@@ -456,7 +501,8 @@ required. After `Active`: `self-review` / `apply-review` only.
 ## Command map
 
 Before a reserved keyword, Read its heading in [`commands.md`](commands.md).
-Valid statuses: each heading's `Status:` line. `help` prints these tables.
+Valid statuses: each heading's `Status:` line. `help all` prints these
+tables.
 
 **Start and plan**
 
@@ -490,9 +536,8 @@ Valid statuses: each heading's `Status:` line. `help` prints these tables.
 
 | Command | What it does |
 |---|---|
-| `follow-convention` | Add or rewrite convention rules |
-| `sync-notes` | Fix inconsistencies after user edits |
-| `fix-notes` | Prune, verify paths and facts, rewrite for clarity, close ID gaps |
+| `update-convention` | Add or rewrite convention rules |
+| `fix-notes` | Fix inconsistencies, prune, verify against the repo, rewrite for clarity, close ID gaps |
 | `compact-journal` | Shorten the journal in place |
 
 **Output and cleanup**
@@ -506,7 +551,9 @@ Valid statuses: each heading's `Status:` line. `help` prints these tables.
 
 | Command | What it does |
 |---|---|
-| `help` | Show these tables; `help <command>` explains one |
+| `help` | Next steps for the current state |
+| `help intro` | The basic path: four steps from idea to done |
+| `help all` / `help <command>` | Show these tables / explain one command |
 | `query-work` / `no-query-work` | Read-only session on / off |
 
 ## Planning quality bar
@@ -549,7 +596,7 @@ If the current message already supplied both, acknowledge and continue grilling.
 2. **Planning quality bar** (includes **draft-check**; `# Scope` after the
    grill, `# Goal` from ARD).
 3. Write `activity.md` (`conventions: pending`), `journal.md` (`# Journal`
-   only), `requirements.md`, `design-choices.md`, `conventions.md` (include
+   plus a `Created` event), `requirements.md`, `design-choices.md`, `conventions.md` (include
    Setup H2), `notes-by-user.md` (`# Notes by User` only unless the user
    already wrote notes). Append one **Catalog** entry.
 4. File review: user can challenge ARD, Conventions, Setup, and plan before

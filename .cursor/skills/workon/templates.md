@@ -24,11 +24,13 @@ Sequences: [`commands.md`](commands.md). Do not copy policy here.
 `<stem>-excerpt.md` (header = source path + what was kept). Reserved names:
 `verify-plan/` (`critic-negative.md`, `critic-positive.md`, `synthesis.md`;
 optional `negative/`, `positive/`, `synth/` slices), `bg/` (optional
-`<stem>/` slices next to `<stem>.md`; `milestone-<n>/` job reports and
-`collate.md`), `self-review/` (`env.md`,
-`milestone-<n>.md`, `critic-a.md`, `critic-b.md`; optional `env/`,
-`milestone-<n>/`, `a/`, `b/`, `synth/` slices), and `self-review.md`. Do
-not use `self-review.md` as a cited-copy name.
+`<stem>/` slices next to `<stem>.md`; `milestone-<n>/` job reports,
+`collate.md`, optional `critic-negative.md` / `critic-positive.md`),
+`self-review/` (`env.md`, `milestone-<n>.md`, `critic-negative.md`,
+`critic-positive.md`; optional `env/`, `milestone-<n>/`, `negative/`,
+`positive/`, `synth/` slices), and `self-review.md`. Full table: **Paths and
+readiness** in [`subagent-contract.md`](subagent-contract.md). Do not use
+`self-review.md` as a cited-copy name.
 
 ## activity.md
 
@@ -103,16 +105,36 @@ delta steps starting at the new requirement.>
 
 ## journal.md
 
-Write-on and caps: **Journal policy** in `SKILL.md`. Until the first write:
+Events, write-on, and caps: **Journal policy** in `SKILL.md`.
 
 ```markdown
 # Journal
+
+## Created: Add CSV export (→ Planning)
+- goal: export report rows as CSV from the CLI
+- from: derived-from `report-api` | imported from `<source>` (omit if new)
+```
+
+### Event entry
+
+```markdown
+## Milestone: CSV writer (Active)
+- done: milestone 2; `go test ./export/...` green
+- found: quoting needs RFC 4180 mode → DC04
+
+## User review: UR2 (Planning)
+- 5 points: applied 3 → R4, DC03; rejected 1; open 1
+- added milestone `Apply UR2`
+
+## Blocked: upstream API (Active → Blocked)
+- blocker: `/v2/rows` returns 500 on large pages
+- next: retry after upstream fix
 ```
 
 ### Pause / resume recap
 
 ```markdown
-## Pause (Active → Paused)
+## Pause: <short why> (Active → Paused)
 
 - why: <one line>
 - done: <1–3 bullets>
@@ -121,14 +143,14 @@ Write-on and caps: **Journal policy** in `SKILL.md`. Until the first write:
 ```
 
 ```markdown
-## Resume (Paused → Active)
+## Resume: <short title> (Paused → Active)
 
 - done: <1–3 bullets>
 - next: <single start step>
 ```
 
 ```markdown
-## Resume (Complete → Planning)
+## Resume: <short title> (Complete → Planning)
 
 - why: <the understood issue>
 - delta: <what the new work is>
@@ -136,10 +158,10 @@ Write-on and caps: **Journal policy** in `SKILL.md`. Until the first write:
 - watch: <legacy verify, or omit>
 ```
 
-### `mark-completed` entry
+### `Complete` entry
 
 ```markdown
-## <Short work title> (Active → Complete)
+## Complete: <short work title> (Active → Complete)
 
 <Shipped outcomes, technical decisions, discoveries, accepted gaps.
 Repo paths and evidence pointers.>
