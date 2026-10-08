@@ -58,7 +58,7 @@ Exceptions: the agent MAY run the **Consistency check** without a keyword;
 
 ## Material-change
 
-**Material** = Goal or Scope rewrite; ARD add/drop/reword after approval that is
+**Material** = Goal or Scope rewrite; RD add/drop/reword after approval that is
 not an in-scope plan refresh; or independently durable new work.
 
 **Not material:** in-scope tightening of plan, design, or conventions on the
@@ -130,8 +130,7 @@ commands). A fresh agent reads it to learn how the activity got here.
 | `Created` | create, `create-sibling` (in the new activity), `import-activity` |
 | `Approved` / `Building` | `approve-plan` / `start-building` |
 | `Milestone` | checkpoint that checks a milestone |
-| `User review` | recording a `UR<n>` cycle in `reviews.md` |
-| `Self review` | recording an `SR<n>` cycle (`apply-review`, `verify-plan` apply) |
+| `Review` | recording an `RU<n>` cycle in `reviews.md` |
 | `Replan` | `replan-work` |
 | `Blocked` | entering `Blocked` |
 | `Pause` / `Resume` | `pause-work` / status change by `resume-work` or `apply-review` |
@@ -144,7 +143,7 @@ No other change writes the journal: notes edits, **Consistency check**,
 
 **Entry:** `## <Event>: <short title> (<from> → <to>)`; omit the arrow when
 status is unchanged. Then ≤ 3 bullets: what happened, IDs / paths / evidence
-command, `next:` if not obvious. Point at IDs; do not copy ARD, plans, or
+command, `next:` if not obvious. Point at IDs; do not copy RD, plans, or
 review points. No dates unless asked; entry order is the timeline.
 
 Pause / resume recap: cap **~10 lines**; omit empty fields.
@@ -181,7 +180,7 @@ Required rows: `status`, `conventions`, `slug`, `branch`, `ticket`, `notes`
 Required sections (order): Goal, Scope, Background and Special Notes, Current
 Design, Current Plan, Milestones, Next Steps, References.
 
-- **Goal** summarizes ARD. On conflict, ARD wins; refresh Goal / Scope at the
+- **Goal** summarizes RD. On conflict, RD wins; refresh Goal / Scope at the
   next checkpoint.
 - **Scope:** one or two paragraphs after the first grill; then near-fixed.
   Major in-flight change → **Material-change**.
@@ -199,12 +198,11 @@ Activity entries carry stable IDs. Cross-references use the ID, not the title.
 
 | ID | Entry | Home |
 |---|---|---|
-| `R<n>` | requirement | `requirements.md` `## R<n>: <title>` |
+| `RD<n>` | Requirement Definition | `requirements.md` `## RD<n>: <title>` |
 | `DC<nn>` | design decision (two digits) | `design-choices.md` `## DC<nn>: <title>` |
 | `CONV<n>` | convention rule (Setup H2 has no ID) | `conventions.md` `## CONV<n>: <title>` |
 | `REF<n>` | reference | `activity.md` `# References` bullet |
-| `UR<n>`, `UR<n>.<m>` | user review cycle, point | `reviews.md` |
-| `SR<n>`, `SR<n>.<m>` | `apply-review` / `verify-plan` apply cycle, point | `reviews.md` |
+| `RU<n>`, `RU<n>.<m>` | Review Update: review cycle, point | `reviews.md` |
 
 - Assign the next free number. Do not reuse a retired (superseded or removed)
   ID, except via `fix-notes` renumbering.
@@ -217,19 +215,35 @@ Activity entries carry stable IDs. Cross-references use the ID, not the title.
 `<slug>/reviews.md`, H1 `# Reviews`. Create lazily. Agent-written record.
 Shape: `templates.md`. Not part of the handoff.
 
-- **User review:** each round of user feedback on activity files or built
-  work is one `UR<n>` cycle. Each point is `UR<n>.<m>` with its outcome.
-  Open the cycle with a **state** note: status, milestone, and what changed
-  since `UR<n-1>` (IDs added or changed, work built). One or two short
+- **One kind of cycle:** each review round is one `RU<n>` cycle (Review
+  Update). Sources: user feedback on activity files or built work,
+  `apply-review`, `verify-plan` apply, the `fix-notes` impact gate. Do not
+  split or label cycles by source.
+- **Point:** each item is `RU<n>.<m>` with its outcome.
+- **Authority:** the user approves every cycle in principle. A point MAY
+  change a requirement, a design decision, a convention, or the
+  implementation.
+- **Where a change lands** (the target's own edit rule holds):
+
+  | Target | Edit |
+  |---|---|
+  | `RD<n>` | Rewrite in place; add `revised-by: RU<n>.<m>`. |
+  | `DC<nn>` | Append a new `DC` with `replaces: DC<nn>` and `revised-by: RU<n>.<m>`. |
+  | `CONV<n>` | Rewrite in place; add `revised-by: RU<n>.<m>`. |
+  | Code, tests, docs | Review milestone (below). No IDs in shipped work. |
+
+- **Material-change** still applies: a point that changes Goal or Scope, or a
+  material RD change after `approve-plan`, needs the prompt.
+- **State note:** open each cycle with status, milestone, and what changed
+  since `RU<n-1>` (IDs added or changed, work built). One or two short
   paragraphs; deltas only. Earlier cycles hold the rest.
-- **Self-review:** each `apply-review` or `verify-plan` apply step is one
-  `SR<n>` cycle. Each proposal is `SR<n>.<m>` with its outcome.
-- Outcome: `applied → <IDs>` | `rejected: <why>` | `open`.
+- Outcome: `applied → <IDs>` | `rejected: <why>` | `open`. Name every
+  changed ID; write `code` for implementation-only changes.
 - **Review milestone:** if a cycle needs product work (code, tests, docs),
-  append milestone `Apply UR<n>` (or `SR<n>`) to `activity.md`. Its MECE
-  steps cite the points. Notes-only edits need no milestone.
-- **Journal:** each recorded cycle appends one `User review` or `Self review`
-  event (**Journal policy**).
+  append milestone `Apply RU<n>` to `activity.md`. Its MECE steps cite the
+  points. Notes-only edits need no milestone.
+- **Journal:** each recorded cycle appends one `Review` event (**Journal
+  policy**).
 - **Renumber log:** `fix-notes` appends `## Renumber <k>` with the
   old → new ID map. Journal entries before it use the old numbers.
 
@@ -275,6 +289,11 @@ Required at birth. Templates: `templates.md`.
   change H1 `# User Notes` to `# Notes by User`. Keep the body.
 - Entries or References bullets without **IDs**: number them in file order;
   rewrite title-based `replaces:` to IDs.
+- Legacy review and requirement IDs: rename `R<n>` → `RD<n>` (same number).
+  Merge `UR<n>`, `SR<n>`, and `RRD<n>` cycles into one `RU<n>` sequence in
+  file order.
+  Update every reference in the scope files. Append the map as a **Renumber
+  log**. Do not edit the journal.
 - Missing `conventions` row: `ok` if status is `Active`, `Paused`, `Blocked`,
   or `Complete`; else `pending`.
 - Missing file: create with its H1 (and Setup H2 on `conventions.md`). Empty
@@ -284,9 +303,11 @@ Agent **best-effort drafts** all except `notes-by-user.md` (repo + this
 activity; user reviews and corrects). Bullets wherever possible. What
 sub-agents may read or receive: contract **Every agent**.
 
-### `requirements.md` (ARD)
+### `requirements.md` (RD)
 
-H1: `# Requirement Definition`. Entries: `## R<n>: <title>`. Parent-only. Keep
+**RD** (Requirement Definition) means the `RD<n>` entries in this file, one
+entry or all. H1: `# Requirement Definition`. Entries: `## RD<n>: <title>`.
+Parent-only. Keep
 current as grilling reveals requirements; user challenges them before
 `approve-plan`. `kind` is exactly one of:
 
@@ -296,8 +317,9 @@ current as grilling reveals requirements; user challenges them before
   old `external-interface` is the same kind (do not rewrite solely to rename).
 - `internal-behavior`: no contract outside this component.
 
-Drop or reword when the user challenges. Material ARD change after approval:
-apply **Material-change**.
+Drop or reword when the user challenges. A review point that changes an entry
+adds `revised-by:` (**Reviews**; same for `DC` and `CONV`). Material RD change after approval: apply
+**Material-change**.
 
 ### `design-choices.md`
 
@@ -307,7 +329,7 @@ delete or rewrite history. Supersede with a new entry and `replaces: DC<nn>`.
 Skip micro-choices recoverable from code. ~200 words hard max. `level` is
 exactly one of:
 
-- `design-choice`: UI or software-facing contract (same coverage as ARD
+- `design-choice`: UI or software-facing contract (same coverage as RD
   `end-user-interface` / `software-interface`). Feeds a future design document.
 - `major-implementation-detail`: internal, but individually mentioned in that
   document. Test: costly if unknown, or reversal ripples across components.
@@ -353,7 +375,7 @@ User sign-off of rules + Setup is `conventions-ok` (**Execution gate**).
 ### `notes-by-user.md`
 
 H1: `# Notes by User`. User-owned. Aim **≤ ~500 words**; if over budget, warn
-once; the user trims. Read for intake; promote load-bearing bits into ARD,
+once; the user trims. Read for intake; promote load-bearing bits into RD,
 Design Decisions, or Conventions. The agent never edits it, except a short
 `agent:` line when asked.
 
@@ -386,9 +408,17 @@ rewriting `activity.md`. Do not load `activities.md` on resume. Do not load
 
 Planning, building, `self-review`, `verify-plan`, `mark-completed`.
 
-- **Per milestone:** focused tests for that outcome only. List cases neatly
-  (happy path, edges, errors that belong here). Do not hang the whole suite
-  off every milestone.
+Three tiers. Plan each tier during planning. Write tests as each milestone is
+built.
+
+- **Unit (per part):** each part a milestone adds or changes (function,
+  component, module) gets focused tests on its own behavior. Cases: happy
+  path, edges, and errors that belong to that part. Isolate the part from
+  its neighbors. Do not hang the whole suite off every milestone.
+- **Integration (per boundary):** test where parts meet: component
+  boundaries, joins between milestones, and each `software-interface` RD.
+  Name the boundary and its cases in the plan. Place the test in the
+  milestone that completes the boundary.
 - **Last milestone** (or a dedicated final one): one or more **end-to-end**
   tests that confirm the Goal as a whole. `mark-completed` MUST NOT proceed
   without that named, runnable e2e unless the user explicitly drops it (reason
@@ -399,8 +429,15 @@ Planning, building, `self-review`, `verify-plan`, `mark-completed`.
   interface. Reuse the repo's test-double pattern if one exists. Ship it
   with the tests so a fresh agent can run e2e. Not activity `artifacts/`
   only. Not a second product.
-- Evidence bullets name the runnable command and the case list. Write tests
-  as each milestone is implemented.
+- **Extend existing tests first:** before you add a test, search for tests
+  with the same goal (same part, boundary, or scenario).
+  - Goals match → extend that test (new case, table row, or assertion).
+  - Goals differ, or the extension would blur its purpose → add a new test.
+  - Do not weaken or rewrite existing assertions to fit. A changed expected
+    behavior is a requirement change; record it as a review point
+    (**Reviews**).
+- **Layout:** follow the repo's test layout, naming, and helpers.
+- Evidence bullets name the runnable command and the case list per tier.
 
 ## Writing style
 
@@ -459,7 +496,7 @@ Durability, not a live log.
 - `activity.md`: scope/design/plan change, milestone reached, blocker, before
   pause / complete / handoff. A checked milestone also appends a `Milestone`
   event.
-- ARD whenever requirements change; must be current before `approve-plan`.
+- RD whenever requirements change; must be current before `approve-plan`.
 - Design Decisions when an important choice is made.
 - Conventions (rules + Setup) when observed, confirmed, or tightened.
 - `activities.md`: **Catalog**. `journal.md`: **Journal policy**.
@@ -472,9 +509,9 @@ Durability, not a live log.
 Agent-run after user edits; also step 0 of `fix-notes`. No keyword, no status
 change, no journal.
 
-1. Check `activity.md`, ARD, Design Decisions, Conventions, and `reviews.md`
-   against each other: broken or duplicate **IDs**, Goal vs ARD, Current
-   Design vs DCs, plan/milestones vs ARD, Setup vs rules.
+1. Check `activity.md`, RD, Design Decisions, Conventions, and `reviews.md`
+   against each other: broken or duplicate **IDs**, Goal vs RD, Current
+   Design vs DCs, plan/milestones vs RD, Setup vs rules.
 2. For each issue: ID or section, the smallest edit, why. Ask yes / no / mods.
    Apply only confirmed fixes. Do not reword beyond the fix.
 3. A fix that changes Goal or Scope is **Material-change**: skip it and prompt.
@@ -537,7 +574,7 @@ tables.
 | Command | What it does |
 |---|---|
 | `update-convention` | Add or rewrite convention rules |
-| `fix-notes` | Fix inconsistencies, prune, verify against the repo, rewrite for clarity, close ID gaps |
+| `fix-notes` | Fix inconsistencies, prune, verify against the repo, rewrite for clarity, grill on plan-changing findings, close ID gaps |
 | `compact-journal` | Shorten the journal in place |
 
 **Output and cleanup**
@@ -568,13 +605,14 @@ answer, explore the repo instead of asking. Do not skip grilling to draft files.
 1. **Project-fit** against `.dev-notes/definition.md`. Do not proceed until it fits.
 2. **Intake:** free-text scope (objective, in/out, constraints, done).
 3. Grill remaining branches: goal, success, scope, constraints, assumptions,
-   risks, interfaces, non-goals. Classify each requirement and write ARD as it
+   risks, interfaces, non-goals. Classify each requirement and write RD as it
    becomes clear. Record Design Decisions as they are made. Best-effort
    Conventions (rules + Setup) from repo/activity facts; user corrects.
 4. If the user cited files, run **Cited context**.
-5. Draft Goal (ARD summary) / Design / Plan / MECE milestones / evidence /
-   Next Steps / References. Each milestone lists focused test cases; the last
-   names e2e (and any interface fake).
+5. Draft Goal (RD summary) / Design / Plan / MECE milestones / evidence /
+   Next Steps / References. Each milestone lists unit cases per part and
+   integration cases for the boundaries it completes; the last names e2e (and
+   any interface fake). Note existing tests to extend (**Test evidence**).
 6. **draft-check:** parent re-reads the drafted files before user review. No
    critics; not the `self-review` pipeline.
 
@@ -594,20 +632,20 @@ If the current message already supplied both, acknowledge and continue grilling.
 
 1. Remind strong model.
 2. **Planning quality bar** (includes **draft-check**; `# Scope` after the
-   grill, `# Goal` from ARD).
+   grill, `# Goal` from RD).
 3. Write `activity.md` (`conventions: pending`), `journal.md` (`# Journal`
    plus a `Created` event), `requirements.md`, `design-choices.md`, `conventions.md` (include
    Setup H2), `notes-by-user.md` (`# Notes by User` only unless the user
    already wrote notes). Append one **Catalog** entry.
-4. File review: user can challenge ARD, Conventions, Setup, and plan before
-   `approve-plan` / `conventions-ok`. Each feedback round is a `UR<n>` cycle
+4. File review: user can challenge RD, Conventions, Setup, and plan before
+   `approve-plan` / `conventions-ok`. Each feedback round is an `RU<n>` cycle
    (**Reviews**).
 5. Revision loop. Then **Execution gate**.
 
 ## Cited context
 
 When the user points at files as initial context or definition updates (create,
-derive, `replan-work`, ARD changes — not every source file touched while building):
+derive, `replan-work`, RD changes — not every source file touched while building):
 
 1. Use every cited file **this session**, saved or not.
 2. Ask **once** with a list. For each: tracked or not, hint whole copy vs excerpt.
@@ -628,6 +666,16 @@ Only after the **Execution gate**, outside **Stops** blocks.
 - Checkpoints only (**Update cadence**).
 - Honor `conventions.md` rules (precedence: **Notes files**). Use Setup
   commands for build/test.
+- **Coding style:** where `conventions.md` rules are silent, the repo's
+  guidelines apply.
+  - Match the surrounding code: naming, idiom, error handling, structure,
+    and file layout.
+  - Keep the diff minimal and in scope. Do not refactor or reformat code the
+    milestone does not touch; suggest it separately.
+  - Reuse existing helpers, utilities, and patterns before you write new
+    ones.
+  - Prefer the standard library and existing dependencies. A new dependency
+    is a Design Decision.
 - Planning vocabulary stays out of shipped work: no **IDs**, milestone
   numbers, or the activity slug in code, comments, or identifiers. Such
   labels mean nothing outside the activity files.
@@ -646,7 +694,7 @@ Only after the **Execution gate**, outside **Stops** blocks.
   - Match the file's comment dialect.
 - New definition files → **Cited context** (ask before copy).
 - Missing invariant that would mislead a fresh reader → update `activity.md`.
-  New requirement or important choice → ARD / Design Decisions. New confirmed
+  New requirement or important choice → RD / Design Decisions. New confirmed
   convention → Conventions. Material change → **Material-change**.
 - Suggest `create-sibling` when work is independently durable.
 - Apply **Test evidence** while building.

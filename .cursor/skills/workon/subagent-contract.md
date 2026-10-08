@@ -39,7 +39,7 @@ pipeline runs, activity files are frozen (**Pipeline in flight** in
   that do not need it. Agents MAY Read it.
 
 **Plan packet** (parent pastes): Goal, Scope, Current Design, Current Plan,
-Milestones, Next Steps, full ARD, full Design Decisions, and the
+Milestones, Next Steps, full RD, full Design Decisions, and the
 `conventions.md` path. Workers, env, test, and explore agents get only the
 slices they need.
 
@@ -96,7 +96,7 @@ churned. No change proposals. Nothing stands out → `- none`.
 ## Keep
 ### <short title>
 - weight: load-bearing | strong | nice
-- where: `activity.md` `# …` | `R<n>` | `DC<nn>` | `CONV<n>` | <path>
+- where: `activity.md` `# …` | `RD<n>` | `DC<nn>` | `CONV<n>` | <path>
 - why: <what breaks if removed or churned>
 ```
 
@@ -116,12 +116,12 @@ worst first. List every `must`; cap the rest at ~5. Nothing wrong →
 - propose: <concrete edit, or `clarify: <ambiguity>`>
 ```
 
-**Kinds.** Defects: `unmet-ard`, `partial-ard`, `contradiction`,
+**Kinds.** Defects: `unmet-rd`, `partial-rd`, `contradiction`,
 `resume-hole`, `evidence-gap`, `convention-fight`, `false-done` (claimed
 done; evidence disagrees). Taste: `replaceable` (a cheaper path still meets
-ARD). Intent: `unclear` (two plausible readings).
+RD). Intent: `unclear` (two plausible readings).
 
-**Weights.** `load-bearing`: Goal, ARD, or invariant; do not churn without a
+**Weights.** `load-bearing`: Goal, RD, or invariant; do not churn without a
 shown defect. `strong`: keep unless a defect. `nice`: a `should` fix may win.
 
 ### Reconcile
@@ -144,11 +144,11 @@ only.
 Critic input: plan packet. Critics MAY Read paths the plan cites; no other
 repo walk.
 
-- Negative focus: each ARD entry met / partial / unmet / untestable; ARD vs
+- Negative focus: each RD entry met / partial / unmet / untestable; RD vs
   design vs plan vs milestones vs conventions; unclear intent; cheaper
-  design; resume holes; missing milestone tests, last-milestone e2e, or
+  design; resume holes; missing unit or integration tests, last-milestone e2e, or
   `software-interface` fake.
-- Positive focus: testable, correctly kinded ARD; Design Decisions with real
+- Positive focus: testable, correctly kinded RD; Design Decisions with real
   alternatives; MECE milestones, named e2e, resume-safe Next Steps, real
   invariants.
 
@@ -159,7 +159,7 @@ repo walk.
    `synthesis.md`. Grill the rest one at a time (recommend an answer); patch
    again. Unanswered items stay out of apply. `- none` → skip.
 5. Show `## Proposals`. Ask all / some / none. Never apply in the turn of
-   the first Read. Discard rejected items. Record `SR<n>` (**Reviews**).
+   the first Read. Discard rejected items. Record `RU<n>` (**Reviews**).
 
 ### `self-review`
 
@@ -190,12 +190,13 @@ repo walk.
    step 4.
 4. **Evaluate** when the parent must judge quality, not only record a pass:
    real design latitude, the last milestone, or the user asked. Launch the
-   critic pair. Input: milestone claim, ARD and design slices, `collate.md`
+   critic pair. Input: milestone claim, RD and design slices, `collate.md`
    and changed paths (MAY Read). Parent Reads both critic files and
    reconciles. Fix `must` defects in a job round; record the rest.
 
-- Negative focus: unmet ARD, weak or missing tests, convention fights,
-  fragile joins, needless complexity.
+- Negative focus: unmet RD, weak or missing unit or integration tests, new
+  tests that duplicate an existing test's goal, convention fights, style
+  that breaks from the surrounding code, fragile joins, needless complexity.
 - Positive focus: clean interfaces, solid tests, simple design. Work the next
   round must not undo.
 

@@ -50,7 +50,7 @@ Metadata table in the **first ~10 lines** (title + table) so listing stays grepp
 
 # Goal
 
-<Short summary of requirements.md. ARD is authoritative.>
+<Short summary of requirements.md. RD is authoritative.>
 
 # Scope
 
@@ -73,20 +73,23 @@ delta steps starting at the new requirement.>
 
 1. [ ] <Outcome A>
    - tests:
-     - <case>: <what it asserts>
+     - unit <part>: <case>: <what it asserts>
+     - integration <boundary>: <case>: <what it asserts>
+     - extend `<existing test path>`: <case added>
    - evidence:
      - `<test command>`
 
 2. [ ] <Outcome B — last is e2e confirmation of the Goal>
    - tests:
+     - unit <part>: <case>: <what it asserts>
      - e2e <path>: <what it asserts>
    - evidence:
      - `<e2e command>`
      - fake (if `software-interface` peer is not live): `<test-double path>`
 
-3. [ ] Apply UR1 (review milestone; **Reviews** in `SKILL.md`)
-   - [ ] <MECE step> (UR1.1, UR1.3)
-   - [ ] <MECE step> (UR1.2)
+3. [ ] Apply RU1 (review milestone; **Reviews** in `SKILL.md`)
+   - [ ] <MECE step> (RU1.1, RU1.3)
+   - [ ] <MECE step> (RU1.2)
    - evidence:
      - `<test command>`
 
@@ -122,9 +125,9 @@ Events, write-on, and caps: **Journal policy** in `SKILL.md`.
 - done: milestone 2; `go test ./export/...` green
 - found: quoting needs RFC 4180 mode → DC04
 
-## User review: UR2 (Planning)
-- 5 points: applied 3 → R4, DC03; rejected 1; open 1
-- added milestone `Apply UR2`
+## Review: RU2 (Planning)
+- 5 points: applied 3 → RD4, DC03; rejected 1; open 1
+- added milestone `Apply RU2`
 
 ## Blocked: upstream API (Active → Blocked)
 - blocker: `/v2/rows` returns 500 on large pages
@@ -191,10 +194,14 @@ Policy (Repair, enums, precedence, who drafts): **Notes files** in
 ```markdown
 # Requirement Definition
 
-## R1: <title>
+## RD1: <title>
 - kind: end-user-interface | software-interface | internal-behavior
 - <description>
+- revised-by: RU<n>.<m>
 ```
+
+Omit `revised-by:` until a review point changes the entry. List each revising
+point. Same rule on `CONV` entries.
 
 ### design-choices.md
 
@@ -208,9 +215,11 @@ Policy (Repair, enums, precedence, who drafts): **Notes files** in
 - alternatives:
   - <alt>: <why not>
 - replaces: DC<nn>
+- revised-by: RU<n>.<m>
 ```
 
-Omit `replaces:` on a first decision.
+Omit `replaces:` on a first decision. Omit `revised-by:` unless a review point
+caused the entry.
 
 ### conventions.md
 
@@ -219,6 +228,7 @@ Omit `replaces:` on a first decision.
 
 ## CONV1: <short title>
 - <2–5 bullets: the rule>
+- revised-by: RU<n>.<m>
 
 ## Setup, build, test and install notes
 - setup: `<command>`
@@ -242,20 +252,24 @@ Policy: **Reviews** in `SKILL.md`.
 ```markdown
 # Reviews
 
-## UR1: <short topic>
+## RU1: <short topic>
 
-state: <status, current milestone. Changes since the previous UR cycle:
+state: <status, current milestone. Changes since the previous RU cycle:
 IDs added/changed, work built. 1–2 short paragraphs; deltas only.>
 
-- UR1.1: <point> — applied → R2, DC03
-- UR1.2: <point> — rejected: <why>
-- UR1.3: <point> — open
+- RU1.1: <point> — applied → RD2 (revised), DC04 (replaces DC03)
+- RU1.2: <point> — rejected: <why>
+- RU1.3: <point> — open
 
-## SR1: apply-review | verify-plan
-- SR1.1: <proposal> — applied → CONV2
+## RU2: <short topic>
+
+state: <deltas since RU1>
+
+- RU2.1: <point> — applied → CONV2 (revised)
+- RU2.2: <point> — applied → code (milestone `Apply RU2`)
 
 ## Renumber 1
-- R4 → R3, DC07 → DC05
+- RD4 → RD3, DC07 → DC05
 ```
 
 ## user-guide.md
