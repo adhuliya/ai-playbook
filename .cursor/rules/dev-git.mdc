@@ -27,11 +27,12 @@ Before `approve-commit`, list scratch paths from this session (not part of inten
 ## Workflow
 
 1. Inspect: `git status`, `git diff` (staged + unstaged), `git log -2 --name-only`.
-2. Draft title and body per Commit Policy.
-3. Stage relevant files. No secrets (`.env`, credentials); warn if asked.
-4. List staged paths, session temporaries (see **Session temporary files**), draft message. User may adjust staging, `delete-files`, or `approve-commit`.
-5. `approve-commit` only: commit staged via HEREDOC (`git commit -m "$(cat <<'EOF' ... EOF)"`), then `git status`.
-6. Hook reject: fix, restage, re-confirm (temporaries/`delete-files` if needed), new commit (amend only if user rules allow).
+2. **Local checks:** find the repo's pre-commit requirements (dev-guide Notes, `CONTRIBUTING`, pre-commit/lint/format config, CI lint jobs). Examples: copyright headers, format, lint. Apply fixes to files changed in this session only. Report what ran, what changed, and what was skipped.
+3. Draft title and body per Commit Policy.
+4. Stage relevant files. No secrets (`.env`, credentials); warn if asked.
+5. List staged paths, session temporaries (see **Session temporary files**), draft message. User may adjust staging, `delete-files`, or `approve-commit`.
+6. `approve-commit` only: commit staged via HEREDOC (`git commit -m "$(cat <<'EOF' ... EOF)"`), then `git status`.
+7. Hook reject: fix, restage, re-confirm (temporaries/`delete-files` if needed), new commit (amend only if user rules allow).
 
 ## Out of scope unless asked
 

@@ -14,18 +14,18 @@ Sequences: [`commands.md`](commands.md). Do not copy policy here.
         requirements.md
         design-choices.md
         conventions.md
-        user-notes.md
+        notes-by-user.md
+        reviews.md              # lazy
+        user-guide.md           # create-guide only
         artifacts/              # copies flat; reserved: verify-plan/, bg/, self-review/
 ```
 
-No child activity directories. Siblings are top-level slugs.
-
 **`artifacts/`:** whole copies as `<basename>` at the root; excerpts as
-`<stem>-excerpt.md` (header = source path + what was kept). Reserved
-(committable; delete only at `mark-completed` cleanup after confirm):
+`<stem>-excerpt.md` (header = source path + what was kept). Reserved names:
 `verify-plan/` (`critic-negative.md`, `critic-positive.md`, `synthesis.md`;
 optional `negative/`, `positive/`, `synth/` slices), `bg/` (optional
-`<stem>/` slices next to `<stem>.md`), `self-review/` (`env.md`,
+`<stem>/` slices next to `<stem>.md`; `milestone-<n>/` job reports and
+`collate.md`), `self-review/` (`env.md`,
 `milestone-<n>.md`, `critic-a.md`, `critic-b.md`; optional `env/`,
 `milestone-<n>/`, `a/`, `b/`, `synth/` slices), and `self-review.md`. Do
 not use `self-review.md` as a cited-copy name.
@@ -40,6 +40,7 @@ Metadata table in the **first ~10 lines** (title + table) so listing stays grepp
 | Key | Value |
 |---|---|
 | status | Planning |
+| conventions | pending |
 | slug | my-activity |
 | branch | none |
 | ticket | none |
@@ -51,8 +52,7 @@ Metadata table in the **first ~10 lines** (title + table) so listing stays grepp
 
 # Scope
 
-<One or two paragraphs: whole activity scope and how it fits the project.
-Set after initial grilling; near-fixed. Major in-flight change = `replan-work`.>
+<One or two paragraphs: whole activity scope and how it fits the project.>
 
 # Background and Special Notes
 
@@ -69,9 +69,6 @@ delta steps starting at the new requirement.>
 
 # Milestones
 
-MECE outcomes. Apply **Test evidence** in `SKILL.md`. Keep checked items on
-reopen; append new; mark removed work `superseded`.
-
 1. [ ] <Outcome A>
    - tests:
      - <case>: <what it asserts>
@@ -85,6 +82,12 @@ reopen; append new; mark removed work `superseded`.
      - `<e2e command>`
      - fake (if `software-interface` peer is not live): `<test-double path>`
 
+3. [ ] Apply UR1 (review milestone; **Reviews** in `SKILL.md`)
+   - [ ] <MECE step> (UR1.1, UR1.3)
+   - [ ] <MECE step> (UR1.2)
+   - evidence:
+     - `<test command>`
+
 # Next Steps
 
 1. <Immediate task>
@@ -92,8 +95,8 @@ reopen; append new; mark removed work `superseded`.
 
 # References
 
-- <docs, specs, commits, issues, related slugs, …>
-- `path/to/input` — context-only | copied (`artifacts/<name>`) | excerpt (`artifacts/<stem>-excerpt.md`)
+- REF1: <docs, specs, commits, issues, related slugs, …>
+- REF2: `path/to/input` — context-only | copied (`artifacts/<name>`) | excerpt (`artifacts/<stem>-excerpt.md`)
   Learned: <1–3 sentences>
 - `derived-from: <parent-slug>` — siblings only; non-load-bearing
 ```
@@ -106,7 +109,7 @@ Write-on and caps: **Journal policy** in `SKILL.md`. Until the first write:
 # Journal
 ```
 
-### Pause / resume recap (~8–12 lines)
+### Pause / resume recap
 
 ```markdown
 ## Pause (Active → Paused)
@@ -135,10 +138,6 @@ Write-on and caps: **Journal policy** in `SKILL.md`. Until the first write:
 
 ### `mark-completed` entry
 
-Heading names the **work slice** and carries the transition tick
-(`(<from> → Complete)`). Body is shipped outcomes, paths, decisions,
-lessons, accepted gaps — no separate tick line.
-
 ```markdown
 ## <Short work title> (Active → Complete)
 
@@ -146,14 +145,9 @@ lessons, accepted gaps — no separate tick line.
 Repo paths and evidence pointers.>
 ```
 
-Sibling provenance lives in derived `activity.md` `# References`
-(`derived-from: <slug>`), not in the journal. Sibling journal starts as
-`# Journal` only.
-
 ## activities.md
 
-Create lazily. Append-only for new activities. Never bulk-read —
-**Catalog** in `SKILL.md`.
+Policy: **Catalog** in `SKILL.md`.
 
 ```markdown
 # Activities
@@ -167,16 +161,15 @@ Harden playbook/target sync for machine registry, ignores, syncmap, and nested-g
 
 ## Notes files
 
-Legacy split, Repair, enums, precedence: **Notes files** in `SKILL.md`.
-Agent best-effort drafts all except `user-notes.md`. Bullets. Promote old
-`###` entries to `##`. Agent-written files use **Prose density**.
+Policy (Repair, enums, precedence, who drafts): **Notes files** in
+`SKILL.md`. Agent-written files are records (**Writing style**).
 
 ### requirements.md
 
 ```markdown
 # Requirement Definition
 
-## <title>
+## R1: <title>
 - kind: end-user-interface | software-interface | internal-behavior
 - <description>
 ```
@@ -186,25 +179,23 @@ Agent best-effort drafts all except `user-notes.md`. Bullets. Promote old
 ```markdown
 # Design Decisions
 
-## <decision title>
+## DC01: <decision title>
 - level: design-choice | major-implementation-detail | implementation-detail
 - chosen: <what>
 - why: <compelling reason>
 - alternatives:
   - <alt>: <why not>
-- replaces: <old decision title>
+- replaces: DC<nn>
 ```
 
 Omit `replaces:` on a first decision.
 
 ### conventions.md
 
-Target ≤ ~500 words.
-
 ```markdown
 # Conventions
 
-## <short title>
+## CONV1: <short title>
 - <2–5 bullets: the rule>
 
 ## Setup, build, test and install notes
@@ -214,14 +205,56 @@ Target ≤ ~500 words.
 - install: `<command>`
 ```
 
-### user-notes.md
-
-Aim ≤ ~500 words. User-owned; do not prune.
+### notes-by-user.md
 
 ```markdown
-# User Notes
+# Notes by User
 
 <User free-form information for this activity.>
+```
+
+## reviews.md
+
+Policy: **Reviews** in `SKILL.md`.
+
+```markdown
+# Reviews
+
+## UR1: <short topic>
+
+state: <status, current milestone. Changes since the previous UR cycle:
+IDs added/changed, work built. 1–2 short paragraphs; deltas only.>
+
+- UR1.1: <point> — applied → R2, DC03
+- UR1.2: <point> — rejected: <why>
+- UR1.3: <point> — open
+
+## SR1: apply-review | verify-plan
+- SR1.1: <proposal> — applied → CONV2
+
+## Renumber 1
+- R4 → R3, DC07 → DC05
+```
+
+## user-guide.md
+
+Policy: **User guide** in `SKILL.md`. Prose per **Writing style**. Omit
+empty sections.
+
+```markdown
+# <Feature title>: User Guide
+
+## What it does
+<Problem solved and the behavior the user sees.>
+
+## How to use
+<Steps, commands, inputs, outputs, options.>
+
+## How to test
+<Runnable commands with expected results. Include the e2e check.>
+
+## How to explain
+<Short pitch, key concepts, a demo script, limits and known gaps.>
 ```
 
 ## List output (agent → user)
@@ -233,9 +266,3 @@ Aim ≤ ~500 words. User-owned; do not prune.
 ```
 
 `ticket` is omitted on purpose (token economy); include it if the user asks.
-
-## Details output (no resume)
-
-1. Full path to `activity.md`
-2. First ~20 lines of that file
-3. Stop

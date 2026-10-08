@@ -4,25 +4,28 @@ Parent pastes a **self-contained** Task prompt. Sub-agents do not see the parent
 chat. Chat parent: always `run_in_background: true`. `subagent_type:
 generalPurpose`. `model`: inherit unless the user named a listed model.
 
-Apply **Prose density** from `SKILL.md` in every file you write. No essays.
-Bullets.
+Write every file as a record (**Writing style** in `SKILL.md`).
 
-Turn-stage, **Parent reads**, and assigned paths live here. `SKILL.md` does not
-restage. Repair notes first (**Notes files** in `SKILL.md`), then freeze
-activity/notes files while a pipeline is in flight.
+Launch mode, depth, bans, turn-stage, **Parent reads**, and assigned paths
+live here. Freeze while a pipeline runs: **Pipeline in flight** (Stops in
+`SKILL.md`).
 
 ## Shared bans
 
 - Do not grill the user (no questions).
 - Do not write `activity.md`, `journal.md`, `requirements.md`,
-  `design-choices.md`, `conventions.md`, `user-notes.md`, or `activities.md`.
+  `design-choices.md`, `conventions.md`, `notes-by-user.md`, `reviews.md`,
+  `user-guide.md`, or `activities.md`.
 - Do not Read `requirements.md` or `design-choices.md`. Parent pastes excerpts.
-- Do not Read `user-notes.md`.
+- Do not Read `notes-by-user.md` or `reviews.md`.
 - Do not `git add` / commit.
 - Do not Read a sibling critic file or another worker's slice dir. Do not edit
-  code. Read-only inspect/test only if the prompt assigns it. Env MAY run
-  documented setup/build commands from the prompt / `conventions.md` Setup;
-  MUST NOT invent tooling or edit source.
+  code, except a milestone worker inside its assigned paths. Read-only
+  inspect/test only if the prompt assigns it. Env MAY run documented
+  setup/build commands from the prompt / `conventions.md` Setup; MUST NOT
+  invent tooling or edit source.
+- Follow **Isolated setup** (`conventions.md` in `SKILL.md`): no system
+  installs or changes unless the prompt says the user asked.
 
 ## Nested children
 
@@ -51,6 +54,7 @@ artifacts/self-review/a/
 artifacts/self-review/b/
 artifacts/self-review/synth/
 artifacts/bg/<stem>/
+artifacts/bg/milestone-<n>/<job>/
 ```
 
 `bg/<stem>/` sits next to `artifacts/bg/<stem>.md`.
@@ -68,7 +72,8 @@ for status. No file yet → say so.
 
 Parent **may** Read a body when consuming results (explore notes while
 drafting; `synthesis.md` after verify-plan; `self-review.md` after
-self-review; `env.md` only when `status: blocked`). Never Read critic bodies,
+self-review; `collate.md` after a milestone pipeline; `env.md` only when
+`status: blocked`). Never Read job reports, critic bodies,
 slice dirs, or milestone test bodies for status. Parent MAY patch
 `synthesis.md` during the verify-plan question gate (below). Do not Read
 `artifacts/bg/` reports for status.
@@ -76,23 +81,35 @@ slice dirs, or milestone test bodies for status. Parent MAY patch
 **Planning:** MAY launch read-only explores (patterns, call sites, one subtree),
 then ask the next grill question and end the turn. Output file if needed:
 `.dev-notes/activities/<slug>/artifacts/bg/<name>.md` (keep until
-`mark-completed` cleanup; committable; never auto-`git add`).
+`delete-tmp-files`; committable; never auto-`git add`).
 
-**Implementation:** parent writes code. Background MAY inspect, run named
-evidence/tests, or write a short `artifacts/bg/` report. Overlapping writes
-forbidden.
+**Implementation:** use the **Milestone pipeline**. Overlapping writes
+forbidden. Parent codes inline only for a few tool calls.
 
-**Pass `conventions.md`:** MUST pass the file path to env, test, critic, and
-verify-plan synthesizer agents (they MAY Read it). Explore agents only if the
-task needs it.
+**Milestone pipeline (turn-stage):**
+
+1. Split the milestone into MECE jobs. Give each job disjoint write paths
+   (code, tests) and one report path
+   `artifacts/bg/milestone-<n>/<job>.md`. On re-run, delete stale job
+   reports. Launch all jobs in one message. End the turn.
+2. Ready job: completion notice, **or** `test -f` plus `rg -l '^# Job'`.
+   When **all** jobs are ready, launch the **collator**. End the turn.
+3. Collator writes `artifacts/bg/milestone-<n>/collate.md`. Parent Reads
+   **only** that file. `fail` or `conflict` → fix via a new job round or
+   inline. `pass` → update activity files (**Update cadence**).
+
+**Pass `conventions.md`:** MUST pass the file path to env, test, critic,
+synthesizer, milestone worker, and collator agents (they MAY Read it).
+Explore agents only if the task needs it. ARD / Design Decisions: parent
+pastes excerpts (env/test/explore/worker: only the slices needed; critics and
+synthesizers: **full**).
 
 **`verify-plan` turn-stage:**
 
 1. On re-run, delete stale files under `verify-plan/negative/`,
    `verify-plan/positive/`, and `verify-plan/synth/`. Launch **negative** and
    **positive** critics in one message (different briefs). Tell the user they
-   are running. End the turn. Repair first, then no activity-file edits while
-   this pipeline is in flight.
+   are running. End the turn.
 2. Ready critic file: completion notice, **or** fallback `test -f` plus
    `rg -l '^# Critic (negative|positive)$'` on that path (header check, not a
    body Read). File missing/empty/`rg` miss → not ready. When **both** are
@@ -112,13 +129,13 @@ task needs it.
 5. Show remaining `## Proposals` (full-sentence confirm). Ask all / some /
    none. Apply only after the user answers. Do not apply in the same turn as
    the first Read of `synthesis.md`. Rejected items discarded (not parked in
-   User Notes). **Keep** assigned files and slice dirs (overwrite on re-run).
-   Delete only at `mark-completed` cleanup after user confirm.
+   Notes by User). Record the cycle as `SR<n>` in `reviews.md` (**Reviews**
+   in `SKILL.md`). **Keep** assigned files and slice dirs (overwrite on
+   re-run). Delete only via `delete-tmp-files`.
 
 **`self-review` turn-stage:**
 
-1. Launch **one** env agent. Tell the user it is running. End the turn. No
-   activity-file edits while this pipeline is in flight (Repair first, then freeze).
+1. Launch **one** env agent. Tell the user it is running. End the turn.
 2. Ready `env.md`: completion notice, **or** `test -f` plus `rg` for
    `^status: (ready|blocked)` (header, not a body Read). Missing/empty/`rg`
    miss → not ready. `blocked` → parent Reads `env.md`, shows it, **stops**.
@@ -132,10 +149,10 @@ task needs it.
    synthesizer; end the turn.
 5. Synthesizer writes `artifacts/self-review.md`. Parent Reads **only** that
    file. Show it. Stop. Wait for `apply-review`. Do not apply in the same
-   turn as the first Read. Do not edit activity/notes files from `self-review`.
+   turn as the first Read.
 
-Keep working files (overwrite on re-run). Committable. Delete only at
-`mark-completed` cleanup after user confirm.
+Keep working files (overwrite on re-run). Committable. Delete only via
+`delete-tmp-files`.
 
 Assigned paths:
 
@@ -149,6 +166,10 @@ Assigned paths:
 .dev-notes/activities/<slug>/artifacts/self-review/milestone-<n>.md
 .dev-notes/activities/<slug>/artifacts/self-review/critic-a.md
 .dev-notes/activities/<slug>/artifacts/self-review/critic-b.md
+
+.dev-notes/activities/<slug>/artifacts/bg/milestone-<n>/<job>.md
+.dev-notes/activities/<slug>/artifacts/bg/milestone-<n>/collate.md
+.dev-notes/activities/<slug>/artifacts/bg/<name>.md
 ```
 
 `<n>` is the milestone number from `activity.md`. Overwrite those paths.
@@ -169,7 +190,7 @@ exit.
 
 **Input (parent pastes):** Goal, Scope, Current Design, Current Plan,
 Milestones, Next Steps, full ARD, full Design Decisions. Path to
-`conventions.md` (MAY Read). Not User Notes, not journal, not
+`conventions.md` (MAY Read). Not Notes by User, not journal, not
 `requirements.md` / `design-choices.md` files. You MAY Read a path the plan
 cites. No extra repo walk.
 
@@ -200,7 +221,7 @@ Return **only** this file body:
 ### <short title>
 - kind: unmet-ard | partial-ard | contradiction | unclear | replaceable | resume-hole | evidence-gap | convention-fight
 - severity: must | should | drop
-- where: `activity.md` `# Current Plan` | `requirements.md` `## …` | `design-choices.md` `## …` | `conventions.md` `## …`
+- where: `activity.md` `# Current Plan` | `R<n>` | `DC<nn>` | `CONV<n>`
 - issue: <one to three short bullets>
 - propose: <concrete edit, or `clarify:` plus the ambiguity>
 ```
@@ -244,7 +265,7 @@ path the plan cites. No extra repo walk. No change proposals.
 
 ### <short title>
 - weight: load-bearing | strong | nice
-- where: `activity.md` `# …` | `requirements.md` `## …` | `design-choices.md` `## …` | `conventions.md` `## …`
+- where: `activity.md` `# …` | `R<n>` | `DC<nn>` | `CONV<n>`
 - why: <what breaks if this is removed or churned>
 - keep: <the element, or the property that must survive an edit>
 ```
@@ -268,7 +289,7 @@ MUST NOT Read slice dirs.
 **Input (parent pastes):** same plan packet as the critics (Goal, Scope,
 Current Design, Current Plan, Milestones, Next Steps, full ARD, full Design
 Decisions, path to `conventions.md`) **plus** the two critic file paths. Not
-User Notes, not journal, not `requirements.md` / `design-choices.md` files.
+Notes by User, not journal, not `requirements.md` / `design-choices.md` files.
 No extra repo walk.
 
 **Judgment:**
@@ -296,7 +317,7 @@ No extra repo walk.
 
 ### <short title>
 - severity: must | should
-- where: `activity.md` `# …` | `requirements.md` `## …` | `design-choices.md` `## …` | `conventions.md` `## …`
+- where: `activity.md` `# …` | `R<n>` | `DC<nn>` | `CONV<n>`
 - change: <the edit>
 - why: <one line>
 - from: negative | both | synth
@@ -396,7 +417,7 @@ e2e when claimed complete.
 
 ### <short title>
 - severity: must | should | drop
-- where: `activity.md` `# Current Plan` | `requirements.md` `## …` | `design-choices.md` `## …` | `conventions.md` `## …`
+- where: `activity.md` `# Current Plan` | `R<n>` | `DC<nn>` | `CONV<n>`
 - issue: <one to three short bullets>
 - propose: <concrete edit>
 ```
@@ -430,7 +451,7 @@ product-code patches). Strip `drop`. Severity: `must` | `should`.
 
 ### <short title>
 - severity: must | should
-- where: `activity.md` `# …` | `requirements.md` `## …` | `design-choices.md` `## …` | `conventions.md` `## …`
+- where: `activity.md` `# …` | `R<n>` | `DC<nn>` | `CONV<n>`
 - change: <the edit>
 - why: <one line>
 - from: env | tests | a | b | both | synth
@@ -439,6 +460,52 @@ product-code patches). Strip `drop`. Severity: `must` | `should`.
 
 If nothing survives: `# Self-review`, `## Evidence` (keep the facts),
 `## Proposals`, `- none`.
+
+---
+
+## Milestone worker (one job)
+
+**Write only** the assigned code/test paths and the assigned report
+`…/artifacts/bg/milestone-<n>/<job>.md`. MAY spawn depth-1 children into
+`bg/milestone-<n>/<job>/`.
+
+**Input (parent pastes):** job goal, assigned paths, relevant design and
+ARD slices, test cases, Setup commands; path to `conventions.md` (MAY
+Read). Follow **Engineering while focused** (comments, conventions, no
+**IDs** in code). Run the job's tests.
+
+```markdown
+# Job <name>
+
+- result: done | partial | blocked
+- changed: <paths>
+- tests: `<command>`: <one-line outcome>
+- notes: <interface assumptions, open issues>
+```
+
+---
+
+## Milestone collator
+
+**Read** the job reports (absolute paths from parent). **Write only**
+`…/artifacts/bg/milestone-<n>/collate.md`. Do not edit code. MUST NOT Read
+job slice dirs.
+
+**Input (parent pastes):** milestone claim, test cases, evidence commands,
+job report paths; path to `conventions.md` (MAY Read).
+
+**Job:** check the joins (overlaps, gaps, interface mismatches between jobs).
+Run the milestone evidence commands.
+
+```markdown
+# Collate milestone <n>
+
+- result: pass | fail | conflict
+- evidence:
+  - `<command>`: <one-line outcome>
+- joins: <gaps, overlaps, mismatches; or none>
+- next: <fix jobs to run, or none>
+```
 
 ---
 
