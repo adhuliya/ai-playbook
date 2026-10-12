@@ -1,6 +1,6 @@
 # workon templates
 
-Shapes only. Policy: [`SKILL.md`](SKILL.md) (**Named policy** headings).
+Shapes only. Policy: [`SKILL.md`](SKILL.md) (bold names point at its headings).
 Sequences: [`commands.md`](commands.md). Do not copy policy here.
 
 ## Directory layout
@@ -11,13 +11,13 @@ Sequences: [`commands.md`](commands.md). Do not copy policy here.
     <slug>/
         activity.md
         journal.md
-        requirements.md
+        requirement-def.md
         design-choices.md
         conventions.md
         notes-by-user.md
         reviews.md              # lazy
         user-guide.md           # create-guide only
-        artifacts/              # copies flat; reserved: verify-plan/, bg/, self-review/
+        artifacts/              # copies flat; reserved: verify-plan/, bg/, review/, comments/, fix/, inflight.md
 ```
 
 **`artifacts/`:** whole copies as `<basename>` at the root; excerpts as
@@ -26,11 +26,28 @@ Sequences: [`commands.md`](commands.md). Do not copy policy here.
 optional `negative/`, `positive/`, `synth/` slices), `bg/` (optional
 `<stem>/` slices next to `<stem>.md`; `milestone-<n>/` job reports,
 `collate.md`, optional `critic-negative.md` / `critic-positive.md`),
-`self-review/` (`env.md`, `milestone-<n>.md`, `critic-negative.md`,
-`critic-positive.md`; optional `env/`, `milestone-<n>/`, `negative/`,
-`positive/`, `synth/` slices), and `self-review.md`. Full table: **Paths and
-readiness** in [`subagent-contract.md`](subagent-contract.md). Do not use
-`self-review.md` as a cited-copy name.
+`review/` (`env.md`, `milestone-<n>.md`, `critic-negative.md`,
+`critic-positive.md`, `report.md`; optional `env/`, `milestone-<n>/`,
+`negative/`, `positive/`, `synth/` slices), `comments/` (`before/`
+snapshot, `job-<k>.md`, `verify.md`; optional `job-<k>/` slices), and
+`fix/` (`drift.md`, `review/` for the fix cycle; optional `drift/`
+slices). Full
+table: **Paths and readiness** in
+[`subagent-contract.md`](subagent-contract.md). `inflight.md` is agent-only
+scratch (**Inflight scratch** in `SKILL.md`). Do not use a reserved name as
+a cited-copy name.
+
+### inflight.md
+
+```markdown
+# Inflight
+
+- pipeline: start-review | fix-cycle review | verify-plan | comments | drift | milestone
+- unit: RU<n> | milestone <n> | <command>
+- launched: <steps launched so far>
+- final: <path of the final file>
+- notes: <short working notes>
+```
 
 ## activity.md
 
@@ -43,14 +60,17 @@ Metadata table in the **first ~10 lines** (title + table) so listing stays grepp
 |---|---|
 | status | Planning |
 | conventions | pending |
+| review-comments | on |
 | slug | my-activity |
 | branch | none |
+| base-branch | main |
+| synced | none |
 | ticket | none |
 | notes | |
 
 # Goal
 
-<Short summary of requirements.md. RD is authoritative.>
+<Short summary of requirement-def.md. RD is authoritative.>
 
 # Scope
 
@@ -93,9 +113,11 @@ delta steps starting at the new requirement.>
    - evidence:
      - `<test command>`
 
+4. removed: <why> (pruned by `fix-activity`; number kept)
+
 # Next Steps
 
-1. <Immediate task>
+1. <Immediate task, or `In progress: <pipeline> <unit>` while a pipeline runs>
 2. <Immediate task>
 
 # References
@@ -126,7 +148,7 @@ Events, write-on, and caps: **Journal policy** in `SKILL.md`.
 - found: quoting needs RFC 4180 mode → DC04
 
 ## Review: RU2 (Planning)
-- 5 points: applied 3 → RD4, DC03; rejected 1; open 1
+- 5 points: applied 3 → RD4, DC03; rejected 1; noted 1
 - added milestone `Apply RU2`
 
 ## Blocked: upstream API (Active → Blocked)
@@ -189,10 +211,15 @@ Harden playbook/target sync for machine registry, ignores, syncmap, and nested-g
 Policy (Repair, enums, precedence, who drafts): **Notes files** in
 `SKILL.md`. Agent-written files are records (**Writing style**).
 
-### requirements.md
+### requirement-def.md
 
 ```markdown
 # Requirement Definition
+
+## Problem: <problem title>
+
+<One paragraph, under ~100 words: the problem this activity solves, why it
+matters, and how it fits the project in `.dev-notes/definition.md`.>
 
 ## RD1: <title>
 - kind: end-user-interface | software-interface | internal-behavior
@@ -254,20 +281,48 @@ Policy: **Reviews** in `SKILL.md`.
 
 ## RU1: <short topic>
 
+status: closed
+scope: milestones 1–2 | plan
+
 state: <status, current milestone. Changes since the previous RU cycle:
 IDs added/changed, work built. 1–2 short paragraphs; deltas only.>
 
-- RU1.1: <point> — applied → RD2 (revised), DC04 (replaces DC03)
-- RU1.2: <point> — rejected: <why>
-- RU1.3: <point> — open
+- RU1.1 (agent): <point> — applied → RD2 (revised), DC04 (replaces DC03)
+- RU1.2 (user): <point> — rejected: <why>
+- RU1.3 (agent): <point> — noted: <why no action>
+- RU1.4 (user): <point> — planned → milestone 3
 
 ## RU2: <short topic>
 
+status: open
+scope: milestones 3
+
 state: <deltas since RU1>
 
-- RU2.1: <point> — applied → CONV2 (revised)
-- RU2.2: <point> — applied → code (milestone `Apply RU2`)
+- RU2.1 (agent): <point> — open
+- RU2.2 (user): <point> — open
 
+## RU3: <short drift topic>
+
+kind: fix
+status: open
+scope: drift <synced>..HEAD
+
+state: <drift summary from `fix/drift.md`>
+
+- RU3.1 (agent): <drift finding> — open
+- RU3.2 (user): <user edit> — open
+```
+
+A cycle with no points holds `- none`; after an automated pass with no
+findings, `- none (agent)`; after env `blocked`, `- none (env blocked)`.
+`status:` is required on every new cycle. `scope:` applies to
+`start-review` and fix cycles; other cycles MAY omit it. `kind: fix`
+appears only on fix cycles (**Reviews** in `SKILL.md`).
+
+Renumber log (`fix-activity`):
+
+```markdown
 ## Renumber 1
 - RD4 → RD3, DC07 → DC05
 ```

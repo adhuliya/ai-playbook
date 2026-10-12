@@ -2,14 +2,14 @@
 name: workon
 description: >-
   Manage durable activities under .dev-notes/activities/ (activity.md,
-  journal.md, requirements.md, design-choices.md, conventions.md,
+  journal.md, requirement-def.md, design-choices.md, conventions.md,
   notes-by-user.md, reviews.md, user-guide.md, activities.md, optional
   artifacts/). Use when the user manages activities, imports an activity, or
   issues workon keywords: help, approve-plan, conventions-ok, start-building,
   pause-work, resume-work, mark-completed, replan-work, create-sibling,
-  import-activity, self-review, apply-review, verify-plan, update-convention,
-  fix-notes, compact-journal, create-guide, delete-tmp-files,
-  query-work, no-query-work.
+  import-activity, start-review, apply-review, verify-plan, update-convention,
+  add-review-comments, remove-review-comments, fix-activity, compact-journal,
+  create-guide, delete-tmp-files, query-work, no-query-work.
 disable-model-invocation: true
 ---
 
@@ -19,8 +19,13 @@ Activity manager. Records must stay resumable months later.
 
 Shapes and layout: [`templates.md`](templates.md). Keyword sequences:
 [`commands.md`](commands.md). Sub-agents:
-[`subagent-contract.md`](subagent-contract.md). Apply a **Named policy** by
-heading. Do not restate it.
+[`subagent-contract.md`](subagent-contract.md). A bold name such as
+**Reviews** points at the heading or bold term of that name in `SKILL.md`
+(or in the contract when it says so). Apply it; do not restate it.
+
+**Command isolation:** when running a reserved keyword, follow only its
+heading in `commands.md` and the policies it names. Rules written for
+another command apply only where this heading names them.
 
 ## Stops
 
@@ -32,26 +37,79 @@ heading. Do not restate it.
 - `activity.md` is current execution truth (rewrite stale sections).
   **Journal policy.** **Notes files.**
 - **Execution gate.** **Portability.** **Writing style.** **Test evidence.**
+- **Guide the user** on every reply that runs a command or meets an
+  unusual situation.
 - **Background sub-agents.** **Update cadence** (no micro-edits). **Catalog**
   (`rg`, no bulk-read).
 - **`query-work`:** session flag until `no-query-work` or session end. Blocks
   every mutation: files, git writes, sub-agent output files, and mutating
-  keywords. Allowed: `help`, `no-query-work`, list, details, and reads. On a
-  blocked request, say query mode is on and ask for `no-query-work`.
-- **Pipeline in flight:** a `verify-plan`, `self-review`, or milestone
-  pipeline runs from launch until the parent reads its final file
-  (`synthesis.md`, `self-review.md`, `collate.md`, or the milestone critic
-  pair when it evaluates). While it runs, activity
-  files are frozen and mutating keywords are refused (name the pipeline).
-  `help`, `query-work`, and `no-query-work` stay allowed. New chat: a final
-  file missing or older than its working files means in flight; ask to wait
-  or abandon.
+  keywords. Allowed: `help`, `no-query-work`, list, details, reads, and
+  `resume-work` on `Planning` / `Approved` / `Active` (reload only). Skip
+  **Notes files** Repair; report pending repairs instead. Review points the
+  user states are not recorded; after `no-query-work`, ask whether to record
+  them. On a blocked request, say query mode is on and ask for
+  `no-query-work`.
+- **Pipeline in flight:** a `verify-plan`, review (`start-review` or fix
+  cycle), comment, drift, or milestone pipeline. It is in flight while
+  `artifacts/inflight.md` exists (**Inflight scratch**). While it runs,
+  activity files are frozen (except the parent's own steps of that
+  pipeline, such as a milestone checkpoint), Repair is skipped, and mutating keywords are
+  refused (name the pipeline). A comment pipeline also freezes the files it
+  snapshots; ask the user not to edit them. Allowed: `help`, `query-work`,
+  `no-query-work`, list, details, reads. Planning explores are not
+  pipelines. New chat with `inflight.md` present: name the pipeline from it;
+  ask to wait or abandon. Abandon deletes `inflight.md`.
+
+## Inflight scratch
+
+`<slug>/artifacts/inflight.md`: agent-only scratch for the current unit of
+work (one pipeline run: review, `verify-plan`, comments, drift, or
+milestone). An open review cycle waiting for `apply-review` is not a unit.
+Never shown as status to the user; `activity.md` is the user's view of
+progress.
+
+- Create it fresh when a unit starts (overwrite any old one). Write:
+  pipeline, unit (`RU<n>`, milestone `<n>`, command), launched steps,
+  expected final file, and short working notes.
+- Before launch, set `activity.md` `# Next Steps` item 1 to `In progress:
+  <pipeline> <unit>` so the user sees it.
+- Delete it when the parent reads the final file (milestone: after the
+  checkpoint that checks it), or when the pipeline ends early (env
+  `blocked`, abandon). Then refresh `# Next Steps`.
+- Sub-agents never read or write it.
+
+## Guide the user
+
+Assume the user may be new, or may face this situation for the first time.
+Continuity with clarity comes first: the user should always know where the
+activity stands and what to type next.
+
+- **After each command or pipeline step**, end with a short guide (≤ 3
+  lines): what just happened, the current state (status, open cycle,
+  pipeline), and the next one or two exact keywords or replies.
+- **First use of a concept** this session (cycle, fix cycle, `synced`,
+  review comments, inflight pipeline): add one plain sentence that explains
+  it. Do not repeat it later in the session.
+- **On a refused or gated request**, say why in one sentence and give the
+  exact keyword that unlocks it.
+- **Exceptional situations:** map each one onto the defined set: a status,
+  a command, a cycle kind, or a **Stops** rule. Name the mapping in one
+  sentence ("This is source drift; `fix-activity` handles it."). Never
+  invent a new flow, file, status, or keyword. If no mapping fits, stop,
+  describe the situation, and offer two or three defined options with a
+  recommendation.
+- **Two plausible readings** of a user request: ask one short question
+  with a recommended answer instead of guessing.
+- Keep guides short; no essays. `help` stays the full answer for "what
+  now?".
 
 ## Keyword gate
 
 Natural language is fine for discussion, create, switch, list, details.
 Gated transitions need the exact reserved keyword. On detected intent, do not
 silent-transition; prompt it, e.g. `If you want to replan, write \`replan-work\`.`
+"Resume <slug>" in plain words = switch plus context reload; if the status
+is `Paused`, `Blocked`, or `Complete`, prompt `resume-work`.
 
 Exceptions: the agent MAY run the **Consistency check** without a keyword;
 `mark-completed` runs the `delete-tmp-files` flow. Both confirm each item.
@@ -74,8 +132,9 @@ On a material change, prompt the matching choice; do not rewrite scope first.
 **Complete stay-on-slug** (never `Complete` → `Active`):
 
 - `resume-work`: grill, then reopen `Complete` → `Planning` (see that command).
-- `apply-review`: stay-on-slug **only**. Report is intake; no sibling; no full
-  resume grill. Material remaining proposal → apply nothing; ask
+- `apply-review`: stay-on-slug **only**. The cycle is intake; no sibling; no
+  full resume grill. Reopen `Complete` → `Planning` only when the cycle adds
+  a review milestone. Material open point → apply nothing; ask
   `create-sibling`. For the grill/classify fork, the user runs `resume-work`
   first.
 
@@ -97,7 +156,9 @@ Complete stay-on-slug reopen to `Planning`, `approve-plan` and
 Both record `prior: <status>` in the `activity.md` `notes` row.
 `resume-work` restores that status and clears the entry.
 
-- `Paused`: intentional stop via `pause-work`.
+- `Paused`: intentional stop via `pause-work`. Not allowed from `Blocked`.
+- Only `resume-work` leaves `Paused` or `Blocked`. `apply-review` never
+  changes these statuses.
 - `Blocked`: cannot continue. The agent MAY set it at a checkpoint when work
   is stuck. Add a one-line blocker to `notes`; details in `activity.md`
   `# Next Steps`. Append a `Blocked` event (**Journal policy**).
@@ -110,9 +171,13 @@ Both record `prior: <status>` in the `activity.md` `notes` row.
 - Remind once per phase change.
 
 **Optional-remind** (once, do not require): `verify-plan` at `approve-plan` if
-this session has not run it; `apply-review` when `self-review.md` exists
-unapplied (`approve-plan`, `start-building`, `pause-work`, `resume-work`);
-`create-guide` at `mark-completed` if `user-guide.md` is missing or stale.
+this session has not run it; `apply-review` when `reviews.md` has an `open`
+cycle (`approve-plan`, `start-building`, `pause-work`, `resume-work`);
+`create-guide` at `mark-completed` if `user-guide.md` is missing or stale;
+`remove-review-comments` at `mark-completed` if `review-comments` is `on`;
+`fix-activity` at `resume-work`, or when the agent notices drift (activity
+files edited outside the agent, the `synced` base not an ancestor of
+`HEAD`, or cited paths missing).
 
 ## Journal policy
 
@@ -130,15 +195,16 @@ commands). A fresh agent reads it to learn how the activity got here.
 | `Created` | create, `create-sibling` (in the new activity), `import-activity` |
 | `Approved` / `Building` | `approve-plan` / `start-building` |
 | `Milestone` | checkpoint that checks a milestone |
-| `Review` | recording an `RU<n>` cycle in `reviews.md` |
+| `Review` | every `RU<n>` cycle close, whatever the source (`apply-review`, chat feedback, `verify-plan`, `fix-activity` inline) |
 | `Replan` | `replan-work` |
 | `Blocked` | entering `Blocked` |
-| `Pause` / `Resume` | `pause-work` / status change by `resume-work` or `apply-review` |
+| `Pause` / `Resume` | `pause-work` / status change by `resume-work`, or `apply-review` reopening `Complete` (the recap replaces the `Review` event and cites `RU<n>`) |
 | `Complete` | `mark-completed` |
-| `Renumber` | `fix-notes` renumber |
+| `Renumber` | `fix-activity` renumber |
 
 No other change writes the journal: notes edits, **Consistency check**,
-`update-convention`, `conventions-ok`, `self-review`, `create-guide`,
+`update-convention`, `conventions-ok`, `start-review` (opening or refreshing
+a cycle), `add-review-comments`, `remove-review-comments`, `create-guide`,
 `delete-tmp-files`, list, details, `help`.
 
 **Entry:** `## <Event>: <short title> (<from> → <to>)`; omit the arrow when
@@ -148,7 +214,7 @@ review points. No dates unless asked; entry order is the timeline.
 
 Pause / resume recap: cap **~10 lines**; omit empty fields.
 
-**`Complete`:** the one thick entry. **Project-work** write-up (what shipped,
+**`Complete`:** the one thick entry. Project-work write-up (what shipped,
 paths, decisions, gaps). Not a lifecycle novel.
 
 Append at end. Prior entries are **read-only** except `compact-journal` (the
@@ -160,7 +226,8 @@ Tree and artifact names: `templates.md`. Slugs are kebab-case and top-level
 only; siblings sit side by side. Ambiguous slug: list matches and ask.
 
 Commit `.dev-notes/activities/`, including useful `artifacts/` copies and
-reserved `verify-plan/`, `self-review/`, `bg/` records. Agent does not
+reserved `verify-plan/`, `review/`, `comments/`, `fix/`, `bg/` records
+(not `inflight.md`; it is scratch). Agent does not
 `git add` / commit unless asked. Huge generated trees stay out of the repo.
 
 Status tokens (exact): `Planning` | `Approved` | `Active` | `Paused` | `Blocked` | `Complete`
@@ -172,10 +239,33 @@ Preferred lifecycle: `Planning → Approved → Active → Complete`, with optio
 
 Title + metadata table in the first ~10 lines. Template: `templates.md`.
 
-Required rows: `status`, `conventions`, `slug`, `branch`, `ticket`, `notes`
-(`ticket` may be `none`; `notes` may be empty; `branch` may be `none`).
+Required rows: `status`, `conventions`, `review-comments`, `slug`, `branch`,
+`base-branch`, `synced`, `ticket`, `notes` (`ticket` may be `none`; `notes` may be
+empty; `branch` may be `none`).
 `branch` is a hint; do not auto-create or check out branches.
+`base-branch` is the parent branch the activity diffs against (default
+`main`). The activity diff is `git diff $(git merge-base HEAD <base-branch>)`
+plus new untracked files.
 `conventions` is `pending` or `ok` (**Execution gate**).
+`review-comments` is `on` (default at create) or `off` (**Engineering while
+focused** comment levels).
+`synced` is the drift baseline for `fix-activity`: a snapshot commit of
+the working tree when the activity files were last in line with the repo,
+or `none`. Take it with `snap=$(git stash create); snap=${snap:-$(git
+rev-parse HEAD)}`, then pin it with `git update-ref refs/workon/<slug>
+$snap` so git does not garbage-collect it. Write `$snap` to the row. The
+snapshot covers uncommitted tracked agent work, so that work is not
+mistaken for drift. Neither command changes the working tree or the index.
+The **`synced` base** is the snapshot's first parent (the `HEAD` it was
+taken on) when it has two parents, else the commit itself.
+
+Writers of `synced` (no others): create and `create-sibling` (first
+snapshot); `import-activity` (`none`); every other agent write to an
+activity file (**Update cadence** checkpoints, `update-convention`,
+`conventions-ok`, **Consistency check** fixes); `fix-activity` step 9;
+`apply-review` closing a fix cycle. Agent writes skip the refresh while a
+fix cycle is `open`, or when the `synced` base is not an ancestor of
+`HEAD` (then remind `fix-activity`).
 
 Required sections (order): Goal, Scope, Background and Special Notes, Current
 Design, Current Plan, Milestones, Next Steps, References.
@@ -188,7 +278,9 @@ Design, Current Plan, Milestones, Next Steps, References.
   signals). Chosen-vs-alternatives live only in Design Decisions.
 - **Milestones:** MECE outcomes. Apply **Test evidence**. On reopen, keep
   checked items; append new ones; mark removed work `superseded` — do not
-  delete (except `fix-notes`). Review milestones: **Reviews**.
+  delete. Milestone numbers are stable: `fix-activity` prune replaces a
+  milestone body with a one-line `<n>. removed: <why>` stub. Review
+  milestones: **Reviews**.
 - **References:** one `REF<n>` bullet per cited planning file (**Cited
   context**).
 
@@ -198,28 +290,67 @@ Activity entries carry stable IDs. Cross-references use the ID, not the title.
 
 | ID | Entry | Home |
 |---|---|---|
-| `RD<n>` | Requirement Definition | `requirements.md` `## RD<n>: <title>` |
+| `RD<n>` | Requirement Definition | `requirement-def.md` `## RD<n>: <title>` |
 | `DC<nn>` | design decision (two digits) | `design-choices.md` `## DC<nn>: <title>` |
 | `CONV<n>` | convention rule (Setup H2 has no ID) | `conventions.md` `## CONV<n>: <title>` |
 | `REF<n>` | reference | `activity.md` `# References` bullet |
 | `RU<n>`, `RU<n>.<m>` | Review Update: review cycle, point | `reviews.md` |
 
 - Assign the next free number. Do not reuse a retired (superseded or removed)
-  ID, except via `fix-notes` renumbering.
+  ID, except via `fix-activity` renumbering.
 - `replaces:` names the old ID.
 - IDs stay out of shipped work and `user-guide.md` (**Engineering while
   focused**).
 
 ## Reviews
 
-`<slug>/reviews.md`, H1 `# Reviews`. Create lazily. Agent-written record.
-Shape: `templates.md`. Not part of the handoff.
+`<slug>/reviews.md`, H1 `# Reviews`. Create lazily. Agent-written record;
+the user MAY edit points of an `open` cycle. Shape: `templates.md`. Not part
+of the handoff.
 
-- **One kind of cycle:** each review round is one `RU<n>` cycle (Review
-  Update). Sources: user feedback on activity files or built work,
-  `apply-review`, `verify-plan` apply, the `fix-notes` impact gate. Do not
-  split or label cycles by source.
-- **Point:** each item is `RU<n>.<m>` with its outcome.
+- **Cycle:** each review round is one `RU<n>` cycle (Review Update). Two
+  kinds only: **regular** (default) and **fix** (`kind: fix`). Do not label
+  cycles by any other source.
+- **Point:** each item is `RU<n>.<m> (agent|user)` with its outcome. The tag
+  names who raised it. A cycle MAY mix both, or hold no points.
+- **Open / closed:** `status: open | closed`. At most one regular and one
+  fix cycle are `open` at a time. Cycles without the line (legacy) are
+  `closed`.
+- **Where points go** (regular cycle):
+
+  | Source | Open regular cycle exists | None open |
+  |---|---|---|
+  | `start-review` | refresh it | open a new one |
+  | chat feedback on activity files or built work | add `user` points; apply only via `apply-review` | new cycle, closed and applied this turn |
+  | `verify-plan` apply | add `agent` points; apply only via `apply-review` | new cycle, closed and applied this turn |
+  | `fix-activity` inline path | new closed cycle (user edits already in the files) | same |
+
+- **Fix cycle:** opened only by `fix-activity` on the fix-cycle path.
+  Holds only drift findings; `scope: drift <synced>..HEAD`. Other feedback
+  goes to the regular cycle. Refresh by re-running `fix-activity`, never
+  `start-review`. Never reopens.
+- **Fix first:** while a fix cycle is open, `apply-review` applies it, not
+  the regular cycle. The regular cycle waits; the user MAY still add points.
+- **Recheck:** after a fix cycle closes, recheck each `open` point of the
+  regular cycle against the new state. Still valid → stays `open`. Fixed
+  → `noted: resolved by RU<k>.<m>`. No longer applies → `noted: obsolete
+  after RU<k>`. Changed `agent` point → rewrite it. Changed `user` point →
+  ask after the close; it stays `open` until answered.
+- **Edit while open:** the user adds, edits, or strikes points in
+  `reviews.md`, or states them in chat. A `start-review` refresh replaces
+  only `agent` points that are still `open`. It never touches `user`
+  points.
+- **Reopen:** the user MAY add points to the last closed regular cycle when
+  no newer regular cycle exists (an open fix cycle does not block this).
+  The user does it by editing that cycle in `reviews.md`, or by naming
+  `RU<n>` in chat. Other chat feedback follows the table above.
+  The agent sets that cycle `open` again. `apply-review` closes it and
+  handles only the new `open` points.
+- **Scope** (`start-review` cycles): records `scope:`. Default: milestones
+  checked after the newest earlier regular cycle with a milestone `scope:`
+  (none → all checked milestones), plus their joins with earlier work. The
+  user MAY name milestones (`start-review 2-3`). In `Planning`: `scope:
+  plan`. Refresh rewrites `scope:` and `state:`.
 - **Authority:** the user approves every cycle in principle. A point MAY
   change a requirement, a design decision, a convention, or the
   implementation.
@@ -230,6 +361,7 @@ Shape: `templates.md`. Not part of the handoff.
   | `RD<n>` | Rewrite in place; add `revised-by: RU<n>.<m>`. |
   | `DC<nn>` | Append a new `DC` with `replaces: DC<nn>` and `revised-by: RU<n>.<m>`. |
   | `CONV<n>` | Rewrite in place; add `revised-by: RU<n>.<m>`. |
+  | `activity.md` section or milestone | Edit in place. A regressed milestone is unchecked with `regressed: <evidence>`. |
   | Code, tests, docs | Review milestone (below). No IDs in shipped work. |
 
 - **Material-change** still applies: a point that changes Goal or Scope, or a
@@ -237,15 +369,21 @@ Shape: `templates.md`. Not part of the handoff.
 - **State note:** open each cycle with status, milestone, and what changed
   since `RU<n-1>` (IDs added or changed, work built). One or two short
   paragraphs; deltas only. Earlier cycles hold the rest.
-- Outcome: `applied → <IDs>` | `rejected: <why>` | `open`. Name every
-  changed ID; write `code` for implementation-only changes.
+- Outcome: `applied → <IDs>` | `planned → milestone <k>` | `rejected:
+  <why>` | `noted: <why no action>` | `open`. Name every changed ID.
+  Product work is `planned` until its milestone is checked; the check is the
+  proof. A cycle with no actionable points is valid: close it with each
+  point `noted`, or with `- none`.
 - **Review milestone:** if a cycle needs product work (code, tests, docs),
   append milestone `Apply RU<n>` to `activity.md`. Its MECE steps cite the
   points. Notes-only edits need no milestone.
-- **Journal:** each recorded cycle appends one `Review` event (**Journal
-  policy**).
-- **Renumber log:** `fix-notes` appends `## Renumber <k>` with the
-  old → new ID map. Journal entries before it use the old numbers.
+- **Journal:** each cycle close (and each re-close after a reopen) appends
+  one `Review` event (**Journal policy**). A status change writes the
+  resume recap instead (cites `RU<n>`). Opening or refreshing writes no
+  journal.
+- **Renumber log:** `fix-activity` appends `## Renumber <k>` with the
+  old → new ID map. Journal entries before it use the old numbers. `RU`
+  IDs and milestone numbers are never renumbered.
 
 ## Catalog
 
@@ -276,7 +414,7 @@ asked). Table from first ~10 lines of each `activity.md` (`rg`). Shape:
 
 ## Notes files
 
-`requirements.md`, `design-choices.md`, `conventions.md`, `notes-by-user.md`.
+`requirement-def.md`, `design-choices.md`, `conventions.md`, `notes-by-user.md`.
 Required at birth. Templates: `templates.md`.
 
 **Repair** (before the first activity-file read or write in a session):
@@ -287,6 +425,11 @@ Required at birth. Templates: `templates.md`.
   `## Setup, build, test and install notes` if missing. Delete `notes.md`.
 - Legacy `user-notes.md`: rename to `notes-by-user.md` (`git mv` if tracked);
   change H1 `# User Notes` to `# Notes by User`. Keep the body.
+- Legacy `requirements.md`: rename to `requirement-def.md` (`git mv` if
+  tracked). Keep the body.
+- `requirement-def.md` without a **Problem header**: draft one from
+  `# Scope`, `# Goal`, and `.dev-notes/definition.md`. Show it once and ask
+  the user to confirm or correct it.
 - Entries or References bullets without **IDs**: number them in file order;
   rewrite title-based `replaces:` to IDs.
 - Legacy review and requirement IDs: rename `R<n>` → `RD<n>` (same number).
@@ -296,6 +439,12 @@ Required at birth. Templates: `templates.md`.
   log**. Do not edit the journal.
 - Missing `conventions` row: `ok` if status is `Active`, `Paused`, `Blocked`,
   or `Complete`; else `pending`.
+- Missing `review-comments` row: `off` if `Complete`; else `on`. Missing
+  `base-branch` row: `main`; tell the user once so they can correct it.
+  Missing `synced` row: `none`.
+- Legacy `artifacts/self-review.md` and `artifacts/self-review/`: old review
+  records. Do not apply them. `delete-tmp-files` lists them (default
+  delete).
 - Missing file: create with its H1 (and Setup H2 on `conventions.md`). Empty
   body is valid.
 
@@ -303,13 +452,23 @@ Agent **best-effort drafts** all except `notes-by-user.md` (repo + this
 activity; user reviews and corrects). Bullets wherever possible. What
 sub-agents may read or receive: contract **Every agent**.
 
-### `requirements.md` (RD)
+### `requirement-def.md` (RD)
 
 **RD** (Requirement Definition) means the `RD<n>` entries in this file, one
-entry or all. H1: `# Requirement Definition`. Entries: `## RD<n>: <title>`.
-Parent-only. Keep
-current as grilling reveals requirements; user challenges them before
-`approve-plan`. `kind` is exactly one of:
+entry or all. H1: `# Requirement Definition`. Parent-only.
+
+**Problem header** (always present, first H2, no ID):
+`## Problem: <problem title>`. The body is one short paragraph under
+~100 words. It states the problem this activity solves and how it fits the
+project in `.dev-notes/definition.md`. Write it from the project-fit and
+intake answers. Do not list requirements here; RD entries hold them.
+Keep it crisp: one problem, its impact, and the project link. Rewrite in
+place when the problem understanding changes. A change to the problem
+itself is **Material-change**.
+
+Entries follow the header: `## RD<n>: <title>`. Keep them current as
+grilling reveals requirements; user challenges them before `approve-plan`.
+`kind` is exactly one of:
 
 - `end-user-interface`: humans (UI, CLI output, docs the user reads).
 - `software-interface`: contract other software must honor (in-repo
@@ -324,7 +483,7 @@ adds `revised-by:` (**Reviews**; same for `DC` and `CONV`). Material RD change a
 ### `design-choices.md`
 
 H1: `# Design Decisions`. Entries: `## DC<nn>: <title>`. Parent-only.
-Append-only (except `fix-notes`). Append when a real choice is made. Do not
+Append-only (except `fix-activity`). Append when a real choice is made. Do not
 delete or rewrite history. Supersede with a new entry and `replaces: DC<nn>`.
 Skip micro-choices recoverable from code. ~200 words hard max. `level` is
 exactly one of:
@@ -354,12 +513,13 @@ and git safety still win. Where rules are silent, repo rules apply.
 
 **Rules:** 2–5 bullets each. `replaces: CONV<n>` only when splitting or
 renaming. Seed from observed repo/activity facts. No taste-only rules. Write
-without a keyword during the planning grill, `conventions-ok`, and for
-in-flight confirmed rules. Rewrite in place when the user asks, or when a
+without a keyword while `conventions: pending` (planning grill,
+`conventions-ok`), and for rules the agent observes and the user confirms.
+Once `conventions: ok`, an explicit user add or rewrite needs
+`update-convention`; on detected intent, prompt it. Rewrite in place when a
 newly confirmed rule contradicts or tightens an entry. No tighter than the
 user stated. Drop: mark `superseded` on request — do not delete (except
-`fix-notes`). Explicit user add/rewrite → `update-convention`; on detected
-intent, prompt it. No forced conventions interview in Planning.
+`fix-activity` prune). No forced conventions interview in Planning.
 
 **Setup:** always best-effort draft; user corrects. It is the env-agent
 bootstrap; the env agent reads it and never writes it.
@@ -388,7 +548,7 @@ delivered and how to use it, test it, and explain it to others. Uses
 
 ## Portability
 
-Handoff is `activity.md` + `journal.md` + `requirements.md` +
+Handoff is `activity.md` + `journal.md` + `requirement-def.md` +
 `design-choices.md` + `conventions.md`. `notes-by-user.md`, `reviews.md`, and
 `user-guide.md` are extra — handoff must not depend on them.
 
@@ -406,7 +566,7 @@ rewriting `activity.md`. Do not load `activities.md` on resume. Do not load
 
 ## Test evidence
 
-Planning, building, `self-review`, `verify-plan`, `mark-completed`.
+Planning, building, `start-review`, `verify-plan`, `mark-completed`.
 
 Three tiers. Plan each tier during planning. Write tests as each milestone is
 built.
@@ -459,8 +619,8 @@ records, and sub-agent reports. Not `notes-by-user.md`.
   when the repeat makes the text clearer.
 - Do not apply the strict STE approved-word dictionary.
 
-**Records** (activity files, journal recaps, `reviews.md`, `self-review.md`,
-sub-agent reports): bullets and fragments. Drop articles if the line stays
+**Records** (activity files, journal recaps, `reviews.md`, sub-agent
+reports): bullets and fragments. Drop articles if the line stays
 unambiguous. Pattern: `[thing] [action] [reason].` Shapes: `templates.md`.
 
 **Prose** (replies, code comments, `user-guide.md`, user docs, skill
@@ -485,6 +645,9 @@ overlapping writes. Handoff is files.
   collects the job results and runs the milestone evidence. Parent reads only
   the collator report, then updates activity files. Flow: **Milestone** in
   the contract.
+- **Comment commands:** `add-review-comments` and `remove-review-comments`
+  always use sub-agents: comment editors plus one verifier. They change
+  comments only. Flow: **Comments** in the contract.
 - **Evaluate, do not just collect:** when the parent must judge results, use
   the contract's **critic pair** (one praises what stands out, one criticizes
   what it dislikes most, both with reasons), never a single agent.
@@ -495,22 +658,24 @@ Durability, not a live log.
 
 - `activity.md`: scope/design/plan change, milestone reached, blocker, before
   pause / complete / handoff. A checked milestone also appends a `Milestone`
-  event.
+  event. Each such checkpoint (any status) refreshes `synced` (writers and
+  skips: **`activity.md`**).
 - RD whenever requirements change; must be current before `approve-plan`.
 - Design Decisions when an important choice is made.
 - Conventions (rules + Setup) when observed, confirmed, or tightened.
 - `activities.md`: **Catalog**. `journal.md`: **Journal policy**.
-- `reviews.md` at each user feedback round and each review apply.
+- `reviews.md`: per **Reviews** (where points go).
 - Always sync before `pause-work`, `mark-completed`, or handoff.
 - After user edits to activity files, run the **Consistency check**.
 
 ## Consistency check
 
-Agent-run after user edits; also step 0 of `fix-notes`. No keyword, no status
+Agent-run after user edits; also step 0 of `fix-activity`. No keyword, no status
 change, no journal.
 
 1. Check `activity.md`, RD, Design Decisions, Conventions, and `reviews.md`
-   against each other: broken or duplicate **IDs**, Goal vs RD, Current
+   against each other: broken or duplicate **IDs**, Problem header vs Goal
+   and Scope, Goal vs RD, Current
    Design vs DCs, plan/milestones vs RD, Setup vs rules.
 2. For each issue: ID or section, the smallest edit, why. Ask yes / no / mods.
    Apply only confirmed fixes. Do not reword beyond the fix.
@@ -518,22 +683,23 @@ change, no journal.
 4. `notes-by-user.md` is input only. If it cites stale IDs or contradicts the
    files, tell the user; do not edit it.
 
-Never prune, rewrite, or renumber here; that needs `fix-notes`.
+Never prune, rewrite, or renumber here; that needs `fix-activity`.
 
 ## Apply timing
 
-Do not alias `self-review`, `apply-review`, `verify-plan`, and
+Do not alias `start-review`, `apply-review`, `verify-plan`, and
 **draft-check** (**Planning quality bar**).
 
 | Pipeline | Apply when |
 |---|---|
 | `verify-plan` | After the contract question gate. Never in the same turn as the first Read of `synthesis.md`. All / some / none. |
-| `apply-review` | Restate remaining `self-review.md` proposals. Ask **only** gaps the report does not settle (one round). If no gaps, apply in this turn. Not product code. |
-| `self-review` | Never applies. Report only. |
+| `apply-review` | Target: the open fix cycle, else the open regular cycle. Restate its `open` points. Ask **only** gaps the points do not settle (one round), then stop; apply next turn after the answers, no new keyword. If no gaps, apply in this turn. Product work becomes a review milestone. |
+| `start-review` | Never applies. Opens or refreshes the cycle only. |
+| chat feedback | Open regular cycle → `user` points, applied by `apply-review`. None open → apply this turn (**Reviews** where points go). |
 
-Planning order: `self-review` → `apply-review` (if the user wants the report
-applied) → `verify-plan` → `approve-plan`. None of the middle steps is
-required. After `Active`: `self-review` / `apply-review` only.
+Planning order: `start-review` → `apply-review` (if the user wants the
+points applied) → `verify-plan` → `approve-plan`. None of the middle steps
+is required. After `Active`: `start-review` / `apply-review` only.
 
 ## Command map
 
@@ -565,16 +731,23 @@ tables.
 
 | Command | What it does |
 |---|---|
-| `self-review` | Sub-agents check plan vs evidence; report only |
-| `apply-review` | Apply the self-review report |
+| `start-review` | Open or refresh a review cycle; automated by default, `manual` on request |
+| `apply-review` | Apply and close one open cycle (fix cycle first) |
 | `verify-plan` | Critics + synthesis of the plan; apply on confirm |
+
+**Comments**
+
+| Command | What it does |
+|---|---|
+| `add-review-comments` | Raise comments in the activity diff to review level; `review-comments: on` |
+| `remove-review-comments` | Trim comments in the activity diff to default level; `review-comments: off` |
 
 **Notes upkeep**
 
 | Command | What it does |
 |---|---|
 | `update-convention` | Add or rewrite convention rules |
-| `fix-notes` | Fix inconsistencies, prune, verify against the repo, rewrite for clarity, grill on plan-changing findings, close ID gaps |
+| `fix-activity` | Resync activity files after user edits, source drift (edits, rebase), or major drift; grill on unclear and plan-impacting findings; then fix, prune, verify, rewrite, close ID gaps |
 | `compact-journal` | Shorten the journal in place |
 
 **Output and cleanup**
@@ -604,6 +777,7 @@ answer, explore the repo instead of asking. Do not skip grilling to draft files.
 
 1. **Project-fit** against `.dev-notes/definition.md`. Do not proceed until it fits.
 2. **Intake:** free-text scope (objective, in/out, constraints, done).
+   Then write the **Problem header** in `requirement-def.md`.
 3. Grill remaining branches: goal, success, scope, constraints, assumptions,
    risks, interfaces, non-goals. Classify each requirement and write RD as it
    becomes clear. Record Design Decisions as they are made. Best-effort
@@ -614,7 +788,7 @@ answer, explore the repo instead of asking. Do not skip grilling to draft files.
    integration cases for the boundaries it completes; the last names e2e (and
    any interface fake). Note existing tests to extend (**Test evidence**).
 6. **draft-check:** parent re-reads the drafted files before user review. No
-   critics; not the `self-review` pipeline.
+   critics; not the `start-review` pipeline.
 
 Required project-fit prompt (or equivalent):
 
@@ -633,13 +807,17 @@ If the current message already supplied both, acknowledge and continue grilling.
 1. Remind strong model.
 2. **Planning quality bar** (includes **draft-check**; `# Scope` after the
    grill, `# Goal` from RD).
-3. Write `activity.md` (`conventions: pending`), `journal.md` (`# Journal`
-   plus a `Created` event), `requirements.md`, `design-choices.md`, `conventions.md` (include
+3. Write `activity.md` (`conventions: pending`, `review-comments: on`,
+   `base-branch` from the grill or `main`, `synced` snapshot),
+   `journal.md` (`# Journal` plus a `Created` event),
+   `requirement-def.md`, `design-choices.md`, `conventions.md` (include
    Setup H2), `notes-by-user.md` (`# Notes by User` only unless the user
    already wrote notes). Append one **Catalog** entry.
-4. File review: user can challenge RD, Conventions, Setup, and plan before
-   `approve-plan` / `conventions-ok`. Each feedback round is an `RU<n>` cycle
-   (**Reviews**).
+4. **File review:** show the drafted files; the user challenges RD,
+   Conventions, Setup, and plan before `approve-plan` / `conventions-ok`.
+   Feedback goes per **Reviews** (where points go). `start-review` is not
+   required. Done when the user has seen the files and every feedback
+   round is recorded.
 5. Revision loop. Then **Execution gate**.
 
 ## Cited context
@@ -679,19 +857,36 @@ Only after the **Execution gate**, outside **Stops** blocks.
 - Planning vocabulary stays out of shipped work: no **IDs**, milestone
   numbers, or the activity slug in code, comments, or identifiers. Such
   labels mean nothing outside the activity files.
-- **Comments:** add the smallest set that lets a reader understand the change.
-  Explain intent, contracts, and traps; do not narrate mechanics or restate
-  code. Write in **Writing style** prose.
+- **Comments:** two levels. The `review-comments` row picks the level for
+  code written now. Explain intent, contracts, and traps; do not narrate
+  mechanics or restate code. Write in **Writing style** prose.
+  - **Default level** (`off`; the level that ships): the smallest set that
+    lets a reader understand the code.
+    - New file: short module header (what this file is for).
+    - New public/exported function: one-line contract/why, not a signature
+      echo.
+    - Private helper: one-line contract if non-trivial; skip if the name is
+      the explanation.
+    - Non-obvious branch or block: one line when the code cannot show the
+      reason.
+    - Bugfix: comment when the wrong code looks reasonable.
+    - Test: scenario intent if the test name is not enough.
+  - **Review level** (`on`; default while building): the default level plus
+    enough for a human reviewer to follow the code without the author.
+    - Non-trivial block: 1–2 lines on why it exists.
+    - Function: the invariants and edge cases it handles, where it handles
+      them.
+    - Test case: the scenario and the expected behavior.
+    - Boundary: what callers may rely on; what the code assumes of its
+      neighbors.
+  - Both levels: ≤ ~3 lines per comment; no essays. No change narration
+    (`added`, `previously`, `now`). No **IDs**.
   - Name concepts and roles, not identifiers, literal constants, or line
     positions. Names and values change during maintenance and make the
     comment stale. Name an identifier only when no concept term fits.
-  - New file: short module header (what this file is for).
-  - New public/exported function: one-line contract/why, not a signature echo.
-  - Private helper: skip if the name is the explanation; keep if a reader
-    would miss a trap or invariant.
-  - Bugfix: comment when the wrong code looks reasonable.
-  - Test: scenario intent if the test name is not enough.
   - Match the file's comment dialect.
+  - Switch levels for existing code only with `add-review-comments` /
+    `remove-review-comments`.
 - New definition files → **Cited context** (ask before copy).
 - Missing invariant that would mislead a fresh reader → update `activity.md`.
   New requirement or important choice → RD / Design Decisions. New confirmed
