@@ -1,0 +1,39 @@
+---
+name: dev-git
+description: >-
+  Git commit workflow: stage, list session temporaries, delete only on delete-files,
+  commit only on approve-commit. Use when user asks to commit, stage, or create a git commit.
+---
+
+# Git commits
+
+Apply when the user asks to commit.
+
+## Commit Policy
+
+1. **Author:** Current user (repo/global git identity). Never agent as author/co-author.
+2. **Title:** One line, ~50 chars. Prefix 1–3 module tags in `[brackets]` from the diff (e.g. `[build]`, `[clang]`). General area names; no fixed global list.
+3. **Body:** Short paragraph or two (what/why). Target ≤200 words; hard limit 30–250. Cover all changes concisely; bullets when appropriate. Prefer brevity over exhaustive detail.
+4. **Gate:** After staging, list staged files and stop. Commit only on `approve-commit`. Until then: restage per user; no commit.
+
+## Session temporary files
+
+Before `approve-commit`, list scratch paths from this session (not part of intended change) with staged paths and draft message.
+
+- Do not delete or `git rm` until user replies `delete-files`.
+- On `delete-files`: remove only listed temporaries (unstage if staged), show `git status`, restage intentional files if needed.
+- No temporaries: say so briefly; do not ask for `delete-files`.
+
+## Workflow
+
+1. Inspect: `git status`, `git diff` (staged + unstaged), `git log -2 --name-only`.
+2. **Local checks:** find the repo's pre-commit requirements (dev-guide Notes, `CONTRIBUTING`, pre-commit/lint/format config, CI lint jobs). Examples: copyright headers, format, lint. Apply fixes to files changed in this session only. Report what ran, what changed, and what was skipped.
+3. Draft title and body per Commit Policy.
+4. Stage relevant files. No secrets (`.env`, credentials); warn if asked.
+5. List staged paths, session temporaries (see **Session temporary files**), draft message. User may adjust staging, `delete-files`, or `approve-commit`.
+6. `approve-commit` only: commit staged via HEREDOC (`git commit -m "$(cat <<'EOF' ... EOF)"`), then `git status`.
+7. Hook reject: fix, restage, re-confirm (temporaries/`delete-files` if needed), new commit (amend only if user rules allow).
+
+## Out of scope unless asked
+
+Push, amend, force, rebase, config — per user git safety rules; never unprompted.

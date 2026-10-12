@@ -6,12 +6,15 @@
 #   - Target cwd:   sync that repo only (--project required).
 #   - --machine:    process machines/<id>/syncmap.txt only (any cwd).
 #
-# .cursor/: playbook → target only. .dev-notes/ + project guides: bidirectional.
+# .agents/ .claude/ .codex/ .cursor/: playbook → target only; target-only files that the
+# playbook once shipped (same inode, or blob in playbook history at that path)
+# are pruned. .dev-notes/ + project guides: bidirectional. AGENTS.md (and
+# CLAUDE.md if present) get a pointer line to .agents/dev-guide.md.
 # Same inode: no-op. Different inode, same bytes: re-link. Content conflict:
 # .dev-notes/ and project guides prompt [p]laybook / [t]arget / skip; --force ⇒
-# playbook. .cursor/ and --machine: playbook-only prompt or --force. Target
-# git-tracked paths: warn and skip when content/inode differs from playbook;
-# already hard-linked playbook copies are silent.
+# playbook. Asset dirs and --machine: playbook-only prompt or --force.
+# Target git-tracked paths: warn and skip when content/inode differs from
+# playbook; already hard-linked playbook copies are silent.
 set -euo pipefail
 
 SEP=$'\x1f'
@@ -22,6 +25,7 @@ Usage:
   sync-playbook.sh [--project <name>] [--yes] [--force] [--ignore-submodules]
   sync-playbook.sh --project <name> [--yes] [--force] [--ignore-submodules]
   sync-playbook.sh --machine [--yes] [--force]            # syncmap only (any cwd)
+  sync-playbook.sh --stats [--project <name>] [--machine] # read-only sync state
 
 Modes (auto-detected by cwd, unless --machine):
   Playbook root  Sync project path(s) for this machine from machines/<id>/projects.txt.
@@ -41,9 +45,29 @@ Flags:
   --ignore-submodules  Skip dev-guide.md under nested .git (no prompts).
   --force           On content conflict, playbook wins without prompting (re-link dest).
                     Bidirectional paths (.dev-notes/, project dev-guide.md) otherwise
-                    prompt [p]laybook / [t]arget / skip. .cursor/ and --machine stay
-                    playbook-only ([y/N]).
+                    prompt [p]laybook / [t]arget / skip. Asset dirs (.agents/,
+                    .claude/, .codex/, .cursor/) and --machine stay playbook-only ([y/N]).
+  --stats           Read-only: change nothing, never prompt. Per project (or syncmap
+                    with --machine): counts per dir, then one line per file with
+                    playbook and target inodes (equal inode = hard-linked = in sync).
+                    Tags: = in sync, > playbook→target (default direction for
+                    everything except .dev-notes/ and project dev-guide.md),
+                    < target→playbook, ? changed on both sides (sync prompts),
+                    ~ same bytes but not linked (re-link), x stale copy (prune),
+                    o target-only (left alone), ! git-tracked in target (untouched).
   -h, --help        Show this help.
+
+Synced into each target:
+  .agents/      rules, skills, dev-guide.md; one-way
+  .claude/      subagents .md (Claude + Cursor); one-way
+  .codex/       subagents .toml (Codex); one-way
+  .cursor/      Cursor-only extras (e.g. hooks); one-way
+                Each = playbook <dir>/ + optional overlay
+                artifacts/live-notes/<project>/<dir>/ (overlay wins on clash).
+  .dev-notes/   artifacts/live-notes/<project>/dev-notes/; bidirectional
+  dev-guide.md  artifacts/live-notes/<project>/dev-notes/dev-guides/; bidirectional
+  AGENTS.md     pointer line to .agents/dev-guide.md appended if missing
+                (also CLAUDE.md when it exists and does not import @AGENTS.md)
 
 Files:
   projects.txt                         Project key list
@@ -69,6 +93,7 @@ YES=0
 FORCE=0
 IGNORE_SUBMODULES=0
 MACHINE_MODE=0
+STATS=0
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -81,6 +106,7 @@ while [[ $# -gt 0 ]]; do
     --yes) YES=1; shift ;;
     --ignore-submodules) IGNORE_SUBMODULES=1; shift ;;
     --force) FORCE=1; shift ;;
+    --stats) STATS=1; shift ;;
     -h|--help) usage; exit 0 ;;
     *)
       echo "error: unknown argument: $1" >&2
@@ -112,6 +138,8 @@ REPAIRED=()
 NEW_TO_TARGET=()
 NEW_TO_PLAYBOOK=()
 TARGET_ONLY=()
+PRUNED=()
+POINTER_ADDED=()
 CONFLICTS=()
 FAILURES=()
 MANAGED=()
@@ -170,16 +198,12 @@ collect_devnotes_files() {
     done
 }
 
-collect_project_guides_files() {
-  local root="$1"
-  [[ -d "$root" ]] || return 0
-  find -P "$root" -type f -name dev-guide.md -print0 |
-    while IFS= read -r -d '' f; do
-      local rel
-      rel="$(rel_under "$root" "$f")"
-      [[ "$rel" == .dev-notes/* ]] && continue
-      printf '%s%s%s\n' "$rel" "$SEP" "$f"
-    done
+# Guides under synced asset dirs (.agents/dev-guide.md) belong to those domains.
+project_guide_rel_ok() {
+  case "$1" in
+    .dev-notes/*|.agents/*|.claude/*|.codex/*|.cursor/*) return 1 ;;
+  esac
+  return 0
 }
 
 collect_live_guides_forward() {
@@ -187,7 +211,10 @@ collect_live_guides_forward() {
   [[ -d "$src_root" ]] || return 0
   find -P "$src_root" -type f -name dev-guide.md -print0 |
     while IFS= read -r -d '' f; do
-      printf '%s%s%s\n' "$(rel_under "$src_root" "$f")" "$SEP" "$f"
+      local rel
+      rel="$(rel_under "$src_root" "$f")"
+      project_guide_rel_ok "$rel" || continue
+      printf '%s%s%s\n' "$rel" "$SEP" "$f"
     done
 }
 
@@ -319,7 +346,7 @@ list_known_project_keys() {
 prompt_nested_guide_resolution() {
   local nested_abs="$1" guide_rel="$2"
   echo "Nested git repo (dev-guide.md at ${guide_rel}): $nested_abs" >&2
-  if [[ "$IGNORE_SUBMODULES" -eq 1 ]]; then
+  if [[ "$IGNORE_SUBMODULES" -eq 1 || "$STATS" -eq 1 ]]; then
     return 1
   fi
   printf "Submodule guides: [s]kip / same project as '%s' [m] / separate project [p]? " "$PROJECT" >&2
@@ -394,7 +421,7 @@ collect_project_guides_files_filtered() {
   local f rel nested nested_abs mod_owner reg_proj resolution pick_proj
   while IFS= read -r -d '' f; do
     rel="$(rel_under "$root" "$f")"
-    [[ "$rel" == .dev-notes/* ]] && continue
+    project_guide_rel_ok "$rel" || continue
     nested="$(nested_git_root_for_guide "$root" "$f" 2>/dev/null)" || nested=""
     if [[ -z "$nested" ]]; then
       printf '%s%s%s\n' "$rel" "$SEP" "$f"
@@ -438,7 +465,7 @@ list_machine_ids() {
 }
 
 resolve_machine() {
-  mkdir -p "$MACHINES_DIR"
+  [[ "$STATS" -eq 1 ]] || mkdir -p "$MACHINES_DIR"
   local alias_id=""
   if [[ -f "$ALIASES_FILE" ]]; then
     alias_id="$(awk -v h="$HOSTNAME_KEY" 'NF>=2 && $1==h { print $2; exit }' "$ALIASES_FILE")"
@@ -448,6 +475,10 @@ resolve_machine() {
   elif [[ -d "$MACHINES_DIR/$HOSTNAME_KEY" ]]; then
     MACHINE_ID="$HOSTNAME_KEY"
   else
+    if [[ "$STATS" -eq 1 ]]; then
+      echo "error: hostname '$HOSTNAME_KEY' is not a known machine (run a normal sync first)" >&2
+      exit 1
+    fi
     local ids=()
     while IFS= read -r id; do
       [[ -n "$id" ]] && ids+=("$id")
@@ -487,7 +518,7 @@ resolve_machine() {
     fi
   fi
   MACHINE_DIR="$MACHINES_DIR/$MACHINE_ID"
-  scaffold_machine_dir "$MACHINE_DIR"
+  [[ "$STATS" -eq 1 ]] || scaffold_machine_dir "$MACHINE_DIR"
 }
 
 # --- ignores ---
@@ -743,13 +774,14 @@ playbook_src_for_managed_rel() {
     [[ -f "$LIVE_GUIDES/$rel" ]] && printf '%s' "$LIVE_GUIDES/$rel"
     return 0
   fi
-  if [[ "$dest_root" == "$TARGET_ROOT/.cursor" ]]; then
-    if [[ -f "$OVERLAY_ROOT/$rel" ]]; then
-      printf '%s' "$OVERLAY_ROOT/$rel"
+  local dom="${dest_root##*/}"
+  if [[ "$dest_root" == "$TARGET_ROOT/$dom" ]] && is_oneway_domain "$dom"; then
+    if [[ -f "$PLAYBOOK_ROOT/$(overlay_rel "$dom")/$rel" ]]; then
+      printf '%s' "$PLAYBOOK_ROOT/$(overlay_rel "$dom")/$rel"
       return 0
     fi
-    if [[ -f "$SHARED_CURSOR/$rel" ]]; then
-      printf '%s' "$SHARED_CURSOR/$rel"
+    if [[ -f "$PLAYBOOK_ROOT/${dom}/$rel" ]]; then
+      printf '%s' "$PLAYBOOK_ROOT/${dom}/$rel"
       return 0
     fi
   elif [[ "$dest_root" == "$DEVNOTES_DEST" ]]; then
@@ -757,7 +789,238 @@ playbook_src_for_managed_rel() {
   fi
 }
 
-# allow_pull: 1 = bidirectional, 0 = one-way (cursor)
+# --- one-way asset domains + prune ---
+
+# Target dir name = playbook shared dir; overlay = artifacts/live-notes/<project>/<dom>.
+ONEWAY_DOMAINS=(.agents .claude .codex .cursor)
+
+overlay_rel() { printf 'artifacts/live-notes/%s/%s' "$PROJECT" "$1"; }
+
+is_oneway_domain() {
+  local d
+  for d in "${ONEWAY_DOMAINS[@]}"; do
+    [[ "$d" == "$1" ]] && return 0
+  done
+  return 1
+}
+
+PLAYBOOK_ASSET_INODES=""
+trap '[[ -z "$PLAYBOOK_ASSET_INODES" ]] || rm -f "$PLAYBOOK_ASSET_INODES"' EXIT
+
+ensure_playbook_asset_inodes() {
+  [[ -z "$PLAYBOOK_ASSET_INODES" ]] || return 0
+  PLAYBOOK_ASSET_INODES="$(mktemp)"
+  local dom d dirs=()
+  for dom in "${ONEWAY_DOMAINS[@]}"; do
+    for d in "$PLAYBOOK_ROOT/$dom" "$PLAYBOOK_ROOT"/artifacts/live-notes/*/"$dom"; do
+      [[ -d "$d" ]] && dirs+=("$d")
+    done
+  done
+  if [[ ${#dirs[@]} -gt 0 ]]; then
+    find -P "${dirs[@]}" -type f -exec stat -f '%d:%i' {} + | LC_ALL=C sort -u >"$PLAYBOOK_ASSET_INODES"
+  fi
+}
+
+# Target-only file in a one-way domain (dom = .agents|.cursor) that the playbook
+# shipped: hard link to a current playbook asset, or its blob appears in playbook
+# git history at <dom>/<rel> or <project><dom>/<rel>. User-authored files never match.
+is_stale_playbook_copy() {
+  local f="$1" dom="$2" rel="$3" id blob p
+  ensure_playbook_asset_inodes
+  id="$(file_id "$f")"
+  [[ -n "$id" ]] && grep -qxF "$id" "$PLAYBOOK_ASSET_INODES" && return 0
+  blob="$(git hash-object "$f" 2>/dev/null)" || return 1
+  # ${PROJECT}${dom}: pre-live-notes overlay location, kept for history matches.
+  for p in "$dom/$rel" "$(overlay_rel "$dom")/$rel" "${PROJECT}${dom}/$rel"; do
+    git -C "$PLAYBOOK_ROOT" log --all --format= --raw --no-abbrev -- "$p" 2>/dev/null |
+      awk '{ print $3; print $4 }' | grep -qxF "$blob" && return 0
+  done
+  return 1
+}
+
+prune_target_file() {
+  local f="$1" dest_root="$2" rel_full="$3" dir
+  rm -f "$f" || { FAILURES+=("$rel_full (prune failed)"); return 1; }
+  PRUNED+=("$rel_full")
+  dir="$(dirname "$f")"
+  while [[ "$dir" != "$dest_root" && "$dir" == "$dest_root"/* ]] && rmdir "$dir" 2>/dev/null; do
+    dir="$(dirname "$dir")"
+  done
+}
+
+# --- pointer (AGENTS.md / CLAUDE.md) ---
+
+AGENTS_POINTER='Read and follow `.agents/dev-guide.md` (always-on rules and skills), only if it exists, before starting any task.'
+AGENTS_POINTER_OLD='Read and follow `.agents/dev-guide.md` (always-on rules and skills) before starting any task.'
+
+ensure_pointer_in() {
+  local f="$1" label="$2"
+  if grep -qxF "$AGENTS_POINTER_OLD" "$f" 2>/dev/null; then
+    if [[ "$STATS" -eq 1 ]]; then
+      stats_add ">" "" "$f" "$label" "pointer line outdated; sync rewrites it"
+      return 0
+    fi
+    local tmp="$f.sync-playbook.tmp"
+    awk -v old="$AGENTS_POINTER_OLD" -v new="$AGENTS_POINTER" '$0 == old { print new; next } { print }' "$f" >"$tmp" && cat "$tmp" >"$f"
+    rm -f "$tmp"
+    POINTER_ADDED+=("$label (updated)")
+    return 0
+  fi
+  grep -qF '.agents/dev-guide.md' "$f" 2>/dev/null && return 0
+  if [[ "$STATS" -eq 1 ]]; then
+    stats_add ">" "" "$f" "$label" "pointer line missing; sync appends it"
+    return 0
+  fi
+  if git -C "$TARGET_ROOT" ls-files --error-unmatch "$label" >/dev/null 2>&1; then
+    label="$label (git-tracked; commit or revert in target)"
+  fi
+  if [[ -s "$f" ]]; then
+    [[ -n "$(tail -c1 "$f")" ]] && printf '\n' >>"$f"
+    printf '\n' >>"$f"
+  fi
+  printf '%s\n' "$AGENTS_POINTER" >>"$f"
+  POINTER_ADDED+=("$label")
+}
+
+ensure_agents_pointer() {
+  if [[ "$STATS" -eq 1 ]]; then
+    [[ -f "$PLAYBOOK_ROOT/.agents/dev-guide.md" ]] || return 0
+  else
+    [[ -f "$TARGET_ROOT/.agents/dev-guide.md" ]] || return 0
+  fi
+  ensure_pointer_in "$TARGET_ROOT/AGENTS.md" "AGENTS.md"
+  local claude="$TARGET_ROOT/CLAUDE.md"
+  if [[ -f "$claude" ]] && ! grep -qF '@AGENTS.md' "$claude"; then
+    ensure_pointer_in "$claude" "CLAUDE.md"
+  fi
+}
+
+# --- stats (read-only) ---
+
+STATS_LINES=() # rel<SEP>tag<SEP>playbook-inode<SEP>target-inode<SEP>note<SEP>group
+STATS_GROUPS=".agents/ .claude/ .codex/ .cursor/ .dev-notes/ dev-guide.md pointer syncmap"
+
+inode_of() {
+  if [[ -n "$1" && -e "$1" ]]; then stat -f '%i' "$1"; else printf '%s' '-'; fi
+}
+
+# tag playbook-file target-file rel note
+stats_add() {
+  local g
+  case "$4" in
+    .agents/*) g=".agents/" ;;
+    .claude/*) g=".claude/" ;;
+    .codex/*) g=".codex/" ;;
+    .cursor/*) g=".cursor/" ;;
+    .dev-notes/*) g=".dev-notes/" ;;
+    AGENTS.md|CLAUDE.md) g="pointer" ;;
+    *"=>"*) g="syncmap" ;;
+    *) g="dev-guide.md" ;;
+  esac
+  STATS_LINES+=("$4${SEP}$1${SEP}$(inode_of "$2")${SEP}$(inode_of "$3")${SEP}${5:-}${SEP}$g")
+}
+
+# Mirrors process_domain decisions without touching anything.
+stats_classify() {
+  local rel="$1" src="$2" tgt="$3" dest="$4" rel_full="$5" dest_root="$6"
+  local allow_pull="$7" pfx="$8" psrc dom
+  if is_git_tracked "$rel_full"; then
+    psrc="$src"
+    [[ -n "$psrc" ]] || psrc="$(playbook_src_for_managed_rel "$rel" "$dest_root" "$pfx")"
+    if [[ -n "$psrc" && -f "$dest" ]] && same_file "$dest" "$psrc"; then
+      stats_add "=" "$psrc" "$dest" "$rel_full"
+    else
+      stats_add "!" "$psrc" "$dest" "$rel_full" "git-tracked in target; left untouched"
+    fi
+    return 0
+  fi
+  if [[ -n "$src" ]] && is_ignored "$(rel_under "$PLAYBOOK_ROOT" "$src")"; then
+    return 0
+  fi
+  if [[ -n "$src" && -n "$tgt" ]]; then
+    if same_file "$src" "$dest"; then
+      stats_add "=" "$src" "$dest" "$rel_full"
+    elif same_bytes "$src" "$dest"; then
+      stats_add "~" "$src" "$dest" "$rel_full" "same content, not linked; sync re-links"
+    elif [[ "$allow_pull" -eq 1 ]]; then
+      stats_add "?" "$src" "$dest" "$rel_full" "changed on both sides; sync prompts"
+    else
+      stats_add ">" "$src" "$dest" "$rel_full" "changed; playbook → target"
+    fi
+  elif [[ -n "$src" ]]; then
+    stats_add ">" "$src" "" "$rel_full" "new; playbook → target"
+  elif [[ "$allow_pull" -ne 1 ]]; then
+    dom="${dest_root##*/}"
+    if ! is_ignored "$(overlay_rel "$dom")/$rel" && ! is_ignored "${dom}/$rel" &&
+      is_stale_playbook_copy "$tgt" "$dom" "$rel"; then
+      stats_add "x" "" "$tgt" "$rel_full" "stale playbook copy; sync prunes"
+    else
+      stats_add "o" "" "$tgt" "$rel_full" "target-only; left in place"
+    fi
+  else
+    [[ -n "$pfx" ]] && is_ignored "${pfx}${rel}" && return 0
+    stats_add "<" "" "$tgt" "$rel_full" "new; target → playbook"
+  fi
+}
+
+STATS_LEGEND_SHOWN=0
+
+print_stats_legend() {
+  [[ "$STATS_LEGEND_SHOWN" -eq 0 ]] || return 0
+  STATS_LEGEND_SHOWN=1
+  cat <<'EOF'
+Legend (playbook/target columns = inode; equal inode = hard-linked):
+  =  in sync
+  >  playbook → target: new or changed in playbook (default direction except .dev-notes/, dev-guide.md)
+  <  target → playbook: exists only in target (.dev-notes/ or dev-guide.md); sync links it into the playbook
+  ?  changed on both sides (.dev-notes/ or dev-guide.md); sync prompts playbook / target / skip
+  ~  same content, not hard-linked; sync re-links
+  x  stale copy the playbook no longer ships; sync deletes it
+  o  target-only, not from the playbook; left alone
+  !  git-tracked in target and differs; left untouched
+EOF
+}
+
+print_stats() {
+  local label="$1" rel tag pino tino note g pending=0 flagged=0
+  print_stats_legend
+  echo
+  echo "=== stats: $label ==="
+  printf '  %-13s %8s %8s %8s %8s %8s %8s %8s %8s\n' \
+    "" "in-sync" ">target" "<playbk" "relink" "decide" "prune" "tgt-only" "tracked"
+  if [[ ${#STATS_LINES[@]} -gt 0 ]]; then
+    printf '%s\n' "${STATS_LINES[@]}" | awk -F "$SEP" -v groups="$STATS_GROUPS" '
+      { c[$6, $2]++; seen[$6] = 1 }
+      END {
+        n = split(groups, gs, " "); nt = split("= > < ~ ? x o !", ts, " ")
+        for (i = 1; i <= n; i++) {
+          g = gs[i]; if (!(g in seen)) continue
+          printf "  %-13s", g
+          for (j = 1; j <= nt; j++) printf " %8d", c[g, ts[j]]
+          printf "\n"
+        }
+      }'
+  fi
+  echo
+  printf '  %-3s %-10s %-10s %s\n' "tag" "playbook" "target" "path"
+  if [[ ${#STATS_LINES[@]} -gt 0 ]]; then
+    while IFS="$SEP" read -r rel tag pino tino note g; do
+      printf '  %-3s %-10s %-10s %s%s\n' "$tag" "$pino" "$tino" "$rel" "${note:+  ($note)}"
+      case "$tag" in
+        ">"|"<"|"~"|"?"|"x") pending=$((pending + 1)) ;;
+        "!") flagged=$((flagged + 1)) ;;
+      esac
+    done < <(printf '%s\n' "${STATS_LINES[@]}" | LC_ALL=C sort -t "$SEP" -k1,1)
+  fi
+  echo
+  if [[ "$pending" -eq 0 ]]; then
+    echo "status: in sync (ignored=${#IGNORED[@]} git-tracked-untouched=$flagged)"
+  else
+    echo "status: $pending pending (ignored=${#IGNORED[@]} git-tracked-untouched=$flagged) — run without --stats to apply"
+  fi
+}
+
+# allow_pull: 1 = bidirectional, 0 = one-way (.agents, .cursor)
 # playbook_path_for_rel: function name or empty — for ignore checks on pull dest
 process_domain() {
   local forward_file="$1" target_file="$2" dest_root="$3" pull_root="$4"
@@ -775,6 +1038,12 @@ process_domain() {
     [[ -n "$rel" ]] || continue
     rel_full="${report_prefix}${rel}"
     dest="$dest_root/$rel"
+
+    if [[ "$STATS" -eq 1 ]]; then
+      stats_classify "$rel" "$src" "$tgt" "$dest" "$rel_full" "$dest_root" \
+        "$allow_pull" "$playbook_prefix_for_ignore"
+      continue
+    fi
 
     if is_git_tracked "$rel_full"; then
       psrc="$src"
@@ -809,7 +1078,13 @@ process_domain() {
       } || FAILURES+=("$rel_full ($err)")
     elif [[ -z "$src" && -n "$tgt" ]]; then
       if [[ "$allow_pull" -ne 1 ]]; then
-        TARGET_ONLY+=("$rel_full")
+        local dom="${dest_root##*/}"
+        if ! is_ignored "$(overlay_rel "$dom")/$rel" && ! is_ignored "${dom}/$rel" &&
+          is_stale_playbook_copy "$tgt" "$dom" "$rel"; then
+          prune_target_file "$tgt" "$dest_root" "$rel_full"
+        else
+          TARGET_ONLY+=("$rel_full")
+        fi
         continue
       fi
       pull_dest="$pull_root/$rel"
@@ -835,8 +1110,6 @@ process_domain() {
 TARGET_ROOT=""
 LIVE_NOTES=""
 LIVE_GUIDES=""
-OVERLAY_ROOT=""
-SHARED_CURSOR=""
 DEVNOTES_DEST=""
 
 is_git_tracked() {
@@ -854,6 +1127,9 @@ compute_git_tracked() {
   if git -C "$TARGET_ROOT" rev-parse --git-dir >/dev/null 2>&1; then
     git -C "$TARGET_ROOT" ls-files | awk '
       $0 == "dev-guide.md" ||
+      index($0, ".agents/") == 1 ||
+      index($0, ".claude/") == 1 ||
+      index($0, ".codex/") == 1 ||
       index($0, ".cursor/") == 1 ||
       index($0, ".dev-notes/") == 1 ||
       $0 ~ /\/dev-guide\.md$/ { print }
@@ -864,8 +1140,11 @@ compute_git_tracked() {
 }
 
 write_exclude_file() {
-  mkdir -p "$TARGET_ROOT/.cursor"
-  local out="$TARGET_ROOT/.cursor/.sync-playbook-excluded"
+  [[ "$STATS" -eq 1 ]] && return 0
+  rm -f "$TARGET_ROOT/.cursor/.sync-playbook-excluded"
+  rmdir "$TARGET_ROOT/.cursor" 2>/dev/null || true
+  mkdir -p "$TARGET_ROOT/.agents"
+  local out="$TARGET_ROOT/.agents/.sync-playbook-excluded"
   {
     echo "# sync-playbook exclusions (regenerated each sync)"
     if [[ ${#EXCLUDE_LINES[@]} -gt 0 ]]; then
@@ -876,8 +1155,12 @@ write_exclude_file() {
 
 ensure_project_known() {
   local project="$1"
-  touch "$PROJECTS_FILE"
+  [[ "$STATS" -eq 1 ]] || touch "$PROJECTS_FILE"
   grep -qxF "$project" "$PROJECTS_FILE" 2>/dev/null && return 0
+  if [[ "$STATS" -eq 1 ]]; then
+    echo "note: project '$project' is not in projects.txt (sync would register it)" >&2
+    return 0
+  fi
   if [[ "$YES" -eq 1 ]]; then
     echo "$project" >>"$PROJECTS_FILE"
     echo "note: appended '$project' to projects.txt"
@@ -896,6 +1179,10 @@ scaffold_live_notes_if_needed() {
   if [[ -d "$LIVE_NOTES" ]]; then
     return 0
   fi
+  if [[ "$STATS" -eq 1 ]]; then
+    echo "note: no live notes at $LIVE_NOTES (sync would scaffold)" >&2
+    return 0
+  fi
   if [[ ! -d "$STRUCTURE" ]]; then
     echo "error: missing scaffold template: $STRUCTURE" >&2
     exit 1
@@ -905,15 +1192,11 @@ scaffold_live_notes_if_needed() {
   echo "note: scaffolded $LIVE_NOTES"
 }
 
-build_cursor_forward_file() {
-  local out="$1"
+build_oneway_forward_file() {
+  local shared="$1" overlay="$2" out="$3"
   : >"$out"
-  collect_files "$SHARED_CURSOR" >"$out"
-  if [[ -d "$OVERLAY_ROOT" ]]; then
-    collect_files "$OVERLAY_ROOT" >>"$out"
-  else
-    echo "warning: no overlay at ${PROJECT}.cursor (shared only)"
-  fi
+  collect_files "$shared" >"$out"
+  collect_files "$overlay" >>"$out"
   local merged
   merged="$(mktemp)"
   awk -F "$SEP" 'NF >= 2 { last[$1] = $0 } END { for (k in last) print last[k] }' "$out" >"$merged"
@@ -927,6 +1210,10 @@ warn_legacy_devnotes_devguides() {
 
 migrate_legacy_devnotes_symlink() {
   [[ -L "$DEVNOTES_DEST" ]] || return 0
+  if [[ "$STATS" -eq 1 ]]; then
+    echo "note: .dev-notes is a legacy symlink (sync migrates it); not inspected" >&2
+    return 1
+  fi
   local live_resolved target_resolved
   live_resolved="$(cd -P "$LIVE_NOTES" && pwd)"
   target_resolved="$(cd -P "$DEVNOTES_DEST" 2>/dev/null && pwd)" || target_resolved=""
@@ -939,18 +1226,19 @@ migrate_legacy_devnotes_symlink() {
   fi
 }
 
-sync_cursor_domain() {
-  mkdir -p "$TARGET_ROOT/.cursor"
+# dom = .agents | .cursor ; sources: <playbook>/<dom> + <playbook>/<project><dom>
+sync_oneway_domain() {
+  local dom="$1"
   local forward_file target_file filtered
   forward_file="$(mktemp)"
   target_file="$(mktemp)"
   filtered="$(mktemp)"
-  build_cursor_forward_file "$forward_file"
-  filter_forward_ignored ".cursor/" <"$forward_file" >"$filtered"
-  collect_files "$TARGET_ROOT/.cursor" |
+  build_oneway_forward_file "$PLAYBOOK_ROOT/$dom" "$PLAYBOOK_ROOT/$(overlay_rel "$dom")" "$forward_file"
+  filter_forward_ignored "$dom/" <"$forward_file" >"$filtered"
+  collect_files "$TARGET_ROOT/$dom" |
     awk -F "$SEP" -v skip=".sync-playbook-excluded" '$1 != skip' >"$target_file"
-  process_domain "$filtered" "$target_file" "$TARGET_ROOT/.cursor" \
-    "$OVERLAY_ROOT" ".cursor/" 0
+  process_domain "$filtered" "$target_file" "$TARGET_ROOT/$dom" \
+    "$PLAYBOOK_ROOT/$(overlay_rel "$dom")" "$dom/" 0
   rm -f "$forward_file" "$target_file" "$filtered"
 }
 
@@ -962,7 +1250,7 @@ sync_devnotes_domain() {
   if [[ -L "$DEVNOTES_DEST" ]]; then
     migrate_legacy_devnotes_symlink || return
   fi
-  mkdir -p "$DEVNOTES_DEST"
+  [[ "$STATS" -eq 1 ]] || mkdir -p "$DEVNOTES_DEST"
   local forward_file target_file filtered
   forward_file="$(mktemp)"
   target_file="$(mktemp)"
@@ -1015,7 +1303,7 @@ filter_guides_nested_policy() {
 }
 
 sync_guides_domain_core() {
-  mkdir -p "$LIVE_GUIDES"
+  [[ "$STATS" -eq 1 ]] || mkdir -p "$LIVE_GUIDES"
   local forward_file target_file filtered
   forward_file="$(mktemp)"
   target_file="$(mktemp)"
@@ -1034,7 +1322,7 @@ sync_guides_domain_at() {
   local project="$1" target="$2"
   local save_project="$PROJECT" save_target="$TARGET_ROOT"
   local save_live="$LIVE_NOTES" save_guides="$LIVE_GUIDES"
-  local save_devnotes="$DEVNOTES_DEST" save_overlay="$OVERLAY_ROOT"
+  local save_devnotes="$DEVNOTES_DEST"
   local save_git_tracked="$GIT_TRACKED_FILE"
   local save_exclude_lines=("${EXCLUDE_LINES[@]+"${EXCLUDE_LINES[@]}"}")
 
@@ -1057,7 +1345,6 @@ sync_guides_domain_at() {
   LIVE_NOTES="$save_live"
   LIVE_GUIDES="$save_guides"
   DEVNOTES_DEST="$save_devnotes"
-  OVERLAY_ROOT="$save_overlay"
   GIT_TRACKED_FILE="$save_git_tracked"
   EXCLUDE_LINES=("${save_exclude_lines[@]+"${save_exclude_lines[@]}"}")
 }
@@ -1087,11 +1374,14 @@ reset_report_arrays() {
   NEW_TO_TARGET=()
   NEW_TO_PLAYBOOK=()
   TARGET_ONLY=()
+  PRUNED=()
+  POINTER_ADDED=()
   CONFLICTS=()
   FAILURES=()
   MANAGED=()
   IGNORED=()
   EXCLUDE_LINES=()
+  STATS_LINES=()
 }
 
 print_report() {
@@ -1117,8 +1407,18 @@ print_report() {
   fi
   if [[ ${#TARGET_ONLY[@]} -gt 0 ]]; then
     echo
-    echo "=== Target-only .cursor (not pulled) ==="
+    echo "=== Target-only ${ONEWAY_DOMAINS[*]} (not playbook-shipped; left in place) ==="
     printf '%s\n' "${TARGET_ONLY[@]}" | LC_ALL=C sort -u | sed 's/^/  /'
+  fi
+  if [[ ${#PRUNED[@]} -gt 0 ]]; then
+    echo
+    echo "=== Pruned (stale playbook copies no longer shipped) ==="
+    printf '%s\n' "${PRUNED[@]}" | LC_ALL=C sort -u | sed 's/^/  /'
+  fi
+  if [[ ${#POINTER_ADDED[@]} -gt 0 ]]; then
+    echo
+    echo "=== Pointer to .agents/dev-guide.md added or updated ==="
+    printf '%s\n' "${POINTER_ADDED[@]}" | sed 's/^/  /'
   fi
   if [[ ${#REPAIRED[@]} -gt 0 ]]; then
     echo
@@ -1136,7 +1436,7 @@ print_report() {
     printf '%s\n' "${NEW_TO_PLAYBOOK[@]}" | LC_ALL=C sort -u | sed 's/^/  /'
   fi
   echo
-  echo "sync: existing=${#EXISTING[@]} repaired=${#REPAIRED[@]} new_to_target=${#NEW_TO_TARGET[@]} new_to_playbook=${#NEW_TO_PLAYBOOK[@]} excluded=${#EXCLUDED[@]} ignored=${#IGNORED[@]} target_only=${#TARGET_ONLY[@]}"
+  echo "sync: existing=${#EXISTING[@]} repaired=${#REPAIRED[@]} new_to_target=${#NEW_TO_TARGET[@]} new_to_playbook=${#NEW_TO_PLAYBOOK[@]} excluded=${#EXCLUDED[@]} ignored=${#IGNORED[@]} target_only=${#TARGET_ONLY[@]} pruned=${#PRUNED[@]}"
 }
 
 sync_one_target() {
@@ -1145,8 +1445,6 @@ sync_one_target() {
   TARGET_ROOT="$target"
   LIVE_NOTES="$PLAYBOOK_ROOT/artifacts/live-notes/$PROJECT/dev-notes"
   LIVE_GUIDES="$LIVE_NOTES/dev-guides"
-  OVERLAY_ROOT="$PLAYBOOK_ROOT/${PROJECT}.cursor"
-  SHARED_CURSOR="$PLAYBOOK_ROOT/.cursor"
   DEVNOTES_DEST="$TARGET_ROOT/.dev-notes"
 
   reset_report_arrays
@@ -1155,15 +1453,23 @@ sync_one_target() {
   scaffold_live_notes_if_needed
   compute_git_tracked
 
-  sync_cursor_domain
+  local dom
+  for dom in "${ONEWAY_DOMAINS[@]}"; do
+    sync_oneway_domain "$dom"
+  done
   sync_devnotes_domain
   warn_legacy_devnotes_devguides
   sync_guides_domain
+  ensure_agents_pointer
 
   write_exclude_file
   [[ -n "$GIT_TRACKED_FILE" ]] && rm -f "$GIT_TRACKED_FILE"
   GIT_TRACKED_FILE=""
 
+  if [[ "$STATS" -eq 1 ]]; then
+    print_stats "$PROJECT @ $TARGET_ROOT"
+    return 0
+  fi
   print_report "$PROJECT @ $TARGET_ROOT"
 
   local exit_code=0
@@ -1225,7 +1531,7 @@ delete_machine_projects_line() {
 handle_missing_path() {
   local project="$1" path="$2" line="$3"
   echo "warning: path missing or not a git root for $project: $path" >&2
-  if [[ "$YES" -eq 1 ]]; then
+  if [[ "$YES" -eq 1 || "$STATS" -eq 1 ]]; then
     echo "note: --yes ⇒ skip $line" >&2
     return 1
   fi
@@ -1260,6 +1566,20 @@ handle_missing_path() {
 
 sync_one_map_file() {
   local src="$1" dest="$2" label="$3"
+  if [[ "$STATS" -eq 1 ]]; then
+    if [[ ! -e "$dest" && ! -L "$dest" ]]; then
+      stats_add ">" "$src" "" "$label" "new; playbook → dest"
+    elif [[ ! -f "$dest" ]]; then
+      stats_add "!" "$src" "" "$label" "dest exists and is not a regular file"
+    elif same_file "$src" "$dest"; then
+      stats_add "=" "$src" "$dest" "$label"
+    elif same_bytes "$src" "$dest"; then
+      stats_add "~" "$src" "$dest" "$label" "same content, not linked; sync re-links"
+    else
+      stats_add ">" "$src" "$dest" "$label" "changed; playbook → dest"
+    fi
+    return 0
+  fi
   if [[ -e "$dest" || -L "$dest" ]]; then
     if [[ -f "$dest" ]]; then
       resolve_both_sides "$src" "$dest" "$label"
@@ -1305,6 +1625,10 @@ process_syncmap() {
       echo "warning: syncmap source not file/dir — skip: $src" >&2
     fi
   done <"$map"
+  if [[ "$STATS" -eq 1 ]]; then
+    print_stats "syncmap @ $MACHINE_ID"
+    return 0
+  fi
   print_report "syncmap @ $MACHINE_ID"
   local exit_code=0
   [[ ${#CONFLICTS[@]} -eq 0 ]] || exit_code=1
@@ -1331,6 +1655,8 @@ fi
 if is_playbook_cwd; then
   resolve_machine
   local_lines=0
+  # sync_one_target reassigns PROJECT; keep the --project filter separately.
+  PROJECT_FILTER="$PROJECT"
   while IFS= read -r line || [[ -n "$line" ]]; do
     [[ -z "$line" || "$line" == \#* ]] && continue
     local_proj="${line%%:*}"
@@ -1339,7 +1665,7 @@ if is_playbook_cwd; then
       echo "warning: bad projects.txt line (want project:/abs/path): $line" >&2
       continue
     fi
-    if [[ -n "$PROJECT" && "$local_proj" != "$PROJECT" ]]; then
+    if [[ -n "$PROJECT_FILTER" && "$local_proj" != "$PROJECT_FILTER" ]]; then
       continue
     fi
     local_lines=1
@@ -1354,8 +1680,8 @@ if is_playbook_cwd; then
     sync_one_target "$local_proj" "$local_path" || OVERALL_EXIT=$?
   done <"$MACHINE_DIR/projects.txt"
   if [[ "$local_lines" -eq 0 ]]; then
-    if [[ -n "$PROJECT" ]]; then
-      echo "error: no paths for project '$PROJECT' on machine '$MACHINE_ID'" >&2
+    if [[ -n "$PROJECT_FILTER" ]]; then
+      echo "error: no paths for project '$PROJECT_FILTER' on machine '$MACHINE_ID'" >&2
       exit 1
     fi
     echo "note: no project paths in machines/${MACHINE_ID}/projects.txt — nothing to sync"
@@ -1376,6 +1702,6 @@ fi
 
 resolve_machine
 load_ignores_for_project "$PROJECT"
-register_machine_path "$PROJECT" "$CWD"
+[[ "$STATS" -eq 1 ]] || register_machine_path "$PROJECT" "$CWD"
 sync_one_target "$PROJECT" "$CWD" || OVERALL_EXIT=$?
 exit "$OVERALL_EXIT"

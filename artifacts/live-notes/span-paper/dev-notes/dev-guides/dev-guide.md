@@ -15,9 +15,13 @@ LaTeX repo: main SCP paper at root; sibling folders hold earlier versions of the
 | Name | Description |
 |------|-------------|
 | `main.tex` | Root paper driver |
+| `rhpl2026_proposal.tex` | Self-contained RHPL 2026 proposal (included after appendices; ~2 pages) |
+| `proof-read-*.tex`, `proof-build.sh` | Journal proof: `original` read-only, edit `edited`; `./proof-build.sh [edited\|original\|diff\|clean]` builds into `proof-build/` with stand-in journal packages (see `proof-read.md`) |
 | `resources/` | Shared style and figures |
 | `elsarticle*`, `*.bst`, `*.cls` | Vendored Elsevier template — do not hand-edit |
 | `oopsla23/` | OOPSLA'23 submission — `oopsla23/dev-guide.md` |
 | `phdthesis/` | PhD thesis — `phdthesis/dev-guide.md` |
 | `20260223-defence/ppt/` | Defence slides — `20260223-defence/ppt/dev-guide.md` |
-| `.cursor/` | Rules, skills, LaTeX hook |
+| `.agents/` | Agent rules and skills (`.agents/dev-guide.md`) |
+| `.claude/agents/`, `.codex/agents/` | Subagents (spell-check) |
+| `.cursor/` | LaTeX hook |

@@ -11,12 +11,14 @@ TARGET="$WORKDIR/target"
 HOMEFILES="$WORKDIR/homefiles"
 LIVE_NOTES="$PLAYBOOK_ROOT/artifacts/live-notes/$PROJECT/dev-notes"
 MACHINE_DIR="$PLAYBOOK_ROOT/machines/$MACHINE"
-OVERLAY="$PLAYBOOK_ROOT/${PROJECT}.cursor"
+OVERLAY_REL="artifacts/live-notes/$PROJECT/.cursor"
+OVERLAY="$PLAYBOOK_ROOT/$OVERLAY_REL"
+AGENTS_OVERLAY="$PLAYBOOK_ROOT/artifacts/live-notes/$PROJECT/.agents"
 
 cleanup() {
   rm -rf "$WORKDIR"
   rm -rf "$PLAYBOOK_ROOT/artifacts/live-notes/$PROJECT"
-  rm -rf "$OVERLAY"
+  rm -rf "$OVERLAY" "$AGENTS_OVERLAY"
   rm -rf "$MACHINE_DIR"
   rm -rf "$PLAYBOOK_ROOT/scripts/_smoke_map_dir" "$PLAYBOOK_ROOT/scripts/_smoke_map_file.txt"
   if [[ -f "$PLAYBOOK_ROOT/projects.txt" ]]; then
@@ -51,10 +53,10 @@ printf '%s\n' 'hub guide' >"$LIVE_NOTES/dev-guides/dev-guide.md"
 # project ignore: ignore ignore-me; folder-ignore rules/ with ! keep-me
 mkdir -p "$PLAYBOOK_ROOT/artifacts/live-notes/$PROJECT"
 cat >"$PLAYBOOK_ROOT/artifacts/live-notes/$PROJECT/ignoresync.txt" <<EOF
-${PROJECT}.cursor/rules/ignore-me.mdc
-${PROJECT}.cursor/rules/
-!${PROJECT}.cursor/rules/keep-me.mdc
-!${PROJECT}.cursor/rules/smoke.mdc
+${OVERLAY_REL}/rules/ignore-me.mdc
+${OVERLAY_REL}/rules/
+!${OVERLAY_REL}/rules/keep-me.mdc
+!${OVERLAY_REL}/rules/smoke.mdc
 EOF
 
 git -C "$TARGET" init -q
@@ -76,7 +78,57 @@ pass "playbook sync + ignores"
 printf '%s\n' 'target only' >"$TARGET/.cursor/rules/only-in-target.mdc"
 ( cd "$PLAYBOOK_ROOT" && "$SYNC" --project "$PROJECT" --yes ) || fail "sync after target-only"
 [[ ! -e "$OVERLAY/rules/only-in-target.mdc" ]] || fail "target-only .cursor was pulled into overlay"
+[[ -f "$TARGET/.cursor/rules/only-in-target.mdc" ]] || fail "user-authored target-only file was pruned"
 pass "cursor one-way (no pull)"
+
+# 2b) .agents: shared + overlay linked; AGENTS.md pointer created once
+same_file "$TARGET/.agents/dev-guide.md" "$PLAYBOOK_ROOT/.agents/dev-guide.md" || fail "shared .agents not linked"
+same_file "$TARGET/.claude/agents/spell-check.md" "$PLAYBOOK_ROOT/.claude/agents/spell-check.md" || \
+  fail "shared .claude subagent not linked"
+same_file "$TARGET/.codex/agents/spell-check.toml" "$PLAYBOOK_ROOT/.codex/agents/spell-check.toml" || \
+  fail "shared .codex subagent not linked"
+mkdir -p "$AGENTS_OVERLAY/skills/smoke"
+printf '%s\n' 'smoke skill' >"$AGENTS_OVERLAY/skills/smoke/SKILL.md"
+( cd "$PLAYBOOK_ROOT" && "$SYNC" --project "$PROJECT" --yes ) || fail ".agents overlay sync"
+same_file "$TARGET/.agents/skills/smoke/SKILL.md" "$AGENTS_OVERLAY/skills/smoke/SKILL.md" || \
+  fail ".agents overlay not linked"
+[[ "$(grep -cF '.agents/dev-guide.md' "$TARGET/AGENTS.md")" == 1 ]] || fail "AGENTS.md pointer missing or duplicated"
+pass ".agents domain + AGENTS.md pointer"
+
+# 2c) existing AGENTS.md / CLAUDE.md get the pointer appended (not with @AGENTS.md import)
+printf '%s' '# Own rules' >"$TARGET/AGENTS.md"
+printf '%s\n' '# Claude notes' >"$TARGET/CLAUDE.md"
+( cd "$PLAYBOOK_ROOT" && "$SYNC" --project "$PROJECT" --yes ) || fail "pointer append sync"
+( cd "$PLAYBOOK_ROOT" && "$SYNC" --project "$PROJECT" --yes ) || fail "pointer idempotent sync"
+[[ "$(head -1 "$TARGET/AGENTS.md")" == "# Own rules" ]] || fail "AGENTS.md content lost"
+[[ "$(grep -cF '.agents/dev-guide.md' "$TARGET/AGENTS.md")" == 1 ]] || fail "AGENTS.md pointer not appended once"
+[[ "$(grep -cF '.agents/dev-guide.md' "$TARGET/CLAUDE.md")" == 1 ]] || fail "CLAUDE.md pointer not appended once"
+printf '%s\n' '@AGENTS.md' >"$TARGET/CLAUDE.md"
+( cd "$PLAYBOOK_ROOT" && "$SYNC" --project "$PROJECT" --yes ) || fail "pointer import sync"
+grep -qF '.agents/dev-guide.md' "$TARGET/CLAUDE.md" && fail "pointer added to CLAUDE.md that imports AGENTS.md"
+pass "pointer append to existing AGENTS.md / CLAUDE.md"
+
+# 2d) legacy pointer line is rewritten in place
+printf '%s\n' '# Own rules' 'Read and follow `.agents/dev-guide.md` (always-on rules and skills) before starting any task.' >"$TARGET/AGENTS.md"
+( cd "$PLAYBOOK_ROOT" && "$SYNC" --project "$PROJECT" --yes ) || fail "pointer upgrade sync"
+[[ "$(grep -cF '.agents/dev-guide.md' "$TARGET/AGENTS.md")" == 1 ]] || fail "pointer duplicated on upgrade"
+grep -qF 'only if it exists' "$TARGET/AGENTS.md" || fail "legacy pointer not rewritten"
+[[ "$(head -1 "$TARGET/AGENTS.md")" == "# Own rules" ]] || fail "AGENTS.md content lost on upgrade"
+pass "legacy pointer rewritten"
+
+# 2d) prune: playbook moves an asset from .cursor overlay to .agents overlay
+mkdir -p "$OVERLAY/skills/moved"
+printf '%s\n' 'moving skill' >"$OVERLAY/skills/moved/SKILL.md"
+( cd "$PLAYBOOK_ROOT" && "$SYNC" --project "$PROJECT" --yes ) || fail "pre-move sync"
+same_file "$TARGET/.cursor/skills/moved/SKILL.md" "$OVERLAY/skills/moved/SKILL.md" || fail "pre-move link"
+mkdir -p "$AGENTS_OVERLAY/skills/moved"
+mv "$OVERLAY/skills/moved/SKILL.md" "$AGENTS_OVERLAY/skills/moved/SKILL.md"
+rmdir "$OVERLAY/skills/moved" "$OVERLAY/skills"
+( cd "$PLAYBOOK_ROOT" && "$SYNC" --project "$PROJECT" --yes ) || fail "post-move sync"
+[[ ! -e "$TARGET/.cursor/skills" ]] || fail "stale .cursor/skills copy not pruned"
+same_file "$TARGET/.agents/skills/moved/SKILL.md" "$AGENTS_OVERLAY/skills/moved/SKILL.md" || fail "moved skill not linked"
+[[ -f "$TARGET/.cursor/rules/only-in-target.mdc" ]] || fail "prune removed user-authored file"
+pass "prune stale playbook copies"
 
 # 3) inode repair (same bytes, different inode)
 rm -f "$TARGET/.cursor/rules/smoke.mdc"
@@ -105,7 +157,7 @@ log="$WORKDIR/tracked.log"
 ( cd "$PLAYBOOK_ROOT" && "$SYNC" --project "$PROJECT" --yes --force ) 2>&1 | tee "$log" || true
 grep -q 'git-tracked' "$log" || fail "expected git-tracked warning"
 [[ "$(cat "$TARGET/.cursor/rules/tracked.mdc")" == "tracked content" ]] || fail "git-tracked file was modified"
-grep -qxF "TGIT_TRACKED: .cursor/rules/tracked.mdc" "$TARGET/.cursor/.sync-playbook-excluded" || \
+grep -qxF "TGIT_TRACKED: .cursor/rules/tracked.mdc" "$TARGET/.agents/.sync-playbook-excluded" || \
   fail "expected TGIT_TRACKED line in exclude file"
 
 rm -f "$TARGET/.cursor/rules/linked-tracked.mdc"
@@ -132,12 +184,12 @@ printf '%s\n' 'noise' >"$OVERLAY/skills/demo/scripts/.DS_Store"
 same_file "$TARGET/.cursor/skills/demo/scripts/mod.py" "$OVERLAY/skills/demo/scripts/mod.py" || \
   fail "non-ignored script not linked"
 grep -qxF "SYNC_IGNORED: .cursor/skills/demo/scripts/__pycache__/" \
-  "$TARGET/.cursor/.sync-playbook-excluded" || fail "expected SYNC_IGNORED __pycache__/ dir line"
+  "$TARGET/.agents/.sync-playbook-excluded" || fail "expected SYNC_IGNORED __pycache__/ dir line"
 grep -qxF "SYNC_IGNORED: .cursor/skills/demo/scripts/.DS_Store" \
-  "$TARGET/.cursor/.sync-playbook-excluded" || fail "expected SYNC_IGNORED .DS_Store line"
+  "$TARGET/.agents/.sync-playbook-excluded" || fail "expected SYNC_IGNORED .DS_Store line"
 # exclude file must not dump unrelated git-tracked trees
-grep -E '^(TGIT_TRACKED|SYNC_IGNORED): ' "$TARGET/.cursor/.sync-playbook-excluded" >/dev/null
-grep -Ev '^(#|TGIT_TRACKED: |SYNC_IGNORED: |$)' "$TARGET/.cursor/.sync-playbook-excluded" && \
+grep -E '^(TGIT_TRACKED|SYNC_IGNORED): ' "$TARGET/.agents/.sync-playbook-excluded" >/dev/null
+grep -Ev '^(#|TGIT_TRACKED: |SYNC_IGNORED: |$)' "$TARGET/.agents/.sync-playbook-excluded" && \
   fail "exclude file has unexpected lines"
 pass "anywhere ignores + exclude file format"
 
@@ -204,5 +256,26 @@ pass "--machine syncmap file+dir"
 ( cd "$TARGET" && "$SYNC" --project "$PROJECT" --yes ) || fail "target-cwd sync"
 [[ ! -e "$TARGET/.cursor/rules/ignore-me.mdc" ]] || fail "ignored file appeared in target-cwd sync"
 pass "target-cwd mode"
+
+# 9) --stats: read-only; tags + inodes for pending work
+printf '%s\n' 'stats new' >"$AGENTS_OVERLAY/skills/smoke/NEW.md"
+rm -f "$TARGET/.agents/skills/smoke/SKILL.md"
+printf '%s\n' 'smoke skill' >"$TARGET/.agents/skills/smoke/SKILL.md"
+printf '%s\n' 'stats pull' >"$TARGET/.dev-notes/stats-pull.md"
+stats_log="$WORKDIR/stats.log"
+( cd "$PLAYBOOK_ROOT" && "$SYNC" --stats --project "$PROJECT" ) >"$stats_log" 2>&1 || fail "--stats run"
+grep -Eq '^  > +[0-9]+ +- +\.agents/skills/smoke/NEW\.md' "$stats_log" || fail "stats: new asset not '>'"
+grep -Eq '^  ~ +[0-9]+ +[0-9]+ +\.agents/skills/smoke/SKILL\.md' "$stats_log" || fail "stats: relink not '~'"
+grep -Eq '^  < +- +[0-9]+ +\.dev-notes/stats-pull\.md' "$stats_log" || fail "stats: pull not '<'"
+ino="$(stat -f '%i' "$PLAYBOOK_ROOT/.agents/dev-guide.md")"
+grep -Eq "^  = +$ino +$ino +\.agents/dev-guide\.md" "$stats_log" || fail "stats: in-sync inodes not shown"
+grep -q '^status: [0-9]* pending' "$stats_log" || fail "stats: missing pending status"
+[[ ! -e "$TARGET/.agents/skills/smoke/NEW.md" ]] || fail "stats linked a file"
+[[ ! -e "$LIVE_NOTES/stats-pull.md" ]] || fail "stats pulled a file"
+same_file "$TARGET/.agents/skills/smoke/SKILL.md" "$AGENTS_OVERLAY/skills/smoke/SKILL.md" && fail "stats re-linked"
+( cd "$PLAYBOOK_ROOT" && "$SYNC" --project "$PROJECT" --yes ) || fail "sync after stats"
+( cd "$PLAYBOOK_ROOT" && "$SYNC" --stats --project "$PROJECT" ) >"$stats_log" 2>&1 || fail "--stats rerun"
+grep -q '^status: in sync' "$stats_log" || fail "stats: not in sync after sync"
+pass "--stats read-only report"
 
 pass "all marshal cases"

@@ -56,6 +56,10 @@ same_file "$TARGET/app/pkg/dev-guide.md" "$LIVE_GUIDES/app/pkg/dev-guide.md" || 
 same_file "$TARGET/.dev-notes/activities/dev-guide.md" "$LIVE_NOTES/activities/dev-guide.md" || \
   fail "activities guide not hard-linked via dev-notes domain"
 
+# .agents/dev-guide.md belongs to the .agents domain, not the guides hub.
+same_file "$TARGET/.agents/dev-guide.md" "$PLAYBOOK_ROOT/.agents/dev-guide.md" || fail ".agents guide not linked"
+[[ ! -e "$LIVE_GUIDES/.agents/dev-guide.md" ]] || fail ".agents/dev-guide.md pulled into guides hub"
+
 # Hub dev-guides/ must not be mirrored into target .dev-notes/.
 if [[ -f "$TARGET/.dev-notes/dev-guides/dev-guide.md" ]]; then
   fail "hub dev-guides mirrored into target .dev-notes"

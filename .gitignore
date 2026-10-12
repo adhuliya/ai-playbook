@@ -1,6 +1,13 @@
 # Keep playbook source assets trackable even if core.excludesFile
-# ignores .cursor/ or .dev-notes/ globally.
+# ignores agent dirs, .dev-notes/, or AGENTS.md globally.
 
+!.agents/
+!.agents/**
+!AGENTS.md
+!.claude/
+!.claude/**
+!.codex/
+!.codex/**
 !.cursor/
 !.cursor/**
 !.dev-notes/
