@@ -32,7 +32,7 @@ Do not open the index files at the start of a turn.
 Open an index file when a command heading names it.
 Also open it when the Reads section names it.
 Also open it when the step you are running tells you to follow that name.
-Do not read the other command files.
+Load a keyword with the extract under **Commands**.
 
 ## Index
 
@@ -68,17 +68,19 @@ Report the status and stop when it sits outside the heading's `Status:` line.
 Run the steps in order.
 The word "Stop" ends the command and the turn.
 
-## Command files
+## Commands
 
-Open the file for the keyword.
-Read only that heading.
+Extract one keyword from the repo root.
+Do not read `commands.md`.
+Replace `<keyword>` with the reserved keyword.
 
-| File | Keywords |
-|---|---|
-| `commands-lifecycle.md` | `replan-work`, `create-sibling`, `import-activity`, `resume-work`, `conventions-ok`, `start-building`, `approve-plan`, `pause-work`, `mark-completed` |
-| `commands-review.md` | `start-review`, `apply-review`, `verify-plan` |
-| `commands-upkeep.md` | `add-review-comments`, `remove-review-comments`, `update-convention`, `fix-activity`, `create-guide`, `delete-tmp-files`, `compact-journal` |
-| `commands-help.md` | `help`, `query-work`, `no-query-work` |
+```bash
+awk -v cmd='<keyword>' '
+  /^## / && index($0, "`" cmd "`") { show = 1 }
+  show && /^## / && !index($0, "`" cmd "`") { exit }
+  show
+' .cursor/skills/workon/commands.md
+```
 
 
 ## Stops
@@ -520,8 +522,7 @@ Never prune, rewrite, or renumber here; that needs `fix-activity`.
 
 ## Command map
 
-Open the keyword's file from **Command files**.
-Read only that heading.
+Run the extract under **Commands**.
 Valid statuses are that heading's `Status:` line.
 `help all` prints the tables below.
 

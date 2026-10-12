@@ -20,7 +20,7 @@ Name that file from the command heading, from Reads, or from the step that uses 
 
 | Change | File |
 |---|---|
-| Keyword steps | The command file that owns that keyword |
+| Keyword steps | `commands.md` (extract one heading) |
 | Create, derive, replan, cited context | `planning.md` |
 | RD, design decisions, conventions, legacy repair | `notes-files.md` |
 | Review cycles and apply timing | `review-policy.md` |
@@ -28,8 +28,9 @@ Name that file from the command heading, from Reads, or from the step that uses 
 | Launch, paths, pipelines, output fields | `subagent-contract.md` |
 | Record shapes | `templates.md` |
 
-Command files are `commands-lifecycle.md`, `commands-review.md`, `commands-upkeep.md`, and `commands-help.md`.
-Read only the heading for the keyword you are changing.
+Keyword steps live in `commands.md`.
+Extract the one heading with the command in `SKILL.md`.
+Do not read `commands.md` from top to bottom.
 A `Read` line sits after the status paragraph.
 Do not insert it into the middle of that paragraph.
 
@@ -42,7 +43,7 @@ The test tiers stay in `building.md`.
 
 Do not open the index files at the start of a turn.
 Open a file when a command heading, the Reads section, or the current step names it.
-Do not read the other command files.
+Load one keyword with the extract under **Commands**.
 Keep a turn to the hot file, one command heading, and one policy file.
 Add the contract when the step launches a Task.
 Add `templates.md` only for the shape that step writes.
