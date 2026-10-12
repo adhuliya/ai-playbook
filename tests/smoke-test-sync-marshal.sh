@@ -252,6 +252,46 @@ same_file "$HOMEFILES/hooks/a.txt" "$PLAYBOOK_ROOT/scripts/_smoke_map_dir/a.txt"
 same_file "$HOMEFILES/hooks/nest/b.txt" "$PLAYBOOK_ROOT/scripts/_smoke_map_dir/nest/b.txt" || fail "syncmap dir nest"
 pass "--machine syncmap file+dir"
 
+# 7b) --machine host field: source block appended / idempotent / rewritten / migrated
+printf '%s\n' 'local before' >"$HOMEFILES/.zshrc"
+printf '%s\n' 'set nocompatible' >"$HOMEFILES/.vimrc"
+ln "$PLAYBOOK_ROOT/scripts/_smoke_map_file.txt" "$HOMEFILES/.tmux.conf"
+cat >"$MACHINE_DIR/syncmap.txt" <<EOF
+scripts/_smoke_map_file.txt:${HOMEFILES}/.playbook/zshrc:${HOMEFILES}/.zshrc
+scripts/_smoke_map_file.txt:${HOMEFILES}/.playbook/vimrc:${HOMEFILES}/.vimrc
+scripts/_smoke_map_file.txt:${HOMEFILES}/.playbook/tmux.conf:${HOMEFILES}/.tmux.conf
+EOF
+( cd "$TARGET" && "$SYNC" --machine --stats ) >"$WORKDIR/block-stats.log" 2>&1 || fail "host block stats"
+grep -q 'block missing; sync appends it' "$WORKDIR/block-stats.log" || fail "stats: missing block not reported"
+grep -q 'hard link to playbook file' "$WORKDIR/block-stats.log" || fail "stats: hard-linked host not reported"
+grep -q 'local before' "$HOMEFILES/.zshrc" && ! grep -q 'ai-playbook' "$HOMEFILES/.zshrc" || fail "stats modified host"
+( cd "$TARGET" && "$SYNC" --machine --yes --force ) || fail "host block sync"
+same_file "$HOMEFILES/.playbook/zshrc" "$PLAYBOOK_ROOT/scripts/_smoke_map_file.txt" || fail "host entry dest link"
+[[ "$(head -n1 "$HOMEFILES/.zshrc")" == "local before" ]] || fail "host local content lost"
+grep -qxF "[[ -f \"$HOMEFILES/.playbook/zshrc\" ]] && source \"$HOMEFILES/.playbook/zshrc\"" "$HOMEFILES/.zshrc" || \
+  fail "zsh source line missing"
+grep -qxF "  execute 'source' fnameescape('$HOMEFILES/.playbook/vimrc')" "$HOMEFILES/.vimrc" || fail "vim source line missing"
+grep -qxF '" >>> ai-playbook >>>' "$HOMEFILES/.vimrc" || fail "vim marker missing"
+same_file "$HOMEFILES/.tmux.conf" "$PLAYBOOK_ROOT/scripts/_smoke_map_file.txt" && fail "tmux host still hard-linked"
+[[ "$(cat "$PLAYBOOK_ROOT/scripts/_smoke_map_file.txt")" == "agent map" ]] || fail "migration touched playbook file"
+grep -qxF "source-file -q \"$HOMEFILES/.playbook/tmux.conf\"" "$HOMEFILES/.tmux.conf" || fail "tmux source line missing"
+grep -q 'agent map' "$HOMEFILES/.tmux.conf" && fail "migrated host kept playbook content"
+( cd "$TARGET" && "$SYNC" --machine --yes --force ) || fail "host block resync"
+[[ "$(grep -c '>>> ai-playbook >>>' "$HOMEFILES/.zshrc")" -eq 1 ]] || fail "block not idempotent"
+cat >"$HOMEFILES/.zshrc" <<EOF
+local before
+# >>> ai-playbook >>>
+source /old/path
+# <<< ai-playbook <<<
+local after
+EOF
+( cd "$TARGET" && "$SYNC" --machine --yes --force ) || fail "host block rewrite"
+grep -q '/old/path' "$HOMEFILES/.zshrc" && fail "outdated block not rewritten"
+[[ "$(tail -n1 "$HOMEFILES/.zshrc")" == "local after" ]] || fail "block rewrite moved or dropped local content"
+( cd "$TARGET" && "$SYNC" --machine --stats ) >"$WORKDIR/block-stats.log" 2>&1 || fail "host block stats (synced)"
+grep -q 'status: in sync' "$WORKDIR/block-stats.log" || fail "stats: synced host blocks not in sync"
+pass "--machine host source block"
+
 # 8) target-cwd mode (ignoresync still present)
 ( cd "$TARGET" && "$SYNC" --project "$PROJECT" --yes ) || fail "target-cwd sync"
 [[ ! -e "$TARGET/.cursor/rules/ignore-me.mdc" ]] || fail "ignored file appeared in target-cwd sync"

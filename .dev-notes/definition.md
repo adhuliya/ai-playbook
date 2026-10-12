@@ -55,7 +55,8 @@ Out of scope:
 | Scaffold | `artifacts/dev-notes-structure/` — template when live notes are missing. |
 | Machine | Host identity (`hostname` / `machines/aliases.txt`) with path + syncmap files. |
 | Project modules | `machines/<id>/project-modules.txt` — `project:/abs/nested` treats nested repo guides as that project on this machine. |
-| Syncmap | `machines/<id>/syncmap.txt` — playbook path → absolute dest (via `--machine`). |
+| Syncmap | `machines/<id>/syncmap.txt` — playbook path → absolute dest, optional host file (via `--machine`). |
+| Source block | Marked `ai-playbook` block sync keeps in a local host file (e.g. `~/.zshrc`) that sources the playbook copy in `~/.playbook/`. |
 | Ignoresync | Playbook-root paths / basename-dir / simple globs excluded from project sync (`!` unignore). |
 
 ## Principles
@@ -75,5 +76,7 @@ Out of scope:
   with equivalents for the others where a format exists.
 - **Machine syncmap is explicit:** `--machine` only; never mixed into default
   project sync.
+- **System files stay local:** `~/.zshrc`, `~/.vimrc`, `~/.tmux.conf` are the
+  machine's own; sync only maintains its source block in them.
 - **Single operational entry:** all install behavior flows through
   `sync-playbook.sh`.

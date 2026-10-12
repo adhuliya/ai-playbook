@@ -1,4 +1,4 @@
-# ~/.agent.zshrc.sh - Cursor Agent terminal shortcuts
+# ~/.playbook/agent.zshrc.sh - Cursor Agent terminal shortcuts
 #
 # Ctrl-G  agent> on the line → Enter generates a shell command (command only).
 # Ctrl-O  agent> on the line → Enter runs a one-shot ask (no persistent session).

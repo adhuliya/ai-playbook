@@ -129,10 +129,6 @@ env_list_append() {
 ####### END  : Idempotent modification of ENV vars #######
 
 
-# Load machine specific ENV variables and settings
-# e.g.: export PATH="$HOME/.local/bin:$PATH"
-[[ -f ~/.envrc.sh ]] && source ~/.envrc.sh
-
 # Load after bindkey -v so Ctrl-G / Ctrl-O bindings are not reset.
-[[ -f ~/.agent.zshrc.sh ]] && source ~/.agent.zshrc.sh
+[[ -f ~/.playbook/agent.zshrc.sh ]] && source ~/.playbook/agent.zshrc.sh
 

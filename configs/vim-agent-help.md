@@ -1,6 +1,6 @@
 # Vim agent cheat sheet
 
-Classic Vim helpers for Cursor **`agent`** (ask + rewrite with review). Loaded from `~/.vim/vim-agent.vim` when `~/.vimrc` sources it.
+Classic Vim helpers for Cursor **`agent`** (ask + rewrite with review). Loaded from `~/.playbook/vim-agent.vim` when `~/.playbook/vimrc` sources it.
 
 ## Setup
 
@@ -9,7 +9,7 @@ Classic Vim helpers for Cursor **`agent`** (ask + rewrite with review). Loaded f
 3. Reload: `:source ~/.vimrc` or restart Vim.
 4. Check load: `:echo exists('g:loaded_vim_agent')` → `1`.
 
-Repo copies: `configs/vim-agent.vim`, `configs/vim-agent-run.sh` → `~/.vim/` via syncmap.
+Repo copies: `configs/vim-agent.vim`, `configs/vim-agent-run.sh` → `~/.playbook/` via syncmap.
 
 ## Leader
 
@@ -56,13 +56,13 @@ Tip: focus **`agent-new`**, edit, then `<leader>ay`. Use `do`/`dp` only if you p
 
 | Variable | Default | Effect |
 |----------|---------|--------|
-| `AGENT_MODEL` | `auto` | Passed to `agent --model` (shared with `~/.agent.zshrc.sh`) |
+| `AGENT_MODEL` | `auto` | Passed to `agent --model` (shared with `~/.playbook/agent.zshrc.sh`) |
 | `AGENT_TIMEOUT` | `180` | Seconds for runner (`timeout` / `gtimeout` when available) |
 
 ## If something fails
 
 - `:messages` — look for lines starting with **`agent:`** (warnings, scope, review hints).
-- **Runner missing:** sync `vim-agent-run.sh` to `~/.vim/`.
+- **Runner missing:** sync `vim-agent-run.sh` to `~/.playbook/`.
 - **Timeout / empty answer:** run `agent` in a shell with the same flags; increase `AGENT_TIMEOUT`.
 
 ### Quick tests
@@ -75,7 +75,7 @@ Tip: focus **`agent-new`**, edit, then `<leader>ay`. Use `do`/`dp` only if you p
 ```bash
 # Runner only (real agent)
 printf '%s\n' 'Reply with one word: hi.' > /tmp/prompt.txt
-bash ~/.vim/vim-agent-run.sh ask /tmp/prompt.txt /tmp/out.json
+bash ~/.playbook/vim-agent-run.sh ask /tmp/prompt.txt /tmp/out.json
 ```
 
 ## More detail

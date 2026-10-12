@@ -4,7 +4,9 @@
 # Modes:
 #   - Playbook cwd: sync all (or --project) paths listed for this machine.
 #   - Target cwd:   sync that repo only (--project required).
-#   - --machine:    process machines/<id>/syncmap.txt only (any cwd).
+#   - --machine:    process machines/<id>/syncmap.txt only (any cwd). Optional
+#                   third field = host file (e.g. ~/.zshrc) that gets a marked
+#                   "ai-playbook" block sourcing dest; the rest of host is untouched.
 #
 # .agents/ .claude/ .codex/ .cursor/: playbook → target only; target-only files that the
 # playbook once shipped (same inode, or blob in playbook history at that path)
@@ -73,7 +75,14 @@ Files:
   projects.txt                         Project key list
   machines/<id>/projects.txt           project:/abs/path lines (many paths per project OK)
   machines/<id>/project-modules.txt    project:/abs/submodule (nested repo = same project)
-  machines/<id>/syncmap.txt            playbook-rel:/abs/dest (files or dirs)
+  machines/<id>/syncmap.txt            playbook-rel:/abs/dest[:/abs/host] (files or dirs)
+                                       host (files only): system file (.zshrc, .vimrc,
+                                       .tmux.conf, ...) that stays local; sync keeps a
+                                       marked ai-playbook block in it that sources dest
+                                       (appended once, rewritten in place if outdated).
+                                       A host still hard-linked to a playbook file is
+                                       replaced by a fresh file with only the block
+                                       (prompt, or --force).
   machines/<id>/ignoresync.txt         machine ignores
   ignoresync.txt                       global ignores
   artifacts/live-notes/<p>/ignoresync.txt  per-project ignores
@@ -140,6 +149,7 @@ NEW_TO_PLAYBOOK=()
 TARGET_ONLY=()
 PRUNED=()
 POINTER_ADDED=()
+SOURCE_BLOCKS=()
 CONFLICTS=()
 FAILURES=()
 MANAGED=()
@@ -1376,6 +1386,7 @@ reset_report_arrays() {
   TARGET_ONLY=()
   PRUNED=()
   POINTER_ADDED=()
+  SOURCE_BLOCKS=()
   CONFLICTS=()
   FAILURES=()
   MANAGED=()
@@ -1419,6 +1430,11 @@ print_report() {
     echo
     echo "=== Pointer to .agents/dev-guide.md added or updated ==="
     printf '%s\n' "${POINTER_ADDED[@]}" | sed 's/^/  /'
+  fi
+  if [[ ${#SOURCE_BLOCKS[@]} -gt 0 ]]; then
+    echo
+    echo "=== Source block (ai-playbook) written to host file ==="
+    printf '%s\n' "${SOURCE_BLOCKS[@]}" | sed 's/^/  /'
   fi
   if [[ ${#REPAIRED[@]} -gt 0 ]]; then
     echo
@@ -1564,6 +1580,156 @@ handle_missing_path() {
 
 # --- syncmap ---
 
+# Host file kind from its basename: sh | vim | tmux (empty = unsupported).
+source_block_kind() {
+  case "${1##*/}" in
+    *zshrc|*bashrc|*profile|*.sh) echo sh ;;
+    *vimrc|*.vim) echo vim ;;
+    *tmux.conf) echo tmux ;;
+  esac
+}
+
+render_source_block() {
+  local kind="$1" path="$2" c="#"
+  [[ "$kind" == vim ]] && c='"'
+  printf '%s >>> ai-playbook >>>\n' "$c"
+  case "$kind" in
+    sh) printf '[[ -f "%s" ]] && source "%s"\n' "$path" "$path" ;;
+    vim)
+      printf "if filereadable('%s')\n" "$path"
+      printf "  execute 'source' fnameescape('%s')\n" "$path"
+      printf 'endif\n'
+      ;;
+    tmux) printf 'source-file -q "%s"\n' "$path" ;;
+  esac
+  printf '%s <<< ai-playbook <<<\n' "$c"
+}
+
+# Prints current block (markers included); returns 2 if start marker has no end.
+extract_source_block() {
+  local host="$1" c="$2"
+  awk -v s="$c >>> ai-playbook >>>" -v e="$c <<< ai-playbook <<<" '
+    $0 == s { inb = 1 }
+    inb { print }
+    inb && $0 == e { done = 1; exit }
+    END { if (inb && !done) exit 2 }
+  ' "$host"
+}
+
+# Host still hard-linked to a playbook file (legacy whole-file syncmap install).
+host_is_playbook_hardlink() {
+  local host="$1" links ino
+  links="$(stat -f '%l' "$host")"
+  [[ "$links" -gt 1 ]] || return 1
+  [[ "$(stat -f '%d' "$host")" == "$(stat -f '%d' "$PLAYBOOK_ROOT")" ]] || return 1
+  ino="$(stat -f '%i' "$host")"
+  [[ -n "$(find -P "$PLAYBOOK_ROOT" -path "$PLAYBOOK_ROOT/.git" -prune -o -type f -inum "$ino" -print 2>/dev/null | head -n1)" ]]
+}
+
+ensure_source_block() {
+  local host="$1" dest="$2"
+  local label="block=>$host" kind c block current rc ans tmp
+  kind="$(source_block_kind "$host")"
+  if [[ -z "$kind" ]]; then
+    echo "warning: unsupported host file type for source block — skip: $host" >&2
+    return 0
+  fi
+  if [[ "$host" == "$dest" ]]; then
+    FAILURES+=("$label (host equals dest)")
+    return 0
+  fi
+  c="#"
+  [[ "$kind" == vim ]] && c='"'
+  block="$(render_source_block "$kind" "$dest")"
+
+  if [[ -L "$host" || ( -e "$host" && ! -f "$host" ) ]]; then
+    if [[ "$STATS" -eq 1 ]]; then
+      stats_add "!" "" "" "$label" "host is a symlink or not a regular file"
+    else
+      FAILURES+=("$label (host is a symlink or not a regular file; resolve manually)")
+    fi
+    return 0
+  fi
+
+  if [[ ! -e "$host" ]]; then
+    if [[ "$STATS" -eq 1 ]]; then
+      stats_add ">" "" "" "$label" "host missing; sync creates it with the block"
+      return 0
+    fi
+    mkdir -p "$(dirname "$host")"
+    printf '%s\n' "$block" >"$host"
+    SOURCE_BLOCKS+=("$host (created)")
+    return 0
+  fi
+
+  if host_is_playbook_hardlink "$host"; then
+    if [[ "$STATS" -eq 1 ]]; then
+      stats_add ">" "" "$host" "$label" "hard link to playbook file; sync replaces it with a fresh file (prompt)"
+      return 0
+    fi
+    ans=n
+    if [[ "$FORCE" -eq 1 ]]; then
+      ans=y
+    else
+      printf "Host %s is a hard link to a playbook file. Replace with a fresh file holding only the source block? [y/N] " "$host" >&2
+      read_tty ans
+    fi
+    case "$ans" in
+      y|Y|yes|YES)
+        rm -f "$host"
+        printf '%s\n' "$block" >"$host"
+        SOURCE_BLOCKS+=("$host (migrated from hard link)")
+        ;;
+      *) CONFLICTS+=("$label (still a hard link to a playbook file)") ;;
+    esac
+    return 0
+  fi
+
+  rc=0
+  current="$(extract_source_block "$host" "$c")" || rc=$?
+  if [[ "$rc" -eq 2 ]]; then
+    if [[ "$STATS" -eq 1 ]]; then
+      stats_add "!" "" "$host" "$label" "start marker without end marker"
+    else
+      FAILURES+=("$label (start marker without end marker; fix manually)")
+    fi
+    return 0
+  fi
+  if [[ "$current" == "$block" ]]; then
+    if [[ "$STATS" -eq 1 ]]; then
+      stats_add "=" "" "$host" "$label"
+    else
+      EXISTING+=("$label")
+    fi
+    return 0
+  fi
+  if [[ "$STATS" -eq 1 ]]; then
+    if [[ -n "$current" ]]; then
+      stats_add ">" "" "$host" "$label" "block outdated; sync rewrites it in place"
+    else
+      stats_add ">" "" "$host" "$label" "block missing; sync appends it"
+    fi
+    return 0
+  fi
+  if [[ -n "$current" ]]; then
+    tmp="$(mktemp)"
+    BLK="$block" awk -v s="$c >>> ai-playbook >>>" -v e="$c <<< ai-playbook <<<" '
+      $0 == s { print ENVIRON["BLK"]; skip = 1; next }
+      skip && $0 == e { skip = 0; next }
+      !skip { print }
+    ' "$host" >"$tmp" && cat "$tmp" >"$host"
+    rm -f "$tmp"
+    SOURCE_BLOCKS+=("$host (updated)")
+  else
+    if [[ -s "$host" ]]; then
+      [[ -n "$(tail -c1 "$host")" ]] && printf '\n' >>"$host"
+      printf '\n' >>"$host"
+    fi
+    printf '%s\n' "$block" >>"$host"
+    SOURCE_BLOCKS+=("$host (appended)")
+  fi
+}
+
 sync_one_map_file() {
   local src="$1" dest="$2" label="$3"
   if [[ "$STATS" -eq 1 ]]; then
@@ -1599,13 +1765,18 @@ process_syncmap() {
   reset_report_arrays
   local map="$MACHINE_DIR/syncmap.txt"
   [[ -f "$map" ]] || { echo "note: no syncmap at $map"; return 0; }
-  local line src dest src_abs f rel dest_f
+  local line src dest host src_abs f rel dest_f
   while IFS= read -r line || [[ -n "$line" ]]; do
     [[ -z "$line" || "$line" == \#* ]] && continue
     src="${line%%:*}"
     dest="${line#*:}"
+    host=""
+    if [[ "$dest" == *:* ]]; then
+      host="${dest#*:}"
+      dest="${dest%%:*}"
+    fi
     if [[ "$src" == "$line" || -z "$src" || -z "$dest" ]]; then
-      echo "warning: bad syncmap line (want playbook-rel:/abs/dest): $line" >&2
+      echo "warning: bad syncmap line (want playbook-rel:/abs/dest[:/abs/host]): $line" >&2
       continue
     fi
     src_abs="$PLAYBOOK_ROOT/$src"
@@ -1615,7 +1786,9 @@ process_syncmap() {
     fi
     if [[ -f "$src_abs" ]]; then
       sync_one_map_file "$src_abs" "$dest" "$src=>$dest"
+      [[ -z "$host" ]] || ensure_source_block "$host" "$dest"
     elif [[ -d "$src_abs" ]]; then
+      [[ -z "$host" ]] || echo "warning: host field ignored for directory entry: $src" >&2
       while IFS= read -r -d '' f; do
         rel="$(rel_under "$src_abs" "$f")"
         dest_f="$dest/$rel"

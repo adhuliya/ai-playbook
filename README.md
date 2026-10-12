@@ -42,7 +42,29 @@ paths for this machine. Missing paths: update / skip / delete (`--yes` ⇒ skip)
 ./scripts/sync-playbook.sh --machine [--yes] [--force]
 ```
 
-Processes `machines/<id>/syncmap.txt` only (`playbook-rel:/abs/dest`).
+Processes `machines/<id>/syncmap.txt` only (`playbook-rel:/abs/dest[:/abs/host]`).
+
+Playbook machine configs install under `~/.playbook/` (e.g. `~/.playbook/zshrc`).
+System files (`~/.zshrc`, `~/.vimrc`, `~/.tmux.conf`) stay local and own all
+machine-specific settings; the optional `host` field makes sync keep one marked
+block in them that sources the playbook copy:
+
+```
+# >>> ai-playbook >>>
+[[ -f "/Users/me/.playbook/zshrc" ]] && source "/Users/me/.playbook/zshrc"
+# <<< ai-playbook <<<
+```
+
+Syntax follows the host name (`*zshrc`/`*bashrc`/`*profile`/`*.sh` → `source`,
+`*vimrc`/`*.vim` → `execute 'source'` with `"` markers, `*tmux.conf` →
+`source-file -q`). Appended once at the end, rewritten in place if outdated,
+never moved; lines below it override the playbook. A host still hard-linked to
+a playbook file (old whole-file install) is replaced by a fresh file holding
+only the block (prompt, or `--force`).
+
+Migrating from whole-file installs: move anything from `~/.envrc.sh` into the
+new local `~/.zshrc` (no longer sourced), then delete the old
+`~/.agent.zshrc.sh`, `~/.vim/vim-agent.vim`, `~/.vim/vim-agent-run.sh`.
 
 ### Flags
 

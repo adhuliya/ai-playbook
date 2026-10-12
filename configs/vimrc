@@ -170,8 +170,8 @@ nnoremap <F6> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar><CR>
 """"""""""""""""""""""""""""""""
 "" Cursor agent (ask / rewrite)
 """"""""""""""""""""""""""""""""
-if filereadable(expand('~/.vim/vim-agent.vim'))
-  execute 'source' fnameescape(expand('~/.vim/vim-agent.vim'))
+if filereadable(expand('~/.playbook/vim-agent.vim'))
+  execute 'source' fnameescape(expand('~/.playbook/vim-agent.vim'))
 endif
 """"""""""""""""""""""""""""""""
 

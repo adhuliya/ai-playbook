@@ -79,7 +79,7 @@ rg -n 'vim-agent.vim' "$ROOT/configs/vimrc" >/dev/null
 rg -n 'vim-agent' "$ROOT/machines/Anshumans-MacBook-Pro.local/syncmap.txt" >/dev/null
 
 # Linked destinations exist after sync
-[[ -f "$HOME/.vim/vim-agent.vim" ]] || { echo "FAIL: ~/.vim/vim-agent.vim missing (run --machine sync)" >&2; exit 1; }
-[[ -f "$HOME/.vim/vim-agent-run.sh" ]] || { echo "FAIL: ~/.vim/vim-agent-run.sh missing" >&2; exit 1; }
+[[ -f "$HOME/.playbook/vim-agent.vim" ]] || { echo "FAIL: ~/.playbook/vim-agent.vim missing (run --machine sync)" >&2; exit 1; }
+[[ -f "$HOME/.playbook/vim-agent-run.sh" ]] || { echo "FAIL: ~/.playbook/vim-agent-run.sh missing" >&2; exit 1; }
 
 echo "vim-agent smoke: OK"

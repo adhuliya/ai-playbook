@@ -1,5 +1,5 @@
 " vim-agent.vim — Cursor agent ask/rewrite helpers for classic Vim
-" Requires: agent on PATH; optional companion ~/.vim/vim-agent-run.sh
+" Requires: agent on PATH; optional companion ~/.playbook/vim-agent-run.sh
 "
 " Keys (leader defaults to <Space> from vimrc):
 "   <leader>aa  Ask about buffer (normal) or selection (visual)
@@ -19,7 +19,7 @@ let g:loaded_vim_agent = 1
 
 let s:ask_bufname = 'agent-ask'
 let s:ask_bufnr = -1
-let s:runner = expand('~/.vim/vim-agent-run.sh')
+let s:runner = expand('~/.playbook/vim-agent-run.sh')
 
 " Review state
 let s:review = {}
