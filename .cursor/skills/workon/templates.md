@@ -1,7 +1,7 @@
 # workon templates
 
-Shapes only. Policy: [`SKILL.md`](SKILL.md) (bold names point at its headings).
-Sequences: [`commands.md`](commands.md). Do not copy policy here.
+Shapes only. Bold names resolve through the index in [`SKILL.md`](SKILL.md).
+Do not copy policy here.
 
 ## Directory layout
 
@@ -17,25 +17,17 @@ Sequences: [`commands.md`](commands.md). Do not copy policy here.
         notes-by-user.md
         reviews.md              # lazy
         user-guide.md           # create-guide only
-        artifacts/              # copies flat; reserved: verify-plan/, bg/, review/, comments/, fix/, inflight.md
+        artifacts/              # copies flat; reserved names below
 ```
 
-**`artifacts/`:** whole copies as `<basename>` at the root; excerpts as
-`<stem>-excerpt.md` (header = source path + what was kept). Reserved names:
-`verify-plan/` (`critic-negative.md`, `critic-positive.md`, `synthesis.md`;
-optional `negative/`, `positive/`, `synth/` slices), `bg/` (optional
-`<stem>/` slices next to `<stem>.md`; `milestone-<n>/` job reports,
-`collate.md`, optional `critic-negative.md` / `critic-positive.md`),
-`review/` (`env.md`, `milestone-<n>.md`, `critic-negative.md`,
-`critic-positive.md`, `report.md`; optional `env/`, `milestone-<n>/`,
-`negative/`, `positive/`, `synth/` slices), `comments/` (`before/`
-snapshot, `job-<k>.md`, `verify.md`; optional `job-<k>/` slices), and
-`fix/` (`drift.md`, `review/` for the fix cycle; optional `drift/`
-slices). Full
-table: **Paths and readiness** in
-[`subagent-contract.md`](subagent-contract.md). `inflight.md` is agent-only
-scratch (**Inflight scratch** in `SKILL.md`). Do not use a reserved name as
-a cited-copy name.
+Put a whole copy at the artifacts root as `<basename>`.
+Name an excerpt `<stem>-excerpt.md`.
+The excerpt header names the source and what you kept.
+Reserved directories are `verify-plan/`, `bg/`, `review/`, `comments/`, and `fix/`.
+The reserved file is `inflight.md`.
+Do not use a reserved name as a cited-copy name.
+File roles live under **Paths and readiness**.
+`inflight.md` is agent scratch (**Inflight scratch**).
 
 ### inflight.md
 
@@ -107,7 +99,7 @@ delta steps starting at the new requirement.>
      - `<e2e command>`
      - fake (if `software-interface` peer is not live): `<test-double path>`
 
-3. [ ] Apply RU1 (review milestone; **Reviews** in `SKILL.md`)
+3. [ ] Apply RU1 (review milestone; **Reviews**)
    - [ ] <MECE step> (RU1.1, RU1.3)
    - [ ] <MECE step> (RU1.2)
    - evidence:
@@ -131,6 +123,7 @@ delta steps starting at the new requirement.>
 ## journal.md
 
 Events, write-on, and caps: **Journal policy** in `SKILL.md`.
+A normal event is a `##` heading plus at most 3 bullets.
 
 ```markdown
 # Journal
@@ -138,22 +131,6 @@ Events, write-on, and caps: **Journal policy** in `SKILL.md`.
 ## Created: Add CSV export (→ Planning)
 - goal: export report rows as CSV from the CLI
 - from: derived-from `report-api` | imported from `<source>` (omit if new)
-```
-
-### Event entry
-
-```markdown
-## Milestone: CSV writer (Active)
-- done: milestone 2; `go test ./export/...` green
-- found: quoting needs RFC 4180 mode → DC04
-
-## Review: RU2 (Planning)
-- 5 points: applied 3 → RD4, DC03; rejected 1; noted 1
-- added milestone `Apply RU2`
-
-## Blocked: upstream API (Active → Blocked)
-- blocker: `/v2/rows` returns 500 on large pages
-- next: retry after upstream fix
 ```
 
 ### Pause / resume recap
@@ -208,8 +185,8 @@ Harden playbook/target sync for machine registry, ignores, syncmap, and nested-g
 
 ## Notes files
 
-Policy (Repair, enums, precedence, who drafts): **Notes files** in
-`SKILL.md`. Agent-written files are records (**Writing style**).
+Policy (Repair, enums, precedence, who drafts): **Notes files**.
+Agent-written files are records (**Writing style**).
 
 ### requirement-def.md
 
@@ -274,7 +251,7 @@ caused the entry.
 
 ## reviews.md
 
-Policy: **Reviews** in `SKILL.md`.
+Policy: **Reviews**.
 
 ```markdown
 # Reviews
@@ -292,16 +269,6 @@ IDs added/changed, work built. 1–2 short paragraphs; deltas only.>
 - RU1.3 (agent): <point> — noted: <why no action>
 - RU1.4 (user): <point> — planned → milestone 3
 
-## RU2: <short topic>
-
-status: open
-scope: milestones 3
-
-state: <deltas since RU1>
-
-- RU2.1 (agent): <point> — open
-- RU2.2 (user): <point> — open
-
 ## RU3: <short drift topic>
 
 kind: fix
@@ -318,7 +285,7 @@ A cycle with no points holds `- none`; after an automated pass with no
 findings, `- none (agent)`; after env `blocked`, `- none (env blocked)`.
 `status:` is required on every new cycle. `scope:` applies to
 `start-review` and fix cycles; other cycles MAY omit it. `kind: fix`
-appears only on fix cycles (**Reviews** in `SKILL.md`).
+appears only on fix cycles (**Reviews**).
 
 Renumber log (`fix-activity`):
 
@@ -329,8 +296,7 @@ Renumber log (`fix-activity`):
 
 ## user-guide.md
 
-Policy: **User guide** in `SKILL.md`. Prose per **Writing style**. Omit
-empty sections.
+Policy: **User guide**. Prose per **Writing style**. Omit empty sections.
 
 ```markdown
 # <Feature title>: User Guide

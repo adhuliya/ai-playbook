@@ -1,59 +1,73 @@
 # Sub-agent contract (workon)
 
-Sub-agents never see the parent chat. Each Task prompt is self-contained.
-Every written file is a record (**Writing style** in `SKILL.md`). While a
-pipeline runs, activity files are frozen (**Pipeline in flight** in
-`SKILL.md`).
+Sub-agents never see the parent chat.
+Make each Task prompt self-contained.
+Write each output file as a record.
+Follow **Writing style** in [`SKILL.md`](SKILL.md).
+Paste that style into the prompt.
+Honor **Pipeline in flight** while a pipeline runs.
 
 ## Launch
 
-- `subagent_type: generalPurpose`. `model`: inherit unless the user named a
-  listed model.
-- Chat parent: `run_in_background: true`. Never wait (no AwaitShell, no
-  status loops). Launch independent Tasks in one message. Then do work that
-  does not need them, or end the turn.
-- Depth 1 only. A worker MAY split its job MECE into children
-  (`run_in_background: false`; block, then merge). A child writes only its
-  file in the worker's slice dir. Children MUST NOT launch agents.
-- Re-run: overwrite assigned files. Delete stale files in the slice dir first.
-  The Comments pipeline wipes `comments/` at its step 2; the Drift
-  pipeline wipes `fix/drift.md` + `fix/drift/` at its step 1. Nothing else
-  is wiped.
-- The parent owns `inflight.md` (**Inflight scratch** in `SKILL.md`);
-  agents never touch it.
-- Keep all files after use (committable). Delete only via `delete-tmp-files`.
+Use `subagent_type: generalPurpose`.
+Use `model: inherit` unless the user named a listed model.
+From the chat parent, set `run_in_background: true`.
+Do not wait, poll, or call AwaitShell.
+Launch independent Tasks in one message.
+Then do work that does not need them, or end the turn.
+
+Stay at depth 1.
+A worker may split its job MECE into children.
+Children use `run_in_background: false`.
+The worker blocks, then merges the children.
+A child writes only its file in that worker's slice directory.
+Children must not launch agents.
+
+On a re-run, overwrite the assigned files.
+Delete stale files in the slice directory first.
+Do not wipe any other directory.
+
+The parent owns `inflight.md`.
+Agents never read or write it.
+Keep pipeline files after use.
+Delete them only through `delete-tmp-files`.
 
 ## Every agent
 
-- Write only the assigned files. Create dirs if needed. Merge child slices
-  into the assigned file before exit. Start with the role's H1. No preamble.
-- Ask the user nothing.
-- Never write activity files: `activity.md`, `journal.md`,
-  `requirement-def.md`, `design-choices.md`, `conventions.md`,
-  `notes-by-user.md`, `reviews.md`, `user-guide.md`, `activities.md`.
-- Never Read `requirement-def.md`, `design-choices.md`, `notes-by-user.md`,
-  `reviews.md`, or `journal.md`. The parent pastes the needed excerpts.
-- Read another agent's file only if the prompt lists it as input. Never Read
-  a slice dir that is not yours.
-- Edit code only as a milestone worker, inside assigned paths. A comment
-  editor edits only comments, inside assigned files. Run only the
-  commands the prompt names. The env agent MAY run documented setup and
-  build commands; it MUST NOT invent tooling.
-- No `git add` or commit. Follow **Isolated setup** (`SKILL.md`): no system
-  installs or changes unless the prompt says the user asked.
-- The parent passes the `conventions.md` path to every agent except explores
-  that do not need it. Agents MAY Read it.
+Write only the assigned files.
+Create directories when you need them.
+Merge child slices into the assigned file before exit.
+Start with the role's H1.
+Do not add a preamble.
+Ask the user nothing.
 
-**Plan packet** (parent pastes): Goal, Scope, Current Design, Current Plan,
-Milestones, Next Steps, the Problem header, full RD, full Design Decisions,
-and the
-`conventions.md` path. Workers, env, test, and explore agents get only the
-slices they need.
+Never write an activity file.
+Those files are `activity.md`, `journal.md`, `requirement-def.md`, `design-choices.md`, `conventions.md`, `notes-by-user.md`, `reviews.md`, `user-guide.md`, and `activities.md`.
+
+Never read `requirement-def.md`, `design-choices.md`, `notes-by-user.md`, `reviews.md`, or `journal.md`.
+The parent pastes the excerpts you need.
+Read another agent's file only when the prompt lists it as input.
+Never read a slice directory that is not yours.
+
+Edit code only as a milestone worker, and only inside assigned paths.
+A comment editor edits only comments, and only inside assigned files.
+Run only the commands the prompt names.
+The env agent may run documented setup and build commands.
+The env agent must not invent tooling.
+Do not `git add` or commit.
+Do not install into the system or change it unless the prompt says the user asked.
+
+The parent passes the `conventions.md` path to every agent except explores that do not need it.
+Those agents may read that file.
+
+**Plan packet** (the parent pastes it): Goal, Scope, Current Design, Current Plan, Milestones, Next Steps, the Problem header, full RD, full Design Decisions, and the `conventions.md` path.
+Workers, the env agent, test agents, and explores get only the slices they need.
 
 ## Paths and readiness
 
-Root: `.dev-notes/activities/<slug>/artifacts/`. `<n>` is the milestone
-number. `<side>` is `positive` or `negative`.
+Root: `.dev-notes/activities/<slug>/artifacts/`.
+`<n>` is the milestone number.
+`<side>` is `positive` or `negative`.
 
 | Role | Assigned file | Ready marker | Slice dir |
 |---|---|---|---|
@@ -73,78 +87,70 @@ number. `<side>` is `positive` or `negative`.
 | milestone critic | `bg/milestone-<n>/critic-<side>.md` | `^# Critic` | `bg/milestone-<n>/<side>/` |
 | explore | `bg/<name>.md` (optional) | none | `bg/<name>/` |
 
-**Ready** = completion notice, or `test -f` plus `rg -l '<marker>'` on the
-assigned file. Missing, empty, or no match → not ready.
+**Ready** means a completion notice, or `test -f` plus `rg -l '<marker>'` on the assigned file.
+Missing, empty, or no match means not ready.
 
 ## Parent reads
 
-- **Status:** metadata only (`test -f`, size, mtime). No file → say so. Never
-  Read a body for status.
-- **Results:** Read a body only to consume it: explore reports while
-  drafting, `synthesis.md`, `review/report.md`, `fix/review/report.md`,
-  `comments/verify.md`, `fix/drift.md`, `collate.md`, the milestone critic
-  pair, and `env.md` (either review dir) only when `blocked`. Never Read job reports, test reports, `verify-plan` or review
-  critic files, comment job reports, snapshots, or slice dirs.
+For status, read metadata only (`test -f`, size, mtime).
+When the file is missing, say so.
+Never read a body to judge status.
+
+Read a body only to consume a result.
+Read the final file the pipeline step names.
+Also read explore reports while you draft.
+Read `env.md` only when it says `blocked`.
+Do not read job reports, test reports, critic files, comment job reports, snapshots, or slice directories.
+On the milestone evaluate step, read both critic files and reconcile them.
 
 ## Collect vs evaluate
 
-- **Collect:** merge facts (outcomes, paths, pass/fail, joins). One agent.
-- **Evaluate:** judge quality, rank options, or decide what to change. Never
-  one agent. Launch the **critic pair** in one message: isolated, same input,
-  opposite briefs. A **reconciler** weighs both files: the synthesizer
-  (`verify-plan`, review) or the parent (milestone).
+Use one agent to collect facts.
+Facts are outcomes, paths, pass or fail, and joins.
+Use a **critic pair** to judge quality, rank options, or decide a change.
+Never use one agent to evaluate.
+Launch the pair in one message.
+Give them the same input and opposite briefs.
+The reconciler is the synthesizer for `verify-plan` and review.
+The reconciler is the parent for a milestone.
 
 ### Critic pair
 
-Both critics: steelman the work before judging. Give a reason and a `where`
-for every item. No generic praise, prose nits, or invented requirements.
+Both critics steelman the work before they judge.
+Give a reason and a `where` for every item.
+Do not give generic praise.
+Do not file prose nits.
+Do not invent requirements.
 
-**Positive critic** (`# Critic positive`): name what stands out as good.
-Rank by weight; top ~5. Each item says what breaks if it is removed or
-churned. No change proposals. Nothing stands out → `- none`.
+The positive critic writes `# Critic positive`.
+Name what stands out as good.
+Rank by weight.
+Keep the top ~5.
+Say what breaks if that item is removed or churned.
+Do not propose changes.
+When nothing stands out, write `- none`.
+The negative critic writes `# Critic negative`.
+Name what you dislike most.
+Put the worst item first.
+List every `must`.
+Cap the rest at ~5.
+When nothing is wrong, write `- none`.
+Field lists: **Output shapes**.
 
-```markdown
-# Critic positive
+**Kinds.** Defects: `unmet-rd`, `partial-rd`, `contradiction`, `resume-hole`, `evidence-gap`, `convention-fight`, `false-done` (claimed done; evidence disagrees). Taste: `replaceable` (a cheaper path still meets RD). Intent: `unclear` (two plausible readings).
 
-## Keep
-### <short title>
-- weight: load-bearing | strong | nice
-- where: `activity.md` `# …` | `RD<n>` | `DC<nn>` | `CONV<n>` | <path>
-- why: <what breaks if removed or churned>
-```
-
-**Negative critic** (`# Critic negative`): name what you dislike most. Rank
-worst first. List every `must`; cap the rest at ~5. Nothing wrong →
-`- none`.
-
-```markdown
-# Critic negative
-
-## Findings
-### <short title>
-- kind: <kind>
-- severity: must | should
-- where: <same style>
-- issue: <1–3 bullets: what is wrong and why it matters>
-- propose: <concrete edit, or `clarify: <ambiguity>`>
-```
-
-**Kinds.** Defects: `unmet-rd`, `partial-rd`, `contradiction`,
-`resume-hole`, `evidence-gap`, `convention-fight`, `false-done` (claimed
-done; evidence disagrees). Taste: `replaceable` (a cheaper path still meets
-RD). Intent: `unclear` (two plausible readings).
-
-**Weights.** `load-bearing`: Goal, RD, or invariant; do not churn without a
-shown defect. `strong`: keep unless a defect. `nice`: a `should` fix may win.
+**Weights.** `load-bearing`: Goal, RD, or an invariant. Do not churn it without a shown defect. `strong`: keep it unless a defect wins. `nice`: a `should` fix may win.
 
 ### Reconcile
 
-- A defect beats a Keep. Taste loses to a Keep.
-- Defect vs taste depends on user intent → ask a question; propose no change.
-- Output changes only. No "negative says / positive says". A Keep appears
-  only as `keep: honored` or `overridden` on a change that touches it.
-- The synthesizer adds its own item (`from: synth`) only for an evident
-  `must` defect that both critics missed.
+A defect beats a Keep.
+Taste loses to a Keep.
+When a defect and a taste item depend on user intent, ask a question.
+Propose no change in that case.
+Output changes only.
+Do not write "negative says" or "positive says".
+Mention a Keep only as `keep: honored` or `overridden` on a change that touches it.
+The synthesizer may add one item (`from: synth`) for an evident `must` both critics missed.
 
 ## Pipelines
 
@@ -165,7 +171,7 @@ repo walk.
   alternatives; MECE milestones, named e2e, resume-safe Next Steps, real
   invariants.
 
-1. Delete stale slices. Launch the critic pair. Tell the user. End the turn.
+1. Delete stale slices. Launch the critic pair. Tell the user.
 2. Both ready → launch the synthesizer (plan packet + both critic paths).
 3. Parent Reads only `synthesis.md`. Strip proposals that break **Stops**.
 4. **Question gate:** answer from session knowledge and patch
@@ -184,7 +190,7 @@ activity diff path list (`base-branch`). `scope: drift`: input adds
 `fix/drift.md`; scoped milestones are those `drift.md` maps changes to;
 critics judge whether the activity files still match the drifted repo.
 
-1. `scope: plan` → go to step 3. Else launch the env agent. End the turn.
+1. `scope: plan` → go to step 3. Else launch the env agent.
 2. `blocked` → the pipeline ends; `<dir>env.md` is its final file. Read it,
    show it, stop. `ready` → launch one test agent per scoped milestone.
    None → go to step 3.
@@ -209,11 +215,12 @@ In flight from step 1 until the milestone is checked or abandoned, across
 job rounds and the critic pair (`inflight.md` stays).
 
 1. Split the milestone into MECE jobs with disjoint write paths (code, tests)
-   and one report each. Launch all workers. End the turn.
+   and one report each. Launch all workers.
 2. All job reports ready → launch the collator (milestone claim, test cases,
    evidence commands, job report paths).
 3. Parent Reads only `collate.md`. `fail` or `conflict` → new job round or an
-   inline fix. `pass` → step 4 if it applies; then update activity files
+   inline fix. Do not check the milestone while a job round is open.
+   `pass` → step 4 if it applies; then update activity files
    (**Update cadence**), check the milestone, and delete `inflight.md`.
 4. **Evaluate** when the parent must judge quality, not only record a pass:
    real design latitude, the last milestone, or the user asked. Launch the
@@ -230,8 +237,8 @@ job rounds and the critic pair (`inflight.md` stays).
 ### Comments (`add-review-comments`, `remove-review-comments`)
 
 Target level: review (`add-review-comments`) or default
-(`remove-review-comments`). Level rules: **Engineering while focused**
-comments in `SKILL.md`; the parent pastes them into every brief.
+(`remove-review-comments`). Level rules: **Engineering while focused** in `building.md`.
+Paste those rules into every brief.
 
 1. Base = `git merge-base HEAD <base-branch>` (`<base-branch>` as resolved
    by the command: local, else `origin/`). Files = `git diff
@@ -242,7 +249,7 @@ comments in `SKILL.md`; the parent pastes them into every brief.
    (the snapshot).
 3. Split files MECE into jobs (no shared file). Each brief: target level,
    the level rules, assigned files, and their hunks (`git diff -U0 <base> --
-   <file>`; a new file is one hunk). Launch all editors. End the turn.
+   <file>`; a new file is one hunk). Launch all editors.
 4. All job reports ready → launch the verifier (file list, snapshot root,
    Setup build and test commands).
 5. Parent Reads only `comments/verify.md` (`add-review-comments` /
@@ -273,7 +280,7 @@ cited in `# Current Design` and `REF<n>` bullets, Setup build and test
 commands.
 
 1. Delete old `fix/drift.md` and `fix/drift/` (keep `fix/review/`). Launch
-   the scanner. End the turn.
+   the scanner.
 2. Ready → parent Reads only `fix/drift.md` (`fix-activity` step B).
 
 Scanner rules:
@@ -304,9 +311,28 @@ assigned paths and do not modify source.
 
 ## Output shapes
 
-```markdown
-# Synthesis
+Start with the role's H1.
+An empty section holds `- none`.
+Name `where` as an activity-file entry or a product path.
 
+```markdown
+# Critic positive
+## Keep
+### <short title>
+- weight: load-bearing | strong | nice
+- where: `activity.md` `# …` | `RD<n>` | `DC<nn>` | `CONV<n>` | <path>
+- why: <what breaks if removed or churned>
+
+# Critic negative
+## Findings
+### <short title>
+- kind: <kind>
+- severity: must | should
+- where: <same style>
+- issue: <1–3 bullets: what is wrong and why it matters>
+- propose: <concrete edit, or `clarify: <ambiguity>`>
+
+# Synthesis
 ## Proposals
 ### <short title>
 - severity: must | should
@@ -315,108 +341,66 @@ assigned paths and do not modify source.
 - why: <one line>
 - from: negative | synth
 - keep: none | honored `<title>` | overridden `<title>` because <defect>
-
 ## Questions
 ### <short title>
 - ask: <one decision>
 - recommend: <best guess>
 - why-it-matters: <which proposal this unlocks or kills>
-```
 
-```markdown
 # Review report
-
 ## Evidence
 - scope: milestones <list> | plan | drift <synced>..HEAD
 - env: ready | blocked | skipped
 - milestone <n>: pass | fail | skipped
-
 ## Proposals
-<same shape as Synthesis; `from: env | tests | negative | synth`>
-```
+<same fields as Synthesis; `from: env | tests | negative | synth`>
 
-Each proposal becomes one `agent` point in the open cycle. `where` names an
-activity file entry or a product path; product work becomes a review
-milestone at `apply-review`. Empty sections hold `- none`.
-
-```markdown
 # Env
-
 status: ready | blocked
-
 ## Used
 - <command or toolchain>
-
 ## Findings
 - <bullet>
-```
 
-`blocked` = documented setup or build cannot run, or no documented command
-exists and discovery failed.
-
-```markdown
 # Milestone <n>
-
 - claim: <what the plan claims>
 - result: pass | fail | blocked
-- evidence:
-  - `<command>`: <one-line outcome>
-```
+- evidence: `<command>`: <one-line outcome>
 
-Test agents run the named commands only. No second suite. No source edits.
-
-```markdown
 # Job <name>
-
 - result: done | partial | blocked
 - changed: <paths>
 - tests: `<command>`: <one-line outcome>
 - notes: <interface assumptions, open issues>
-```
 
-Workers follow **Engineering while focused** (`SKILL.md`) and run their
-job's tests.
-
-```markdown
 # Collate milestone <n>
-
 - result: pass | fail | conflict
-- evidence:
-  - `<command>`: <one-line outcome>
+- evidence: `<command>`: <one-line outcome>
 - joins: <gaps, overlaps, interface mismatches; or none>
 - next: <fix jobs, or none>
-```
 
-The collator collects only: it checks joins and runs the evidence commands.
-It does not edit code or judge quality.
-
-```markdown
 # Comments job <k>
-
 - result: done | partial | blocked
 - changed: <paths>
 - notes: <skipped files, unclear comments; or none>
-```
 
-```markdown
 # Comments verify
-
 - result: pass | fail
-- files:
-  - `<path>`: pass | fail: <first non-comment changed line>
+- files: `<path>`: pass | fail: <first non-comment changed line>
 - tests: `<command>`: pass | fail: <one-line outcome>
-```
 
-```markdown
 # Drift
-
 - baseline: ok | rewritten | none
 - range: <synced>..HEAD + uncommitted
-- changed:
-  - milestone <n> | other: <paths>
+- changed: milestone <n> | other: <paths>
 - moved: <old → new; or none>
 - missing: <cited paths; or none>
-- evidence:
-  - milestone <n>: `<command>`: pass | fail: <one line> | skipped
+- evidence: milestone <n>: `<command>`: pass | fail: <one line> | skipped
 - major: yes | no — <trigger>
 ```
+
+`blocked` means documented setup or build cannot run.
+`blocked` also means no documented command exists and discovery failed.
+Test agents run the named commands only.
+Do not add a second suite.
+Do not edit source.
