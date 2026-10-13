@@ -17,6 +17,25 @@ SEARCH_FILES="lifecycle.md records.md review-policy.md planning.md building.md n
 
 die() { echo "error: $*" >&2; exit 1; }
 
+# If a core tool is missing, shadow it with the first available substitute
+# (listed alternates, then a busybox applet). With none, fail only on use.
+fallback() {
+  local tool=$1 alt; shift
+  command -v "$tool" >/dev/null 2>&1 && return 0
+  for alt in "$@"; do
+    command -v "$alt" >/dev/null 2>&1 && { eval "$tool() { command $alt \"\$@\"; }"; return 0; }
+  done
+  if [[ $'\n'$(busybox --list 2>/dev/null)$'\n' == *$'\n'$tool$'\n'* ]]; then
+    eval "$tool() { busybox $tool \"\$@\"; }"
+  else
+    eval "$tool() { die \"$tool not found\"; }"
+  fi
+}
+fallback awk gawk mawk nawk
+fallback grep ggrep
+fallback sed gsed
+need_git() { command -v git >/dev/null 2>&1 || die "git not found"; }
+
 # Print the heading whose text starts with $2 (case-insensitive, backticks and
 # asterisks ignored) from file $1, through the next heading of the same or a
 # higher level.
@@ -160,7 +179,8 @@ EOF
 
 make_snapshot() {
   local slug=$1 d idx tree
-  d=$ACT_DIR/$slug; idx=$(mktemp -u)
+  d=$ACT_DIR/$slug
+  idx=$(mktemp -u 2>/dev/null) || idx=$(git rev-parse --git-dir)/workon-index.$$
   GIT_INDEX_FILE=$idx git read-tree HEAD
   GIT_INDEX_FILE=$idx git add -u
   GIT_INDEX_FILE=$idx git add -f "$d"
@@ -171,6 +191,7 @@ make_snapshot() {
 
 cmd_snapshot() {
   local slug=${1:?slug} pin=${2:-} snap act
+  need_git
   git rev-parse --git-dir >/dev/null 2>&1 || die "not a git repo"
   snap=$(make_snapshot "$slug")
   echo "snapshot: $snap"
@@ -184,6 +205,7 @@ cmd_snapshot() {
 
 cmd_base() {
   local c=${1:?commit} subj np base
+  need_git
   if ! git cat-file -e "$c^{commit}" 2>/dev/null; then echo "base: none"; echo "mode: none"; return 0; fi
   subj=$(git log -1 --format=%s "$c"); np=$(( $(git rev-list --parents -n1 "$c" | wc -w) - 1 ))
   if [[ "$subj" == "workon synced"* ]] || [ "$np" -ge 2 ]; then base=$(git rev-parse "$c^1"); else base=$(git rev-parse "$c"); fi
