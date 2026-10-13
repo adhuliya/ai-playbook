@@ -1,7 +1,7 @@
 # workon templates
 
-Shapes only. Bold names resolve through the index in [`SKILL.md`](SKILL.md).
-Do not copy policy here.
+Shapes only; policy lives behind the bold names in the [`SKILL.md`](SKILL.md)
+index. Agent-written files are records (**Writing style**).
 
 ## Directory layout
 
@@ -20,16 +20,12 @@ Do not copy policy here.
         artifacts/              # copies flat; reserved names below
 ```
 
-Put a whole copy at the artifacts root as `<basename>`.
-Name an excerpt `<stem>-excerpt.md`.
-The excerpt header names the source and what you kept.
-Reserved directories are `verify-plan/`, `bg/`, `review/`, `comments/`, and `fix/`.
-The reserved file is `inflight.md`.
-Do not use a reserved name as a cited-copy name.
-File roles live under **Paths and readiness**.
-`inflight.md` is agent scratch (**Inflight scratch**).
-
-### inflight.md
+A whole copy sits at the artifacts root as `<basename>`; an excerpt is
+`<stem>-excerpt.md` with a header that names the source and what was kept.
+The reserved directories are `verify-plan/`, `bg/`, `review/`, `comments/`,
+and `fix/`, and the reserved file is `inflight.md`; never use a reserved
+name for a cited copy. File roles: **Paths and readiness**. `inflight.md`
+is parent scratch (**Inflight pipelines**):
 
 ```markdown
 # Inflight
@@ -43,7 +39,8 @@ File roles live under **Paths and readiness**.
 
 ## activity.md
 
-Metadata table in the **first ~10 lines** (title + table) so listing stays greppable.
+The title and metadata table sit in the first ~10 lines so listing stays
+greppable.
 
 ```markdown
 # <Human Title>
@@ -122,8 +119,8 @@ delta steps starting at the new requirement.>
 
 ## journal.md
 
-Events, write-on, and caps: **Journal policy** in `SKILL.md`.
-A normal event is a `##` heading plus at most 3 bullets.
+Events, write-on, and caps: **Journal policy**. A normal event is a `##`
+heading plus at most 3 bullets.
 
 ```markdown
 # Journal
@@ -133,7 +130,7 @@ A normal event is a `##` heading plus at most 3 bullets.
 - from: derived-from `report-api` | imported from `<source>` (omit if new)
 ```
 
-### Pause / resume recap
+Pause / resume recaps:
 
 ```markdown
 ## Pause: <short why> (Active → Paused)
@@ -160,7 +157,7 @@ A normal event is a `##` heading plus at most 3 bullets.
 - watch: <legacy verify, or omit>
 ```
 
-### `Complete` entry
+The `Complete` entry:
 
 ```markdown
 ## Complete: <short work title> (Active → Complete)
@@ -171,7 +168,7 @@ Repo paths and evidence pointers.>
 
 ## activities.md
 
-Policy: **Catalog** in `SKILL.md`.
+Policy: **Catalog**.
 
 ```markdown
 # Activities
@@ -185,10 +182,10 @@ Harden playbook/target sync for machine registry, ignores, syncmap, and nested-g
 
 ## Notes files
 
-Policy (Repair, enums, precedence, who drafts): **Notes files**.
-Agent-written files are records (**Writing style**).
-
-### requirement-def.md
+Policy (Repair, enums, precedence, who drafts): **Notes files**. Omit
+`revised-by:` until a review point changes the entry (RD, CONV) or caused
+it (DC), then list each revising point. Omit `replaces:` on a first
+decision.
 
 ```markdown
 # Requirement Definition
@@ -204,11 +201,6 @@ matters, and how it fits the project in `.dev-notes/definition.md`.>
 - revised-by: RU<n>.<m>
 ```
 
-Omit `revised-by:` until a review point changes the entry. List each revising
-point. Same rule on `CONV` entries.
-
-### design-choices.md
-
 ```markdown
 # Design Decisions
 
@@ -221,11 +213,6 @@ point. Same rule on `CONV` entries.
 - replaces: DC<nn>
 - revised-by: RU<n>.<m>
 ```
-
-Omit `replaces:` on a first decision. Omit `revised-by:` unless a review point
-caused the entry.
-
-### conventions.md
 
 ```markdown
 # Conventions
@@ -241,8 +228,6 @@ caused the entry.
 - install: `<command>`
 ```
 
-### notes-by-user.md
-
 ```markdown
 # Notes by User
 
@@ -251,7 +236,11 @@ caused the entry.
 
 ## reviews.md
 
-Policy: **Reviews**.
+Policy: **Reviews**. `status:` is required on every new cycle. `scope:`
+applies to `start-review` and fix cycles; other cycles MAY omit it. `kind:
+fix` appears only on fix cycles. A cycle with no points holds `- none`;
+after an automated pass with no findings, `- none (agent)`; after env
+`blocked`, `- none (env blocked)`.
 
 ```markdown
 # Reviews
@@ -281,12 +270,6 @@ state: <drift summary from `fix/drift.md`>
 - RU3.2 (user): <user edit> — open
 ```
 
-A cycle with no points holds `- none`; after an automated pass with no
-findings, `- none (agent)`; after env `blocked`, `- none (env blocked)`.
-`status:` is required on every new cycle. `scope:` applies to
-`start-review` and fix cycles; other cycles MAY omit it. `kind: fix`
-appears only on fix cycles (**Reviews**).
-
 Renumber log (`fix-activity`):
 
 ```markdown
@@ -296,7 +279,7 @@ Renumber log (`fix-activity`):
 
 ## user-guide.md
 
-Policy: **User guide**. Prose per **Writing style**. Omit empty sections.
+Policy: **User guide**. Prose per **Writing style**; omit empty sections.
 
 ```markdown
 # <Feature title>: User Guide
@@ -316,10 +299,10 @@ Policy: **User guide**. Prose per **Writing style**. Omit empty sections.
 
 ## List output (agent → user)
 
+`ticket` is omitted on purpose (token economy); include it if the user asks.
+
 ```markdown
 | title | status | slug | branch | notes |
 |---|---|---|---|---|
 | Add export endpoint | Active | add-export-endpoint | feature/add-export-endpoint | waiting on API review |
 ```
-
-`ticket` is omitted on purpose (token economy); include it if the user asks.

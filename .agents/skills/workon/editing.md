@@ -1,110 +1,76 @@
 # Editing the workon skill
 
-Read this before you change any file in this directory.
-This file is for editors of the skill.
-Do not load it while you run an activity.
+Read this before you change any file in this directory. It is for editors
+of the skill; do not load it while you run an activity.
 
-`SKILL.md` is the hot file. It is loaded on every workon turn.
-Every other file is loaded only when a step names it.
+## Loading model
 
-## Hot file
+`SKILL.md` is the kernel: the harness loads it on every turn, so it holds
+only rules that are true on every turn (How it works, How to read, Stops,
+Keyword gate, Guide the user, Writing style). Every other rule reaches the
+agent through `scripts/workon.sh`: `load <keyword>` prints a command
+heading plus the sections its `Reads:` line names, and `section <name>`
+prints one section. A rule the agent could miss on an ordinary turn
+therefore belongs either in the kernel or in a section that the relevant
+command's `Reads:` line names. Keep the kernel near its current size.
 
-Keep a rule in `SKILL.md` when a missed rule would make an ordinary command wrong.
-That set is the stops, the session probe, the gates, and the journal.
-It also holds `activity.md`, IDs, writing style, the command map, the index, Reads, and command isolation.
-
-Put a procedure in another file when only some commands need it.
-Name that file from the command heading, from Reads, or from the step that uses it.
+In `commands.md`, the `Reads:` line is one line, placed after the status
+paragraph. Items are separated by `;` and are a file (`planning.md`), a
+section in a named file (`templates.md#journal.md`), or a bare section
+name resolved by search order (`lifecycle.md`, `records.md`,
+`review-policy.md`, `planning.md`, `building.md`, `notes-files.md`,
+`subagent-contract.md`, `templates.md`, `commands.md`, `SKILL.md`). A bare
+name matches the first heading whose text starts with it, at any level, so
+qualify a name that exists in two files. A check of one or two sentences
+may stay inline in a command when loading a whole section would be the
+only reason; `approve-plan` and `mark-completed` keep the e2e completion
+rule for that reason.
 
 ## Where a change goes
 
 | Change | File |
 |---|---|
-| Keyword steps | `commands.md` (extract one heading) |
+| Keyword steps, natural-language entry points, the command map (`help`) | `commands.md` |
+| Status changes, gates, reminders, journal, update cadence, consistency check, session probe prose | `lifecycle.md` |
+| Activity folder, `activity.md`, `synced` semantics, IDs, catalog, user guide, portability | `records.md` |
 | Create, derive, replan, cited context | `planning.md` |
 | RD, design decisions, conventions, legacy repair | `notes-files.md` |
 | Review cycles and apply timing | `review-policy.md` |
 | Test tiers, engineering, comment levels | `building.md` |
-| Launch, paths, pipelines, output fields | `subagent-contract.md` |
+| Launch, prompt shape, inflight scratch, paths, parent reads, pipeline steps | `subagent-contract.md` |
+| What one sub-agent role does, its rules, its output shape | `briefs/<role>.md` (`common.md` for all roles) |
 | Record shapes | `templates.md` |
+| Probe checks, snapshot and base mechanics, list, section extraction | `scripts/workon.sh` |
 
-Keyword steps live in `commands.md`.
-Extract the one heading with the command in `SKILL.md`.
-Do not read `commands.md` from top to bottom.
-A `Read` line sits after the status paragraph.
-Do not insert it into the middle of that paragraph.
+Two places must agree with the script: the **Session probe** prose
+describes what `probe` checks and fixes, and **`activity.md`** describes
+what `snapshot` and `base` do. Change the script and the prose together.
 
-A check of one or two sentences may stay in the command.
-Do that when loading a whole policy file would be the only reason to open it.
-`approve-plan` and `mark-completed` keep the end-to-end completion rule for that reason.
-The test tiers stay in `building.md`.
+## Moving and naming
 
-## What a turn may open
+When you move a policy, add its names to the **Index**, then run `bash
+.agents/skills/workon/scripts/workon.sh section "<name>"` for each bold
+name you touched and confirm it resolves. Keep a bold name on one line so a
+search finds it. A bold name in the kernel is a trigger, not a restatement:
+it tells the agent when to load that section.
 
-Do not open the index files at the start of a turn.
-Open a file when a command heading, the Reads section, or the current step names it.
-Load one keyword with the extract under **Commands**.
-Keep a turn to the hot file, one command heading, and one policy file.
-Add the contract when the step launches a sub-agent.
-Add `templates.md` only for the shape that step writes.
-
-Create, derive, and replan may also open `notes-files.md`.
-Open `building.md` as well when that step writes milestone tests.
-
-## Bold names
-
-A bold name points at a heading or a bold term.
-Names in the index live in that file.
-A qualified name such as **Reviews** fix first lives in the file that owns the first name.
-Any other bold name lives in `SKILL.md`.
-Apply the named text.
-Do not restate it.
-
-When you move a policy, add its names to the index.
-After the edit, search for the bold name and confirm it still resolves.
-
-Do not put a moved name in a reminder that every turn reads.
-Stops, Portability, and Update cadence are such reminders.
-A bold name there makes the agent open that file on every turn.
+Keep every pipeline step, path row, ready marker, critic kind, weight, and
+output-shape field; sub-agents read them from the briefs, so a missing
+field is a behavior change. The parent never pastes brief text, so a rule
+the parent needs stays in the contract and a rule a sub-agent needs stays
+in its brief.
 
 ## Wording
 
-Follow **Writing style** in `SKILL.md` when you rewrite a sentence.
-Use full sentences with articles.
-Use the imperative.
-Put one instruction in each sentence.
-Keep an instruction to 20 words or fewer.
-Keep a description to 25 words or fewer.
-Use one term for one meaning.
-Keep keywords, status tokens, IDs, paths, and commands exact.
-Do not invent abbreviations.
-
-State each fact once.
-Elsewhere, point at the heading that owns it.
-A shorter sentence that drops a constraint is a behavior change.
-Keep the old sentence when a cut would make the order or the condition unclear.
-
-## Contract
-
-Keep `subagent-contract.md` as one file.
-Remove a rule only when the same rule is already stated in one other place.
-Keep every pipeline step, path row, critic kind, weight, and output field.
-The parent pastes those fields into a prompt.
-A missing field is a behavior change.
-
-## Legacy repair
-
-The session probe in `SKILL.md` runs before the first activity-file read.
-It creates a missing notes file.
-It fills a missing metadata row.
-It opens `notes-files.md` only when the activity is legacy.
-Keep the legacy steps in **Repair**.
-Do not copy those steps back into the hot file.
+Follow **Writing style** in `SKILL.md`. A shorter sentence that drops a
+constraint is a behavior change; keep the old sentence when a cut would
+make the order or the condition unclear.
 
 ## Before you finish
 
-Search for the old path or the old heading name.
-Fix each command `Read` line that names a file you moved.
-Check that `help all` still prints the command map from `SKILL.md`.
-Measure `SKILL.md` when you add more than a few lines.
-The hot file should stay near its current size.
+Run `load` for every heading in `commands.md` and confirm each `Reads:`
+item resolves. Search for the old path or heading name you changed. Check
+that `help all` still prints the command map from the `help` heading, and
+that the `probe`, `snapshot`, `base`, and `list` sub-commands still run
+against a sample activity. Measure `SKILL.md` when you add more than a few
+lines.
