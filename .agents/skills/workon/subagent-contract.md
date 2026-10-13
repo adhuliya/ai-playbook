@@ -275,7 +275,8 @@ does not edit files.
 One drift scanner; it collects, it does not judge. Read-only for source and
 activity files. It MAY split evidence runs into children.
 
-Input (parent pastes): baseline mode, `synced` commit and its base,
+Input (parent pastes): baseline mode, `synced` commit and its base, fresh
+snapshot `<now>`,
 `base-branch`, each milestone with its paths and evidence commands, paths
 cited in `# Current Design` and `REF<n>` bullets, Setup build and test
 commands.
@@ -286,8 +287,9 @@ commands.
 
 Scanner rules:
 
-- Changed paths, by baseline:
-  - `ok`: `git diff --name-status <synced>` (working tree vs snapshot).
+- Changed paths, by baseline (exclude `.dev-notes/`; the parent owns notes
+  drift):
+  - `ok`: `git diff --name-status <synced> <now>`.
   - `rewritten`: compare `git diff --name-status $(git merge-base <synced>
     <base-branch>) <synced>` with the current activity diff. Report paths
     whose activity changes differ. Ignore upstream-only changes.

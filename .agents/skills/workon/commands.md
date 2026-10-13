@@ -323,8 +323,10 @@ Read `notes-files.md` before these steps.
 ## `fix-activity`
 
 Status: any. User-invoked only. No status change. Never edits product code.
+Usage: `fix-activity [<what to fix> | tidy]`.
 
-Read `review-policy.md` and `subagent-contract.md` before these steps.
+Read `review-policy.md` before these steps.
+Read `subagent-contract.md` before step B or E2.
 Scope: `activity.md`, RD, Design Decisions, Conventions, `reviews.md`.
 Never rewrites the journal (`compact-journal`); appends only `Review` and
 `Renumber` events. `notes-by-user.md` is input only.
@@ -339,15 +341,28 @@ yes`. **Plan-impacting finding** = passes the step 4 test. **Unclear
 finding** = two plausible readings of a user edit, a source change of
 unknown intent, or a fact the repo cannot settle.
 
+**Request** (classify the user's words first):
+- **Targeted:** the user names an ID, section, path, or fact to fix.
+- **Resync:** bare `fix-activity`, or plain words such as "out of date".
+- **Tidy:** `tidy`, or plain words that ask to prune, rewrite, or renumber.
+- Mixed request: run the targeted part first, then offer the rest.
+
 **Turn order:**
-- Turn 1: A, B. Launching B ends the turn.
-- Turn 2: read `drift.md`; C, D, 0, 2; grill unclear findings; route.
-- Then the fix-cycle path (E1–E4) or the inline path (1, 3–9; reuse the
-  step 0 and 2 results).
+- Turn 1: classify; T; then the targeted path, the tidy path, or gate 1.
+- Gate 1 `scan`: B ends the turn. Next turn: read `drift.md`; D, 2;
+  grill unclear findings; route. The fix-cycle route stops at gate 2.
+- Then the fix-cycle path (E1–E4) or the inline path (reuse T and step 2).
+
+T. **Triage** (parent, inline, read-only; no sub-agent): take a fresh
+   **snapshot** `<now>`. Run A, C, and step 0. Summarize source drift with
+   `git diff --stat <synced> <now> -- . ':!.dev-notes'`. Report in ≤ 4
+   lines: baseline mode, user edits, changed source paths, consistency
+   issues. Baseline `none`: skip the diffs and report that. No findings
+   and no targeted request → say the files are in line. Stop.
 
 A. **Baseline** from the `synced` row and its **`synced` base**:
-   - `ok`: the base is an ancestor of `HEAD`. Drift = `git diff <synced>`
-     (working tree vs snapshot).
+   - `ok`: the base is an ancestor of `HEAD`. Drift = `git diff <synced>
+     <now>`.
    - `rewritten`: the commit exists but its base is not an ancestor
      (rebase, force push). Drift = the activity's own changes then vs now:
      `git diff $(git merge-base <synced> <base-branch>) <synced>` against
@@ -356,7 +371,8 @@ A. **Baseline** from the `synced` row and its **`synced` base**:
 B. **Drift scan:** write `inflight.md` (**Inflight scratch**); run the
    **Drift** pipeline in the contract. Next turn, parent Reads only
    `fix/drift.md`; delete `inflight.md`.
-C. **Notes drift** (parent): diff the scope files against `synced`. An
+C. **Notes drift** (parent): `git diff <synced> <now> --
+   .dev-notes/activities/<slug>/`, limited to the scope files. An
    edit without a matching journal event, `revised-by:`, or `RU` point is a
    **user edit**. Ignore a `# Next Steps` `In progress:` line. A clear user edit is truth unless it contradicts another
    file; contradictions are findings.
@@ -371,10 +387,37 @@ before proposing its fix. One question at a time; recommend an answer;
 explore the repo first. Classify each answer: plan-impacting, clear user
 edit, or a step 5 item.
 
+**Targeted path:**
+1. Propose only what the user named, in the step 5 shape. A plan-impacting
+   fix adds its `# Current Plan`, `# Milestones`, and `# Next Steps` edits
+   to the same proposal. Grill per the grill rule only when the request is
+   unclear. Offer `review` once to run the fix-cycle path instead.
+2. On yes: run steps 6, 8, and 9. On `review`: treat it as gate 1
+   `scan` and run B; the next turn continues at the route.
+3. List other triage findings, one line each; do not act on them. Offer
+   `fix-activity` for drift or `fix-activity tidy` once.
+
+**Tidy path:** the inline path with steps 1, 3, and 7. Report triage
+drift; do not fix it. When drift exists, recommend a resync first.
+
+**Resync path:**
+
+G1. **Gate 1:** baseline `ok` and no changed source paths → skip the gate
+    and run the inline path. Else name the drift scan: one scanner,
+    evidence re-runs for checked milestones with changed paths, and a
+    review that may follow. Ask `scan`, `inline` (skip the scan), or
+    `stop`. Stop the turn.
+
 **Route:** major drift, any plan-impacting finding, or baseline `none`
 with at least one checked milestone → **fix-cycle path**. Else →
 **inline path**. Baseline `none` with no checked milestone: inline path,
 verify every fact in step 2, skip the Setup build.
+
+G2. **Gate 2** (fix-cycle route only): list the findings and the route
+    reason. Name the review: env agent, tests, critic pair, synthesizer.
+    Ask `review` (run E1–E4), `inline`, or `stop`. Stop the turn.
+    `inline`: run the inline path; plan-impacting findings go in the step 5
+    proposal with their plan edits. `stop`: `synced` stays unchanged.
 
 **Fix-cycle path** (all drift findings go through review):
 
@@ -388,10 +431,11 @@ E3. Parent Reads `fix/review/report.md` and adds its points as `agent`
     points. Env `blocked` → Read `fix/review/env.md`, show it, and add
     `- none (env blocked)` for the report points. Delete `inflight.md`.
     Grill per the grill rule; patch the points with the answers.
-E4. Show the cycle. Ask for `apply-review`. Stop. Steps 1 and 3–9 wait for
-    the next `fix-activity` after the fix cycle closes.
+E4. Show the cycle. Ask for `apply-review`. Stop. The inline path waits
+    for the next `fix-activity` after the fix cycle closes.
 
-**Inline path:**
+**Inline path:** steps 0, 2, 4–6, 8, 9. Steps 1, 3, and 7 run only on
+the tidy path. Otherwise, after step 9, offer `fix-activity tidy` once.
 
 0. **Consistency:** find the **Consistency check** issues. Add them to the
    step 5 list as `fix:` items.
@@ -421,8 +465,9 @@ E4. Show the cycle. Ask for `apply-review`. Stop. Steps 1 and 3–9 wait for
      assumption (a `# Current Design` invariant or a Background fact).
    - The change affects `# Current Plan`, `# Milestones`, or `# Next Steps`.
 
-   On the inline path, a plan-impacting finding from steps 1 or 3 switches
-   to the fix-cycle path (E1). A change to Goal or Scope is
+   On the inline path, a new plan-impacting finding from steps 1 or 3 goes
+   to gate 2. When the user already chose `inline` there, it joins the
+   step 5 proposal with its plan edits. A change to Goal or Scope is
    **Material-change**: skip it and prompt.
 5. Show one proposal list: ID or section, action (`delete` | `fold into <ID>`
    | `shorten` | `rewrite` | `fix: <new value>` | `flag: <unresolved>`), why.
@@ -430,18 +475,21 @@ E4. Show the cycle. Ask for `apply-review`. Stop. Steps 1 and 3–9 wait for
 6. Apply only confirmed items. Append-only and `superseded` rules do not
    block pruning. Git is the archive. A change to Goal or Scope is
    **Material-change**: skip it and prompt. Then record confirmed clear
-   user edits (from C) to RD, DC, or CONV entries as `user` points of one
-   new closed regular `RU<n>` cycle (`applied → <IDs>`), and append its
-   `Review` event. No such edits → no cycle.
+   user edits (from C) to RD, DC, or CONV entries, and applied targeted
+   requests, as `user` points of one new closed regular `RU<n>` cycle
+   (`applied → <IDs>`), and append its `Review` event. No such items → no
+   cycle.
 7. Renumber `RD`, `DC`, `CONV`, and `REF` IDs to close gaps (never `RU`
    IDs or milestone numbers). Update every reference in the scope files.
    Append the old → new map to `reviews.md` (**Reviews** renumber log) and
    show it. Append a one-line `Renumber` event pointing at that log.
 8. If `notes-by-user.md` cites removed or renumbered IDs or broken paths, tell
    the user and show the map; do not edit it.
-9. Refresh `synced` (**`activity.md`** snapshot). The fix-cycle path skips
-   this step: `synced` stays unchanged until `apply-review` closes the fix
-   cycle, so a re-run before then still sees the drift.
+9. Refresh `synced` (**`activity.md`** snapshot) when this run applied at
+   least one item. Reported drift that was not fixed leaves the baseline;
+   say so in the reply. The fix-cycle path skips this step: `synced` stays
+   unchanged until `apply-review` closes the fix cycle, so a re-run before
+   then still sees the drift.
 
 ## `create-guide`
 

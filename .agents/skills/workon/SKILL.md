@@ -318,6 +318,7 @@ Commit `.dev-notes/activities/`, including useful `artifacts/` copies and
 reserved `verify-plan/`, `review/`, `comments/`, `fix/`, `bg/` records
 (not `inflight.md`; it is scratch). Agent does not
 `git add` / commit unless asked. Huge generated trees stay out of the repo.
+A gitignored `.dev-notes/` is valid; the `synced` snapshot still covers it.
 
 Status tokens (exact): `Planning` | `Approved` | `Active` | `Paused` | `Blocked` | `Complete`
 
@@ -340,13 +341,28 @@ plus new untracked files.
 focused** comment levels).
 `synced` is the drift baseline for `fix-activity`: a snapshot commit of
 the working tree when the activity files were last in line with the repo,
-or `none`. Take it with `snap=$(git stash create); snap=${snap:-$(git
-rev-parse HEAD)}`, then pin it with `git update-ref refs/workon/<slug>
-$snap` so git does not garbage-collect it. Write `$snap` to the row. The
-snapshot covers uncommitted tracked agent work, so that work is not
-mistaken for drift. Neither command changes the working tree or the index.
-The **`synced` base** is the snapshot's first parent (the `HEAD` it was
-taken on) when it has two parents, else the commit itself.
+or `none`. A **snapshot** holds `HEAD`, uncommitted tracked changes, and the
+activity folder, also when `.dev-notes/` is gitignored:
+
+```bash
+d=.dev-notes/activities/<slug>; idx=$(mktemp -u)
+GIT_INDEX_FILE=$idx git read-tree HEAD
+GIT_INDEX_FILE=$idx git add -u
+GIT_INDEX_FILE=$idx git add -f "$d"
+tree=$(GIT_INDEX_FILE=$idx git write-tree); rm -f "$idx"
+if [ "$tree" = "$(git rev-parse 'HEAD^{tree}')" ]; then snap=$(git rev-parse HEAD)
+else snap=$(git commit-tree "$tree" -p HEAD -m "workon synced <slug>"); fi
+```
+
+Pin it with `git update-ref refs/workon/<slug> $snap` so git does not
+garbage-collect it. Write `$snap` to the row. The snapshot covers
+uncommitted agent work, so that work is not mistaken for drift. It does
+not change the working tree or the real index. Measure drift between two
+snapshots: `git diff <synced> <now>`, where `<now>` is a fresh unpinned
+snapshot. A plain `git diff <synced>` misses gitignored activity files.
+The **`synced` base** is the snapshot's first parent when its subject
+starts with `workon synced` or it is a legacy stash (two parents). Else it
+is the commit itself.
 
 Writers of `synced` (no others): create and `create-sibling` (first
 snapshot); `import-activity` (`none`); every other agent write to an
@@ -566,7 +582,7 @@ Valid statuses are that heading's `Status:` line.
 | Command | What it does |
 |---|---|
 | `update-convention` | Add or rewrite convention rules |
-| `fix-activity` | Resync activity files after user edits, source drift (edits, rebase), or major drift; grill on unclear and plan-impacting findings; then fix, prune, verify, rewrite, close ID gaps |
+| `fix-activity [<what to fix> \| tidy]` | Fix what the user names, or resync after drift; cheap triage first; asks before each pipeline; prune, rewrite, renumber only on `tidy` |
 | `compact-journal` | Shorten the journal in place |
 
 **Output and cleanup**
