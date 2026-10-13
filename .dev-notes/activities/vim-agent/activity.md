@@ -49,7 +49,7 @@ Shipped classic-Vim integration sourced from synced `~/.vim/vim-agent.vim` (via 
 
 - `configs/agent.zshrc.sh`, `configs/vimrc`
 - `configs/vim-agent.vim`, `configs/vim-agent-run.sh`, `configs/vim-agent-help.md` (repo cheat sheet; not syncmap'd)
-- `machines/Anshumans-MacBook-Pro.local/syncmap.txt` → `~/.vim/`
+- `machines/<id>/syncmap.txt` → `~/.vim/`
 - `tests/smoke-test-vim-agent.sh`
 
 # Milestones
@@ -70,5 +70,5 @@ Shipped classic-Vim integration sourced from synced `~/.vim/vim-agent.vim` (via 
 
 - `configs/vim-agent-help.md` — cheat sheet (read in repo or `:edit` from playbook path)
 - `configs/vimrc`, `configs/vim-agent.vim`, `configs/vim-agent-run.sh`, `configs/agent.zshrc.sh`
-- `machines/Anshumans-MacBook-Pro.local/syncmap.txt`
+- `machines/<id>/syncmap.txt`
 - `tests/smoke-test-vim-agent.sh`
