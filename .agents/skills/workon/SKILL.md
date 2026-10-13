@@ -40,7 +40,7 @@ Load a keyword with the extract under **Commands**.
 |---|---|
 | `notes-files.md` | Notes files, Repair, Problem header, Isolated setup |
 | `review-policy.md` | Reviews, Apply timing |
-| `planning.md` | Planning quality bar, Create sequence, Cited context, draft-check, File review |
+| `planning.md` | Planning quality bar, Definition bootstrap, Create sequence, Cited context, draft-check, File review |
 | `building.md` | Test evidence, Engineering while focused |
 | `subagent-contract.md` | critic pair, Pipelines, Every agent, Paths and readiness |
 | `editing.md` | Editing the workon skill |
@@ -202,6 +202,7 @@ is `Paused`, `Blocked`, or `Complete`, prompt `resume-work`.
 
 Exceptions: the agent MAY run the **Consistency check** without a keyword;
 `mark-completed` runs the `delete-tmp-files` flow. Both confirm each item.
+A `yes` to the `approve-plan` conventions offer counts as `conventions-ok`.
 
 ## Material-change
 
@@ -255,6 +256,8 @@ Both record `prior: <status>` in the `activity.md` `notes` row.
 ## Reminders
 
 - Create, `create-sibling`, `replan-work`: remind to use a **strong** model.
+  A strong model is the most capable reasoning model the user can pick
+  (for example, a top Claude Opus or GPT high-reasoning tier).
 - At `approve-plan`: one-time note that planning is done; user may drop the
   strong model. No execution-tier recommendation.
 - Remind once per phase change.
@@ -355,7 +358,9 @@ else snap=$(git commit-tree "$tree" -p HEAD -m "workon synced <slug>"); fi
 ```
 
 Pin it with `git update-ref refs/workon/<slug> $snap` so git does not
-garbage-collect it. Write `$snap` to the row. The snapshot covers
+garbage-collect it. Write `$snap` to the row. On the first pin in a
+session, tell the user in one sentence: the ref is local, never pushed,
+and only marks the drift baseline. The snapshot covers
 uncommitted agent work, so that work is not mistaken for drift. It does
 not change the working tree or the real index. Measure drift between two
 snapshots: `git diff <synced> <now>`, where `<now>` is a fresh unpinned
@@ -412,7 +417,8 @@ Activity entries carry stable IDs. Cross-references use the ID, not the title.
 `.dev-notes/activities/activities.md`. Create lazily (`# Activities`).
 **Append** new entries at the end. Do not rewrite or reorder the whole file
 unless asked. Heading: `## <slug>: Short title` plus one high-level paragraph.
-Not a substitute for `activity.md`.
+Not a substitute for `activity.md`. Name activities by slug only.
+No **IDs** and no milestone numbers in the catalog.
 
 On create / derive / import, do not Read the catalog:
 

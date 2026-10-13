@@ -15,6 +15,7 @@ answer, explore the repo instead of asking. Do not skip grilling to draft files.
 **Order (mandatory):**
 
 1. **Project-fit** against `.dev-notes/definition.md`. Do not proceed until it fits.
+   When the file is missing, empty, or only `TODO`, run **Definition bootstrap** first.
 2. **Intake:** free-text scope (objective, in/out, constraints, done).
    Then write the **Problem header** in `requirement-def.md`.
 3. Grill remaining branches: goal, success, scope, constraints, assumptions,
@@ -40,6 +41,18 @@ Required intake prompt (or equivalent):
 > out-of-scope boundaries, constraints, and what "done" looks like.
 
 If the current message already supplied both, acknowledge and continue grilling.
+
+## Definition bootstrap
+
+Runs once per repo, when `.dev-notes/definition.md` is missing, empty, or only `TODO`.
+
+1. Read the README and the top-level layout. Do not bulk-read.
+2. Ask two or three short questions, one at a time: purpose, users, out of scope.
+   Recommend an answer for each.
+3. Draft `definition.md`: a `# <Project>` H1 and one short paragraph per answer.
+   Keep it under ~200 words.
+4. Show the draft. Write it only after the user confirms or corrects it.
+5. Continue at **Project-fit**.
 
 ## Create sequence
 

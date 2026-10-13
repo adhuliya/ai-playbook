@@ -160,7 +160,9 @@ Status: `Planning` (`Approved` / `Active`: report state; do not rewrite history)
 2. **Optional-remind** `verify-plan` and `apply-review`.
 3. Set `status` to `Approved`. Append an `Approved` event (milestone count).
 4. One-time note: planning done; user may drop the strong model.
-5. Do not implement. Ask for `conventions-ok` if `pending`, then
+5. Do not implement. If `conventions: pending`, ask: "Accept the conventions
+   too? (`yes` / `review`)". On `yes`, run `conventions-ok` from step 1.
+   On `review`, the user runs `conventions-ok` later. Then ask for
    `start-building`.
 
 ## `pause-work`
@@ -513,6 +515,9 @@ Status: any. Also run by `mark-completed`. No status change, no journal.
      when no fix cycle is `open`; `comments/` when no comment pipeline is
      in flight; `bg/milestone-<n>/` when milestone `<n>` is checked.
    - `inflight.md`: never listed; it is managed by **Inflight scratch**.
+   - Snapshot ref `refs/workon/<slug>`: list only when status is `Complete`;
+     **default delete**. Delete with `git update-ref -d`. Leave the `synced`
+     row; after git prunes the commit, the baseline reads `none`.
    - Legacy `self-review/`, `self-review.md`: **default delete**.
    - Untracked / gitignored leftovers (scratch dirs, sample outputs, dumped
      test artifacts, isolated-setup envs): **default delete**.
@@ -555,7 +560,7 @@ Status: any; read-only; no focused activity needed.
 - `help intro`: teach the basic path in ≤ 8 lines. Name only these steps:
   1. Describe the work in plain words (e.g. `workon add CSV export`).
      Answer the questions, then review the drafted files.
-  2. `approve-plan` and `conventions-ok`: accept the plan and the rules.
+  2. `approve-plan`: accept the plan. Answer `yes` to accept the rules too.
   3. `start-building`: the agent builds and tests.
   4. `mark-completed`: close the work when the tests pass.
 
@@ -573,7 +578,7 @@ Status: any; read-only; no focused activity needed.
 | Fix cycle `open` | Review its points in `reviews.md`; then `apply-review` (applies drift fixes first). |
 | Regular cycle `open` | Add or edit points; then `apply-review`. |
 | No focused activity | Name an activity to switch to it, or describe new work to create one. |
-| `Planning` | Answer open questions; review the files and give feedback. Then `approve-plan` (and `conventions-ok` if `pending`). |
+| `Planning` | Answer open questions; review the files and give feedback. Then `approve-plan` (it offers to accept the conventions if `pending`). |
 | `Approved` | `conventions-ok` if `pending`; then `start-building`. |
 | `Active` | Give feedback or say continue. `start-review` after a milestone. `mark-completed` when all milestones and the e2e pass and no review cycle is open. `pause-work` to stop. |
 | `Paused` | `resume-work`. |
