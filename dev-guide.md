@@ -27,7 +27,7 @@ Shared agent rules/skills (Cursor, Codex, Claude Code), per-project overlays, an
 | `.agents/` | Shared rules, skills, and their index — `.agents/dev-guide.md` |
 | `.claude/agents/`, `.codex/agents/` | Shared subagents (same agent in `.md` and `.toml` form) |
 | `.dev-notes/seed-prompt.md` | Recreate playbook from scratch (`seed-prompt` skill) |
-| `projects.txt` | Registered target project keys |
+| `projects.txt` | Registered target project keys (sync creates it; personal, kept on your own branch) |
 | `machines/` | Per-machine `projects.txt`, `project-modules.txt`, `syncmap.txt`, `ignoresync.txt`, `aliases.txt` |
 | `ignoresync.txt` | Global sync ignores (paths, `__pycache__/`, `*.pyc`, …) |
 | `scripts/sync-playbook.sh` | Hard-link sync into targets + `--machine` syncmap |

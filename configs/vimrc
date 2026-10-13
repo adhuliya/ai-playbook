@@ -118,7 +118,7 @@ set clipboard=unnamed
 :vnoremap L $
 :vnoremap H ^
 
-" pa://github.com/adhuliya/config-files.gitte from clipboard
+" paste from clipboard
 :nnoremap <leader>v "+p
 
 " add new line
