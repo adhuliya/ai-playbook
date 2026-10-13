@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "hooks": {
+    "afterFileEdit": [
+      {
+        "command": "python3 .cursor/hooks/compile-latex-on-edit.py",
+        "type": "command",
+        "timeout": 120,
+        "failClosed": false
+      }
+    ]
+  }
+}
