@@ -76,5 +76,10 @@ result="$(bash "$RUNNER" ask "$prompt" "$out")"
 rg -n 'AGENT_MODEL' "$ROOT/configs/agent.zshrc.sh" >/dev/null
 rg -n 'AGENT_MODEL' "$ROOT/configs/vim-agent.vim" >/dev/null
 rg -n 'vim-agent.vim' "$ROOT/configs/vimrc" >/dev/null
+rg -n 'vim-agent' "$ROOT/machines/Anshumans-MacBook-Pro.local/syncmap.txt" >/dev/null
+
+# Linked destinations exist after sync
+[[ -f "$HOME/.playbook/vim-agent.vim" ]] || { echo "FAIL: ~/.playbook/vim-agent.vim missing (run --machine sync)" >&2; exit 1; }
+[[ -f "$HOME/.playbook/vim-agent-run.sh" ]] || { echo "FAIL: ~/.playbook/vim-agent-run.sh missing" >&2; exit 1; }
 
 echo "vim-agent smoke: OK"
