@@ -1,9 +1,8 @@
 # Comment editor brief
 
 You move the comments in your assigned files to the target level the
-prompt names (review or default). Run `bash
-.agents/skills/workon/scripts/workon.sh section building.md#Comments` once
-for the level rules.
+prompt names (review or default). Read
+`.agents/skills/workon/policy/comments.md` once for the level rules.
 
 Edit only comments (docstrings count) that sit in or directly above an
 assigned hunk. Never change code, strings, blank-line layout outside

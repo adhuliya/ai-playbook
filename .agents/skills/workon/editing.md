@@ -1,76 +1,72 @@
 # Editing the workon skill
 
 Read this before you change any file in this directory. It is for editors
-of the skill; do not load it while you run an activity.
+of the skill; do not read it while you run an activity.
 
 ## Loading model
 
-`SKILL.md` is the kernel: the harness loads it on every turn, so it holds
-only rules that are true on every turn (How it works, How to read, Stops,
-Keyword gate, Guide the user, Writing style). Every other rule reaches the
-agent through `scripts/workon.sh`: `load <keyword>` prints a command
-heading plus the sections its `Reads:` line names, and `section <name>`
-prints one section. A rule the agent could miss on an ordinary turn
-therefore belongs either in the kernel or in a section that the relevant
-command's `Reads:` line names. Keep the kernel near its current size.
+`SKILL.md` is the only file the harness loads. It stays a short intro plus
+the reading guide and the Index. Every other rule lives in a small file that
+the agent reads on demand with the Read tool, so a rule the agent could miss
+on an ordinary turn belongs in a file that the relevant command's `Reads:`
+line names, or in `always.md`. There is no loader script; do not add one.
 
-In `commands.md`, the `Reads:` line is one line, placed after the status
-paragraph. Items are separated by `;` and are a file (`planning.md`), a
-section in a named file (`templates.md#journal.md`), or a bare section
-name resolved by search order (`lifecycle.md`, `records.md`,
-`review-policy.md`, `planning.md`, `building.md`, `notes-files.md`,
-`subagent-contract.md`, `templates.md`, `commands.md`, `SKILL.md`). A bare
-name matches the first heading whose text starts with it, at any level, so
-qualify a name that exists in two files. A check of one or two sentences
-may stay inline in a command when loading a whole section would be the
-only reason; `approve-plan` and `mark-completed` keep the e2e completion
-rule for that reason.
+Each file holds one concept, so a read costs only what the turn needs. Put
+a new rule in the file that owns its concept; start a new file when a
+concept has no home. Keep `SKILL.md` and `always.md` near their current
+size: they load on every session.
+
+Each file in `commands/` starts with `# \`keyword\``, a `Status:` paragraph,
+and one `Reads:` line of paths relative to this folder, separated by
+commas. List the policy, shape, and pipeline files the command needs, and
+no others. A check of one or two sentences may stay inline in a command when
+a new file would be the only reason; `approve-plan` and `mark-completed`
+keep the e2e completion rule for that reason.
 
 ## Where a change goes
 
 | Change | File |
 |---|---|
-| Keyword steps, natural-language entry points, the command map (`help`) | `commands.md` |
-| Status changes, gates, reminders, journal, update cadence, consistency check, session probe prose | `lifecycle.md` |
-| Activity folder, `activity.md`, `synced` semantics, IDs, catalog, user guide, portability | `records.md` |
-| Create, derive, replan, cited context | `planning.md` |
-| RD, design decisions, conventions, legacy repair | `notes-files.md` |
-| Review cycles and apply timing | `review-policy.md` |
-| Test tiers, engineering, comment levels | `building.md` |
-| Launch, prompt shape, inflight scratch, paths, parent reads, pipeline steps | `subagent-contract.md` |
+| Keyword steps, natural-language entry points, the command map (`help`) | `commands/<keyword>.md` |
+| Rules that hold every turn: stops, keyword gate, guiding, asking, fewer prompts | `always.md` |
+| Status changes, gates, reminders, journal, update cadence, consistency check, session start | `policy/` (one file per concept) |
+| Activity folder, `activity.md`, IDs, catalog, guide for users, portability, references, plan outline | `policy/` |
+| Create, derive, replan, planning stages, cited context | `policy/` |
+| Review cycles and apply timing | `policy/reviews.md`, `policy/apply-timing.md` |
+| Test tiers, engineering, comment levels | `policy/test-evidence.md`, `policy/engineering.md`, `policy/comments.md` |
+| Launch, prompt shape, inflight scratch, paths, parent reads | `policy/launch.md`, `inflight.md`, `paths.md`, `parent-reads.md` |
+| Pipeline steps | `pipelines/<name>.md` |
 | What one sub-agent role does, its rules, its output shape | `briefs/<role>.md` (`common.md` for all roles) |
-| Record shapes | `templates.md` |
-| Probe checks, snapshot and base mechanics, list, section extraction | `scripts/workon.sh` |
+| Record shapes | `shapes/<record>.md` |
+| Old layouts and their fixes | `repair.md`, plus the marker scan in `policy/session-start.md` |
 
-Two places must agree with the script: the **Session probe** prose
-describes what `probe` checks and fixes, and **`activity.md`** describes
-what `snapshot` and `base` do. Change the script and the prose together.
+Two places must agree: the marker scan in `policy/session-start.md` and the
+fixes in `repair.md`. Change both together.
 
 ## Moving and naming
 
-When you move a policy, add its names to the **Index**, then run `bash
-.agents/skills/workon/scripts/workon.sh section "<name>"` for each bold
-name you touched and confirm it resolves. Keep a bold name on one line so a
-search finds it. A bold name in the kernel is a trigger, not a restatement:
-it tells the agent when to load that section.
+When you move a policy, update the **Index** in `SKILL.md` and every
+`Reads:` line that names the file. Keep a bold name on one line so a search
+finds it. A bold name in the kernel is a trigger, not a restatement: it
+tells the agent when to read that file.
 
 Keep every pipeline step, path row, ready marker, critic kind, weight, and
 output-shape field; sub-agents read them from the briefs, so a missing
 field is a behavior change. The parent never pastes brief text, so a rule
-the parent needs stays in the contract and a rule a sub-agent needs stays
-in its brief.
+the parent needs stays in `policy/` or `pipelines/` and a rule a sub-agent
+needs stays in its brief.
 
 ## Wording
 
-Follow **Writing style** in `SKILL.md`. A shorter sentence that drops a
-constraint is a behavior change; keep the old sentence when a cut would
-make the order or the condition unclear.
+Follow `writing-style.md`. A shorter sentence that drops a constraint is a
+behavior change; keep the old sentence when a cut would make the order or
+the condition unclear.
 
 ## Before you finish
 
-Run `load` for every heading in `commands.md` and confirm each `Reads:`
-item resolves. Search for the old path or heading name you changed. Check
-that `help all` still prints the command map from the `help` heading, and
-that the `probe`, `snapshot`, `base`, and `list` sub-commands still run
-against a sample activity. Measure `SKILL.md` when you add more than a few
-lines.
+Check every path on every `Reads:` line exists. Search for old paths and
+names (`scripts/`, `templates.md`, `commands.md`, `lifecycle.md`,
+`synced`, `user-guide`). Check that each bold name resolves through the
+Index. Check that `help all` still prints the command map. Run the
+session-start command from `policy/session-start.md` against a sample
+activity. Measure `SKILL.md` when you add more than a few lines.

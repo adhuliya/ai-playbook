@@ -13,7 +13,8 @@ output file with the role's H1 and no preamble; an empty section holds
 
 Never write an activity file: `activity.md`, `journal.md`,
 `requirement-def.md`, `design-choices.md`, `conventions.md`,
-`notes-by-user.md`, `reviews.md`, `user-guide.md`, `activities.md`. Never
+`notes-by-user.md`, `reviews.md`, `references.md`, `plan-outline.md`,
+`guide-for-users.md`, `activities.md`. Never
 read `requirement-def.md`, `design-choices.md`, `notes-by-user.md`,
 `reviews.md`, or `journal.md`; the parent pastes the excerpts you need.
 Read another agent's file only when the prompt lists it as input. Never
@@ -24,10 +25,8 @@ read a slice directory that is not yours. Never read or write
 
 Ask the user nothing. Edit code only as a milestone worker, inside assigned
 paths; a comment editor edits only comments, inside assigned files. Run
-only the commands the prompt names, plus the `workon.sh section` call your
-brief names. Do not `git add` or
-commit. Do not install into or change the system unless the prompt says the
-user asked.
+only the commands the prompt names. Do not `git add` or commit. Do not
+install into or change the system unless the prompt says the user asked.
 
 ## Children
 
@@ -40,7 +39,6 @@ any other directory.
 
 ## Style
 
-Output files are records. Run `bash .agents/skills/workon/scripts/workon.sh
-section "Writing style"` once and apply its **All text** and **Records**
-rules: bullets and fragments, one term one meaning, exact paths and
-commands, no filler.
+Output files are records. Read `.agents/skills/workon/writing-style.md`
+once and apply its **All text** and **Records** rules: bullets and fragments, one term one meaning, exact paths and commands,
+no filler.

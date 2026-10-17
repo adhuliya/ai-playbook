@@ -1,13 +1,8 @@
-# Review policy
-
-Loaded by the review commands and by `feedback` (chat feedback on activity
-files or built work). Index: [`SKILL.md`](SKILL.md).
-
-## Reviews
+# Reviews
 
 `<slug>/reviews.md` (H1 `# Reviews`) is the agent-written record of review
 cycles, created lazily. The user MAY edit the points of an `open` cycle. It
-is not part of the handoff. Shape: `templates.md`.
+is not part of the handoff. Shape: `shapes/reviews.md`.
 
 **Cycles and points.** Each review round is one `RU<n>` cycle (Review
 Update). There are two kinds only: **regular** (default) and **fix**
@@ -27,7 +22,7 @@ without the line (legacy) is `closed`.
 | `fix-activity` inline path | new closed cycle (user edits already in the files) | same |
 
 **Fix cycle.** Only `fix-activity` opens one, on its fix-cycle path. It
-holds only drift findings (`scope: drift <synced>..HEAD`); other feedback
+holds only drift findings (`scope: drift`); other feedback
 goes to the regular cycle. Refresh it by re-running `fix-activity`, never
 `start-review`. It never reopens. **Fix first:** while a fix cycle is open,
 `apply-review` applies it and the regular cycle waits, though the user MAY
@@ -51,7 +46,7 @@ feedback follows the table above. The agent sets that cycle `open` again;
 **Scope** (`start-review` cycles) is recorded as `scope:`. The default is
 the milestones checked after the newest earlier regular cycle with a
 milestone `scope:` (none → all checked milestones), plus their joins with
-earlier work. The user MAY name milestones (`start-review 2-3`). In
+earlier work. The user MAY name milestones (`start-review M2-M3`). In
 `Planning`, `scope: plan`. A refresh rewrites `scope:` and `state:`.
 
 **State note.** Each cycle opens with status, milestone, and what changed
@@ -61,7 +56,7 @@ paragraphs of deltas only; earlier cycles hold the rest.
 **Authority and outcomes.** The user approves every cycle in principle. A
 point MAY change a requirement, a design decision, a convention, or the
 implementation. Each point ends with an outcome: `applied → <IDs>` |
-`planned → milestone <k>` | `rejected: <why>` | `noted: <why no action>` |
+`planned → M<k>` | `rejected: <why>` | `noted: <why no action>` |
 `open`. Name every changed ID. Product work is `planned` until its
 milestone is checked; the check is the proof. A cycle with no actionable
 points is valid: close it with each point `noted`, or with `- none`.
@@ -89,17 +84,3 @@ recap instead, citing `RU<n>`. Opening or refreshing writes no journal.
 **Renumber log.** `fix-activity` appends `## Renumber <k>` with the old →
 new ID map. Journal entries before it use the old numbers. `RU` IDs and
 milestone numbers are never renumbered.
-
-## Apply timing
-
-Nothing applies in the turn that first reads a pipeline result. `verify-plan`
-applies after the contract question gate (all / some / none). `apply-review`
-applies the open fix cycle, else the open regular cycle, after one round of
-gap questions (see that command). `start-review` never applies; it opens or
-refreshes a cycle. Chat feedback with an open regular cycle becomes `user`
-points for `apply-review`; with none open it applies this turn (where
-points go).
-
-Planning order: `start-review` → `apply-review` (if the user wants the
-points applied) → `verify-plan` → `approve-plan`. None of the middle steps
-is required. After `Active`: `start-review` / `apply-review` only.

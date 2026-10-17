@@ -36,9 +36,9 @@ both critics missed.
 
 # Review report
 ## Evidence
-- scope: milestones <list> | plan | drift <synced>..HEAD
+- scope: milestones <list> | plan | drift
 - env: ready | blocked | skipped
-- milestone <n>: pass | fail | skipped
+- M<n>: pass | fail | skipped
 ## Proposals
 <same fields as Synthesis; `from: env | tests | negative | synth`>
 ```
