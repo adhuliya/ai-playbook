@@ -1,11 +1,12 @@
 # `verify-plan`
 
-Critic input: the plan packet. Critics MAY Read paths the plan cites; no
+Critic input: the plan packet file. Critics MAY Read paths the plan cites; no
 other repo walk.
 
-1. Delete stale slices. Launch the critic pair (`pipeline: verify-plan`).
-   Tell the user.
-2. Both ready → launch the synthesizer (plan packet + both critic paths).
+1. Delete stale slices. Write `verify-plan/packet.md` (**Plan packet**).
+   Launch the critic pair (`pipeline: verify-plan`) with its path. Tell the
+   user.
+2. Both ready → launch the synthesizer (packet path + both critic paths).
 3. The parent Reads only `synthesis.md` and strips proposals that break
    **Stops**.
 4. **Question gate:** answer from session knowledge and patch

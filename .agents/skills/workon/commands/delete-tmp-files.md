@@ -9,7 +9,7 @@ Status: any. Also run by `mark-completed`. No status change, no journal.
      `open`; `fix/` when no fix cycle is `open`; `comments/` when no
      comment pipeline is in flight; `bg/M<n>/` when `M<n>` is
      checked.
-   - `inflight.md`: never listed; **Inflight pipelines** manages it.
+   - `inflight.md`: never listed; **Inflight pipelines** (`policy/inflight.md`) manages it.
    - Legacy leftovers, default **delete**: `self-review/` and
      `self-review.md`; `bg/milestone-<n>/` and `review/milestone-<n>*`; the
      old snapshot ref `refs/workon/<slug>` when `git for-each-ref

@@ -16,7 +16,8 @@ In `stage: requirements`:
 - Do not draft Current Design, Current Plan, milestones, or
   `plan-outline.md`. Each holds `TBD (design stage)`. `# Next Steps` says
   `requirements-ok` follows once RD is complete.
-- **File review** covers the Problem header, RD, and Design Decisions.
+- **File review** covers the Problem header, RD, and Design Decisions
+  (below).
 - When no grill branch is open, say RD looks complete and prompt
   `requirements-ok`. Never move to design silently.
 
@@ -30,3 +31,11 @@ In `stage: requirements`:
   `replan-work`, which sets `stage: requirements` on request. Drafted design
   stays until the user revises it.
 - `create-sibling` and `import-activity` start at `stage: design`.
+
+## File review
+
+Show `plan-outline.md` first, then the other drafted files. The user
+challenges RD, Conventions, Setup, and the plan before `approve-plan` and
+`conventions-ok`. Feedback goes per **Reviews** (where points go);
+`start-review` is not required. File review is done when the user has seen
+the files and every feedback round is recorded. Then run the revision loop.

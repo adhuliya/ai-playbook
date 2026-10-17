@@ -16,7 +16,7 @@ Never write an activity file: `activity.md`, `journal.md`,
 `notes-by-user.md`, `reviews.md`, `references.md`, `plan-outline.md`,
 `guide-for-users.md`, `activities.md`. Never
 read `requirement-def.md`, `design-choices.md`, `notes-by-user.md`,
-`reviews.md`, or `journal.md`; the parent pastes the excerpts you need.
+`reviews.md`, or `journal.md`; the parent pastes the excerpts you need or lists a packet file in `inputs`.
 Read another agent's file only when the prompt lists it as input. Never
 read a slice directory that is not yours. Never read or write
 `inflight.md`. You may read `conventions.md` when the prompt gives its path.

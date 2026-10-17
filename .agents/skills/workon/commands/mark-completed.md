@@ -25,5 +25,5 @@ Reads: policy/journal.md, policy/portability.md, policy/reminders.md, policy/act
 4. Append the `Complete` journal entry (**Journal policy**).
    **Optional-remind** `create-guide` and `remove-review-comments`.
 5. **Cleanup:** run the `delete-tmp-files` flow.
-6. Later fixes: `resume-work` (`Complete` path), then the **Execution gate**,
+6. Later fixes: `resume-work` (`Complete` path), then the **Execution gate** (`policy/execution-gate.md`),
    then `mark-completed` again.

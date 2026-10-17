@@ -8,7 +8,7 @@ Reads: policy/paused-blocked.md, policy/material-change.md, policy/journal.md, p
 ## `Paused` / `Blocked`
 
 1. Read `activity.md` and RD / Design Decisions / Conventions. Refresh
-   stale references (**Refresh**). Open the journal only if it has entries.
+   stale references (**Refresh**, `policy/references.md`). Open the journal only if it has entries.
 2. Summarize concisely: objective, design, conventions, status,
    discoveries, remaining work, next action, branch hint. `Blocked`: restate
    the blocker.
@@ -47,4 +47,4 @@ yet. This is the **Complete stay-on-slug** or sibling fork
    refresh) and `plan-outline.md`. Set `stage: design`.
 6. Then append the resume recap (`Complete` → `Planning`; `next:` is the
    first delta step).
-7. **File review** and the **Execution gate**.
+7. **File review** (`policy/planning-stages.md`) and the **Execution gate**.

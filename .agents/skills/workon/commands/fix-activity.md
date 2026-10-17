@@ -5,10 +5,9 @@ Usage: `fix-activity [<what to fix> | tidy]`.
 
 Reads: policy/reviews.md, policy/apply-timing.md, policy/consistency-check.md, policy/activity-md.md, policy/journal.md, policy/ids.md
 
-Before step B or E2, also read the launch kit (`policy/launch.md`,
-`policy/inflight.md`, `policy/paths.md`, `policy/parent-reads.md`,
-`policy/critic-pair.md`) and the pipeline file: `pipelines/drift.md` for B,
-`pipelines/review.md` for E2.
+Before step B or E2, also read the launch kit (**Background sub-agents**)
+and the pipeline file: `pipelines/drift.md` for B, `pipelines/review.md` for
+E2.
 
 This command brings the activity files back in line with reality after
 changes the agent did not see. Scope files: `activity.md`,
@@ -172,7 +171,7 @@ tidy path; otherwise offer `fix-activity tidy` once after step 8.
 5. **Propose** one list: ID or section, action (`delete` | `fold into <ID>`
    | `shorten` | `rewrite` | `fix: <new value>` | `flag: <unresolved>`),
    why. Ask yes / no / mods (**Asking**). A change to Goal or Scope is a
-   **Material-change**: skip it and prompt.
+   **Material-change** (`policy/material-change.md`): skip it and prompt.
 6. **Apply** only confirmed items. Append-only and `superseded` rules do not
    block pruning; git is the archive. A plan edit also rewrites
    `plan-outline.md`. Then record confirmed clear user edits (from C) to RD,

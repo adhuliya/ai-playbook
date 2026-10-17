@@ -3,7 +3,7 @@
 Status: any. No status change, no journal. Never applies (**Apply timing**).
 Usage: `start-review [<milestones>] [manual]`.
 
-Reads: policy/reviews.md, policy/apply-timing.md, policy/launch.md, policy/inflight.md, policy/paths.md, policy/parent-reads.md, policy/critic-pair.md, pipelines/review.md, shapes/reviews.md
+Reads: policy/reviews.md, policy/apply-timing.md, shapes/reviews.md
 
 This command works on the regular cycle only and never touches a fix cycle
 (**Reviews**).
@@ -22,8 +22,9 @@ This command works on the regular cycle only and never touches a fix cycle
    or plain words such as "I will review it myself"). Manual: mark `open`
    `agent` points from an earlier scope `noted: out of scope`; tell the user
    to add points in `reviews.md` or in chat. Stop.
-3. **Automated.** Write `inflight.md` (**Inflight pipelines**), then run the
-   **Review** pipeline in the contract. A re-run overwrites
+3. **Automated.** Read the launch kit and `pipelines/review.md`
+   (**Background sub-agents**). Write `inflight.md` (**Inflight
+   pipelines**), then run the **Review** pipeline. A re-run overwrites
    `artifacts/review/`.
 4. The parent Reads `review/report.md`, or `review/env.md` when `blocked`
    (then record `- none (env blocked)` and stop). Replace the cycle's

@@ -11,8 +11,9 @@ and critics judge whether the activity files still match the drifted repo.
 2. `blocked` → the pipeline ends and `<dir>env.md` is its final file: read
    it, show it, stop. `ready` → launch one test agent per scoped
    milestone; none → go to step 3.
-3. All test reports ready → launch the critic pair (`pipeline: review`)
-   with the plan packet plus `env.md` and the test report paths (if any).
+3. All test reports ready → write `<dir>packet.md` (**Plan packet**), then
+   launch the critic pair (`pipeline: review`) with its path plus `env.md`
+   and the test report paths (if any).
    Critics MAY Read the scoped changed paths; they do not re-run tests or
    walk the rest of the repo.
 4. Both ready → launch the synthesizer (same input + both critic paths).

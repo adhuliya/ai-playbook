@@ -7,11 +7,11 @@ Reads: policy/journal.md, policy/reminders.md, policy/execution-gate.md, policy/
 
 1. Needs `stage: design`; if `requirements`, prompt `requirements-ok` and
    stop. The planning outputs are written and reviewed, and RD is current
-   and challengeable. Send the user back to **File review** instead of approving
-   when RD is empty, stale, or unreviewed; when the **Problem header** is
-   missing; when `plan-outline.md` is missing; or when the last milestone has
-   no named runnable e2e command. A
-   user nod does not replace a missing e2e name; only an explicit user drop
+   and challengeable. Send the user back to **File review** instead of
+   approving when RD is empty, stale, or unreviewed; when the **Problem
+   header** (a `## Problem:` heading in RD) is missing; when
+   `plan-outline.md` is missing; or when the last milestone has no named
+   runnable e2e command. A user nod does not replace a missing e2e name; only an explicit user drop
    waives it, and that reason goes in `activity.md`.
 2. **Optional-remind** `verify-plan` and `apply-review`.
 3. Set `status` to `Approved`. Append an `Approved` event (milestone count).

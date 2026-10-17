@@ -1,8 +1,9 @@
 # `add-review-comments` / `remove-review-comments`
 
 Status: `Active`, `Paused`, `Blocked`, `Complete`. No status change, no
-journal. Comment-only edits need neither the **Execution gate** nor a
-`Complete` reopen. Levels: **Engineering while focused** comments.
+journal. Comment-only edits need neither the **Execution gate**
+(`policy/execution-gate.md`) nor a `Complete` reopen. Levels:
+**Engineering while focused** (`policy/engineering.md`) comments.
 
 Reads: policy/comments.md, policy/launch.md, policy/inflight.md, policy/paths.md, policy/parent-reads.md, policy/critic-pair.md, pipelines/comments.md
 
@@ -14,7 +15,7 @@ default level, then sets `review-comments: off`.
    Neither exists → say so, suggest fixing the row, stop. Empty activity
    diff → say so; stop.
 2. Write `inflight.md` (**Inflight pipelines**). Run the **Comments**
-   pipeline in the contract. Scope: lines the activity added or changed;
+   pipeline (`pipelines/comments.md`). Scope: lines the activity added or changed;
    comments outside that scope stay as they are.
 3. The parent Reads only `comments/verify.md`. Restore every `fail` file
    from its snapshot. Tests `fail` → restore every file. Delete
