@@ -32,7 +32,7 @@ greppable.
 
 # Current Design
 
-<Latest agreed design only. After `mark-completed`, shipped handoff.>
+See `design.md`.
 
 # Current Plan
 

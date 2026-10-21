@@ -4,6 +4,9 @@ Applies to planning, building, `start-review`, `verify-plan`, and
 `mark-completed`. Plan every tier during planning; write the tests as each
 milestone is built. Evidence bullets name the runnable command and the
 case list per tier. Follow the repo's test layout, naming, and helpers.
+Use the same case name in the milestone's test bullets and in `design.md`'s
+`TC<n>` Test Plan line and Traceability row (**Design document**,
+**IDs**); the two never list the case under different names.
 
 - **Unit (per part):** each part a milestone adds or changes (function,
   component, module) gets focused tests on its own behavior: happy path,

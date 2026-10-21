@@ -20,13 +20,16 @@ Current Design, Current Plan, Milestones, Next Steps. References live in
   the next checkpoint.
 - **Scope:** one or two paragraphs after the first grill, then near-fixed.
   A major in-flight change is a **Material-change**.
-- **Current Design:** the execution handoff (invariants, boundaries,
-  evidence signals). Chosen-vs-alternatives live only in Design Decisions.
+- **Current Design:** a one-line pointer to `design.md` (**Design
+  document**), which now holds the execution handoff, the decision
+  synthesis, and the requirement-to-test-to-path trace. Rewrite the
+  pointer only if it goes stale.
 - **Milestones:** MECE outcomes with **Test evidence**, numbered `M1`,
   `M2`, … in order. Always write the `M` prefix, in this file and in every
   citation. On reopen, keep checked items, append new ones, and mark removed
   work `superseded`; do not delete. Milestone numbers are stable: a
   `fix-activity` prune replaces a milestone body with a one-line
   `M<n>: removed: <why>` stub. Review milestones: **Reviews**.
-- In `stage: requirements`, Current Design, Current Plan, and Milestones
-  hold `TBD (design stage)`.
+- In `stage: requirements`, Current Design points at `design.md`, whose
+  Current Design, Test Plan, and Traceability hold `TBD (design stage)`;
+  Current Plan and Milestones hold `TBD (design stage)` too.

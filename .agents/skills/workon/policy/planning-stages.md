@@ -13,9 +13,12 @@ In `stage: requirements`:
   grill, **Cited context**. Write the **Problem header**, RD, and Goal.
 - Record a Design Decision when a choice is made; do not hunt for them.
   Draft Conventions only when the user raises them.
-- Do not draft Current Design, Current Plan, milestones, or
-  `plan-outline.md`. Each holds `TBD (design stage)`. `# Next Steps` says
-  `requirements-ok` follows once RD is complete.
+- Do not draft `design.md`'s Current Design, Test Plan, or Traceability,
+  Current Plan, milestones, or `plan-outline.md`. Each holds
+  `TBD (design stage)`.
+  `design.md`'s Decisions section mirrors `design-choices.md` as choices
+  are made. `# Next Steps` says `requirements-ok` follows once RD is
+  complete.
 - **File review** covers the Problem header, RD, and Design Decisions
   (below).
 - When no grill branch is open, say RD looks complete and prompt

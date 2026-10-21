@@ -31,7 +31,7 @@ nothing stands out.
 ## Keep
 ### <short title>
 - weight: load-bearing | strong | nice
-- where: `activity.md` `# …` | `RD<n>` | `DC<nn>` | `CONV<n>` | <path>
+- where: `activity.md` `# …` | `design.md` `## …` | `RD<n>` | `TC<n>` | `DC<nn>` | `CONV<n>` | <path>
 - why: <what breaks if removed or churned>
 ```
 

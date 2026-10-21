@@ -23,8 +23,11 @@ Printed by `help all`. Keep one row per command; `help.md` names this file.
 | Notes upkeep | `update-convention` | Add or rewrite convention rules |
 | | `fix-activity [<what to fix> \| tidy]` | Fix what the user names, or resync after drift; asks what changed, then cheap triage; asks before each pipeline; prune, rewrite, renumber only on `tidy` |
 | | `compact-journal` | Shorten the journal in place |
+| | `add-ac` | Draft and append `AC<n>` acceptance criteria for RDs that lack it |
 | Output and cleanup | `create-guide` | Write `guide-for-users.md` for humans |
+| | `detailed-design` | Write a diagram-rich `artifacts/detailed-design.md` from `design.md` |
 | | `delete-tmp-files` | List activity temporaries; delete on confirm |
 | Session | `user-away` | Say you are leaving; the agent takes permissions early and works to a stopping point |
 | | `help` / `help intro` / `help all` / `help <command>` | Next steps / the four-step basic path / this map / explain one command |
 | | `query-work` / `no-query-work` | Read-only session on / off |
+| | `teach-off` / `teach-brief` / `teach-deep` | How much the agent teaches the task's design and code; default `teach-off` |

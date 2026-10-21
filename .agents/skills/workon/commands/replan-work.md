@@ -2,7 +2,7 @@
 
 Status: `Planning`, `Approved`, `Active`, `Paused`, `Blocked`.
 
-Reads: policy/planning-quality-bar.md, policy/planning-stages.md, policy/references.md, policy/requirement-def.md, policy/design-choices.md, policy/conventions.md, policy/test-evidence.md, policy/material-change.md, policy/journal.md, policy/catalog.md, policy/reminders.md, policy/execution-gate.md, policy/plan-outline.md
+Reads: policy/planning-quality-bar.md, policy/planning-stages.md, policy/references.md, policy/requirement-def.md, policy/design-choices.md, policy/design-document.md, policy/conventions.md, policy/test-evidence.md, policy/material-change.md, policy/journal.md, policy/catalog.md, policy/reminders.md, policy/execution-gate.md, policy/plan-outline.md
 
 This is the in-flight **Material-change**.
 
@@ -13,7 +13,8 @@ This is the in-flight **Material-change**.
    reopen requirements, set `stage: requirements` (**Planning stages**).
    Run **Cited context** when files are cited, and refresh stale references
    (**Refresh**).
-3. Rewrite RD, `# Scope`, the affected `activity.md` sections, and
+3. Rewrite RD, `# Scope`, the affected `activity.md` sections, `design.md`
+   (**Design document**), and
    `plan-outline.md` (design stage). Append
    Design Decisions. Update Conventions (rules and Setup) from observed
    facts and user-confirmed rules. If the Goal changed, patch that one

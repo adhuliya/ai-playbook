@@ -3,11 +3,11 @@
 Status: any. **Optional-remind** `apply-review` and `fix-activity`; this
 command does not close an open cycle.
 
-Reads: policy/paused-blocked.md, policy/material-change.md, policy/journal.md, policy/reminders.md, policy/execution-gate.md, policy/plan-outline.md, shapes/journal.md
+Reads: policy/paused-blocked.md, policy/material-change.md, policy/journal.md, policy/reminders.md, policy/execution-gate.md, policy/plan-outline.md, policy/design-document.md, shapes/journal.md
 
 ## `Paused` / `Blocked`
 
-1. Read `activity.md` and RD / Design Decisions / Conventions. Refresh
+1. Read `activity.md`, `design.md`, and RD / Design Decisions / Conventions. Refresh
    stale references (**Refresh**, `policy/references.md`). Open the journal only if it has entries.
 2. Summarize concisely: objective, design, conventions, status,
    discoveries, remaining work, next action, branch hint. `Blocked`: restate

@@ -17,7 +17,8 @@ is often unnecessary. Then fix gaps in one batched step (**Fewer prompts**):
   `# Requirement Definition`. `design-choices.md`: `# Design Decisions`.
   `conventions.md`: `# Conventions` plus the empty `## Setup, build, test and
   install notes`. `notes-by-user.md`: `# Notes by User`. `references.md`:
-  `# References`.
+  `# References`. Missing `design.md` is a legacy marker (below), not a
+  plain gap; do not create it here.
 - **Missing row:** add its default. `conventions`: `ok` when the status is
   `Active`, `Paused`, `Blocked`, or `Complete`, else `pending`.
   `review-comments`: `off` when `Complete`, else `on`. `base-branch`: `main`
@@ -29,6 +30,8 @@ any of these shows:
 
 - a file named `notes.md`, `user-notes.md`, `requirements.md`, or
   `user-guide.md`, or `artifacts/self-review.md` or `artifacts/self-review/`;
+- `design.md` missing while `requirement-def.md` exists (pre-design-document
+  layout);
 - a line from the `rg` hits: a `# References` heading, a `synced` row, a
   numbered milestone, an `R<n>` heading, or a `UR`, `SR`, or `RRD` ID;
 - `requirement-def.md` listed as having no `## Problem:` heading;

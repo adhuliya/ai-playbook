@@ -7,7 +7,8 @@
    you write that record. Write `activity.md` (`stage` as chosen, default `design`;
    `conventions: pending`, `review-comments: on`, `base-branch` from the
    grill or `main`), `journal.md` (`# Journal` plus a `Created` event),
-   `requirement-def.md`, `design-choices.md`, `conventions.md` (with the
+   `requirement-def.md`, `design-choices.md`, `design.md` (**Design
+   document**), `conventions.md` (with the
    Setup H2), `references.md` (one `REF<n>` per cited item), and
    `notes-by-user.md` (`# Notes by User` only, unless the user already
    wrote notes). In `stage: design`, also write `plan-outline.md`

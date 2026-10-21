@@ -27,3 +27,10 @@ of:
 A review point that changes an entry adds `revised-by:` (**Reviews**; the
 same for `DC` and `CONV`). A material RD change after approval follows
 **Material-change**.
+
+An entry MAY carry an `AC<n>` list (**IDs**: shares `RD<n>`'s number):
+short, checkable pass/fail conditions. By default this stays informal —
+the milestone's test cases (`TC<n>` in `design.md`) are the RD's
+acceptance evidence (**Test evidence**, `design.md` Traceability). `add-ac`
+drafts and appends `AC<n>` for the RDs that lack it; nothing else writes
+it.

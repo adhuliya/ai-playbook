@@ -1,9 +1,10 @@
 # Portability
 
 The handoff is `activity.md` + `journal.md` + `requirement-def.md` +
-`design-choices.md` + `conventions.md` + `references.md` +
-`notes-by-user.md`. `plan-outline.md`, `reviews.md`, and
-`guide-for-users.md` are extra; the handoff must not depend on them.
+`design-choices.md` + `design.md` + `conventions.md` + `references.md` +
+`notes-by-user.md`. `plan-outline.md`, `reviews.md`, `guide-for-users.md`,
+and `artifacts/detailed-design.md` are extra; the handoff must not depend
+on them.
 
 - Inline load-bearing facts. No "as discussed".
 - Use repo-relative paths, commands, and commit / PR / ticket IDs. No host

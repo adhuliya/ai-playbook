@@ -9,7 +9,8 @@ description: >-
   replan-work, create-sibling, import-activity, start-review, apply-review,
   verify-plan, update-convention, add-review-comments,
   remove-review-comments, fix-activity, compact-journal, create-guide,
-  delete-tmp-files, query-work, no-query-work, user-away.
+  detailed-design, add-ac, delete-tmp-files, query-work, no-query-work,
+  user-away, teach-off, teach-brief, teach-deep.
 disable-model-invocation: true
 ---
 
@@ -43,9 +44,13 @@ Work runs in three phases:
 
 Each folder holds a fixed set of files. The shape of each is in `shapes/`.
 
-- `activity.md`: the current truth (status, goal, scope, design, plan,
-  milestones `M1`, `M2`, …, next steps). `plan-outline.md`: a short overview
-  of that plan.
+- `activity.md`: the current truth (status, goal, scope, a pointer to
+  design, plan, milestones `M1`, `M2`, …, next steps). `plan-outline.md`: a
+  short overview of that plan.
+- `design.md`: the lean design reference (invariants, a decision synthesis,
+  and a requirement-to-test-to-path trace). `detailed-design.md` (in
+  `artifacts/`): a diagram-rich expansion, written only by
+  `detailed-design`.
 - `journal.md`: the append-only event timeline.
 - `requirement-def.md`, `design-choices.md`, `conventions.md`: numbered
   entries (`RD<n>`, `DC<nn>`, `CONV<n>`) that the plan cites by ID.
@@ -70,7 +75,8 @@ reset. Never bulk-read a folder.
    engineering turn), or `feedback` (chat comments on the work).
    `add-review-comments` and `remove-review-comments` share
    `review-comments.md`; `query-work` and `no-query-work` share
-   `query-work.md`.
+   `query-work.md`; `teach-off`, `teach-brief`, and `teach-deep` share
+   `teach-mode.md`.
 4. **When a command or `always.md` names a step, read the file that step
    names, just before you reach it.** A `Reads:` line is the up-front set;
    the steps name the rest.
@@ -84,5 +90,6 @@ reset. Never bulk-read a folder.
 | Building: `build` | the command file and its `Reads:`; the launch kit and `pipelines/milestone.md` just before the first sub-agent launch |
 | Review: `start-review`, `apply-review`, `verify-plan` | the command file and its `Reads:` (review policies, the launch kit, the matching `pipelines/` file) |
 | Sub-agent launch | the launch kit (**Background sub-agents** in `always.md`). Sub-agents read their own `briefs/` files; the parent does not |
-| Upkeep: `fix-activity`, `compact-journal`, `update-convention` | the command file and its `Reads:`; `fix-activity` names its pipelines at the step that needs them |
+| Upkeep: `fix-activity`, `compact-journal`, `update-convention`, `add-ac` | the command file and its `Reads:`; `fix-activity` names its pipelines at the step that needs them |
+| Output and cleanup: `create-guide`, `detailed-design` | the command file and its `Reads:` |
 | Editing this skill | `editing.md`, never while you run an activity |

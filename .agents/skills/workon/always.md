@@ -8,8 +8,9 @@ turn.
 Follow only the loaded command file and the policies it names; ignore rules
 that belong to another command. Run the steps in order. The word "Stop"
 ends the command and the turn. Every command needs one focused activity,
-except `help`, `import-activity`, `create`, `list`, `query-work`, and
-`no-query-work`. When the status is not on the file's `Status:` line,
+except `help`, `import-activity`, `create`, `list`, `query-work`,
+`no-query-work`, `teach-off`, `teach-brief`, and `teach-deep`. When the
+status is not on the file's `Status:` line,
 report the status and stop. `start-review`, `apply-review`, `verify-plan`,
 and **draft-check** are four distinct steps; do not treat one as another.
 
@@ -41,6 +42,11 @@ and **draft-check** are four distinct steps; do not treat one as another.
   `no-query-work`.
 - **User away.** `user-away` sets a session flag that ends at the user's
   next message (`commands/user-away.md`). While it holds, ask nothing.
+- **Teach mode.** `teach-off` / `teach-brief` / `teach-deep` set a session
+  flag for how much the agent explains the domain and engineering content
+  of the current task (design rationale, implementation concepts,
+  tradeoffs) in replies; default `off`. Independent of query mode and user
+  away; never adds teaching prose to records. See `commands/teach-mode.md`.
 - **Pipeline in flight.** While `artifacts/inflight.md` exists, a pipeline
   of background sub-agents is running (**Inflight pipelines**,
   `policy/inflight.md`). Activity files are frozen except for the parent's

@@ -73,7 +73,9 @@ points is valid: close it with each point `noted`, or with `- none`.
 
 **Review milestone.** When a cycle needs product work (code, tests, docs),
 append the milestone `Apply RU<n>` to `activity.md`; its MECE steps cite
-the points. Notes-only edits need no milestone. **Material-change** still
+the points. A point that adds a test case adds it to the matching `TC<n>` in
+`design.md`'s Test Plan and Traceability too, tagged `(planned for M<n>)`
+like any other (**Design document**, **IDs**). Notes-only edits need no milestone. **Material-change** still
 applies: a point that changes Goal or Scope, or a material RD change after
 `approve-plan`, needs the prompt.
 

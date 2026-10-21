@@ -18,8 +18,8 @@ numbers, or the activity slug in code, comments, or identifiers. Such
 labels mean nothing outside the activity files.
 
 While building, keep the records honest. A missing invariant that would
-mislead a fresh reader goes into `activity.md`; a new requirement or
-important choice goes into RD or Design Decisions; a newly confirmed
-convention goes into Conventions; a material change follows
-**Material-change**. New definition files follow **Cited context** (ask
+mislead a fresh reader goes into `design.md` (**Design document**); a new
+requirement or important choice goes into RD or Design Decisions (and
+`design.md`'s synthesis); a newly confirmed convention goes into
+Conventions; a material change follows **Material-change**. New definition files follow **Cited context** (ask
 before copy). Suggest `create-sibling` when work is independently durable.

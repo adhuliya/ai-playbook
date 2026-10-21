@@ -3,7 +3,7 @@
 Status: `Active` (an engineering turn with no keyword: "continue", a
 milestone, a fix).
 
-Reads: policy/engineering.md, policy/comments.md, policy/test-evidence.md, policy/update-cadence.md, policy/journal.md, policy/activity-md.md
+Reads: policy/engineering.md, policy/comments.md, policy/test-evidence.md, policy/update-cadence.md, policy/journal.md, policy/activity-md.md, policy/design-document.md
 
 Follow **Engineering while focused** and **Test evidence**. Run each
 milestone through the **Milestone** pipeline; checkpoint per

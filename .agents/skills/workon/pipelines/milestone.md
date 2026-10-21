@@ -14,6 +14,6 @@ job rounds and the critic pair (`inflight.md` stays).
 4. **Evaluate** when the parent must judge quality, not only record a pass:
    real design latitude, the last milestone, or the user asked. Launch the
    critic pair (`pipeline: milestone`) with the milestone claim, RD and
-   design slices, `collate.md`, and the changed paths (MAY Read). The
+   design slices (from `design.md`), `collate.md`, and the changed paths (MAY Read). The
    parent Reads both critic files and reconciles. Fix `must` defects in a
    job round; record the rest.

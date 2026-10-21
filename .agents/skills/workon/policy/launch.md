@@ -26,12 +26,14 @@ inputs: <paths the brief may read>
 read one packet file, not pasted text. Before it launches the critics, the
 parent writes the packet once per pipeline run and lists its path in
 `inputs`. The packet holds the `activity.md` sections Goal, Scope, Current
-Design, Current Plan, Milestones, and Next Steps, then the full RD (with the
-Problem header) and the full Design Decisions. Build it in one shell call,
-so the text never passes through your context:
+Plan, Milestones, and Next Steps, then the full RD (with the
+Problem header), the full Design Decisions, and `design.md` (**Design
+document**) minus its Decisions section (`design-choices.md` already
+carries that in full; repeating it would duplicate the packet). Build it
+in one shell call, so the text never passes through your context:
 
 ```bash
-s=.dev-notes/activities/<slug>; mkdir -p "$s/artifacts/<dir>"; { awk '/^# /{p=/^# (Goal|Scope|Current Design|Current Plan|Milestones|Next Steps)/} p' "$s/activity.md"; cat "$s/requirement-def.md" "$s/design-choices.md"; } > "$s/artifacts/<dir>packet.md"
+s=.dev-notes/activities/<slug>; mkdir -p "$s/artifacts/<dir>"; { awk '/^# /{p=/^# (Goal|Scope|Current Plan|Milestones|Next Steps)/} p' "$s/activity.md"; cat "$s/requirement-def.md" "$s/design-choices.md"; awk '/^## /{p=($0!="## Decisions")} p' "$s/design.md"; } > "$s/artifacts/<dir>packet.md"
 ```
 
 `<dir>` is the pipeline directory with its slash (`verify-plan/`, `review/`,

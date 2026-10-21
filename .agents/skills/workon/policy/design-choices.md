@@ -7,13 +7,13 @@ never delete or rewrite history, and supersede with a new entry that says
 words per entry. `level` is exactly one of:
 
 - `design-choice`: a UI or software-facing contract (same coverage as RD
-  `end-user-interface` / `software-interface`). Feeds a future design
-  document.
+  `end-user-interface` / `software-interface`). Feeds `design.md`
+  (**Design document**) in full.
 - `major-implementation-detail`: internal, but individually mentioned in
-  that document. Test: costly if unknown, or reversal ripples across
+  `design.md`. Test: costly if unknown, or reversal ripples across
   components.
-- `implementation-detail`: internal; summarized (not copied) in that
-  document.
+- `implementation-detail`: internal; summarized (not copied) in
+  `design.md`.
 
 When unsure between adjacent levels, pick the higher; the user may
 downgrade.

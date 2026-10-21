@@ -24,7 +24,7 @@ Write one entry per event, in the same turn:
 No other change writes the journal: notes edits, **Consistency check**,
 `update-convention`, `conventions-ok`, `start-review` (opening or
 refreshing a cycle), `add-review-comments`, `remove-review-comments`,
-`create-guide`, `delete-tmp-files`, list, details, `help`.
+`create-guide`, `detailed-design`, `delete-tmp-files`, list, details, `help`.
 
 An entry is `## <Event>: <short title> (<from> → <to>)`; omit the arrow when
 the status is unchanged. Then at most three bullets: what happened, IDs /

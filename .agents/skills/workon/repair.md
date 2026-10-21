@@ -20,6 +20,14 @@ journal. Afterwards tell the user, in three lines or fewer, what changed.
 - `plan-outline.md` missing, `stage: design`, and the status is not
   `Complete`: draft it from `# Current Plan` and `# Milestones` (**Plan
   summary**). Show it once with the next **File review**.
+- `design.md` missing (**Design document**): create it with the `# Design`
+  H1. Migrate the body
+  of `activity.md`'s `# Current Design` section into its Current Design
+  section. Synthesize a Decisions section from `design-choices.md` by
+  level. Add an empty Test Plan (`TBD` lines per RD) and an empty
+  Traceability section (`TBD` rows from RD). Then
+  replace `# Current Design` in `activity.md` with the one-line pointer
+  `See \`design.md\`.`. Show the new `design.md` once.
 
 **Older layouts:**
 

@@ -3,7 +3,7 @@
 Status: any. User-invoked only. No status change. Never edits product code.
 Usage: `fix-activity [<what to fix> | tidy]`.
 
-Reads: policy/reviews.md, policy/apply-timing.md, policy/consistency-check.md, policy/activity-md.md, policy/journal.md, policy/ids.md
+Reads: policy/reviews.md, policy/apply-timing.md, policy/consistency-check.md, policy/activity-md.md, policy/design-document.md, policy/journal.md, policy/ids.md
 
 Before step B or E2, also read the launch kit (**Background sub-agents**)
 and the pipeline file: `pipelines/drift.md` for B, `pipelines/review.md` for
@@ -11,7 +11,7 @@ E2.
 
 This command brings the activity files back in line with reality after
 changes the agent did not see. Scope files: `activity.md`,
-`plan-outline.md`, RD, Design Decisions, Conventions, `references.md`,
+`plan-outline.md`, `design.md`, RD, Design Decisions, Conventions, `references.md`,
 `reviews.md`. `notes-by-user.md` is input only. The journal is never
 rewritten here (that is `compact-journal`); this command appends only
 `Review` and `Renumber` events. Drift comes from user edits to activity
@@ -162,8 +162,8 @@ tidy path; otherwise offer `fix-activity tidy` once after step 8.
    **Asking**).
 4. **Impact test.** A finding is plan-impacting when both hold (step D
    failures always are): it changes an `RD<n>`, a `CONV<n>` rule, Setup, or
-   another load-bearing assumption (a `# Current Design` invariant or a
-   Background fact); and the change affects `# Current Plan`,
+   another load-bearing assumption (a `design.md` Current Design invariant
+   or a Background fact); and the change affects `# Current Plan`,
    `# Milestones`, or `# Next Steps`. On the inline path, a new
    plan-impacting finding from steps 1 or 3 goes to gate 2; when the user
    already chose `inline` there, it joins the step 5 proposal with its plan
