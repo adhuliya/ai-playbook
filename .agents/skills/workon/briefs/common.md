@@ -9,7 +9,7 @@ brief next and follow both.
 Write only your assigned files, creating directories as needed. Start each
 output file with the role's H1 and no preamble; an empty section holds
 `- none`. Name a `where` as an activity-file entry (`activity.md` `# …`,
-`RD<n>`, `DC<nn>`, `CONV<n>`) or a product path.
+`RD<n>`, `DD<n>`, `DC<nn>`, `CONV<n>`) or a product path.
 
 Never write an activity file: `activity.md`, `journal.md`,
 `requirement-def.md`, `design-choices.md`, `conventions.md`,

@@ -7,7 +7,7 @@ files. Skip it under query mode, while a pipeline is in flight, and for
 Run one read-only shell call:
 
 ```bash
-d=.dev-notes/activities/<slug>; ls -A "$d" "$d/artifacts"; head -n 14 "$d/activity.md"; rg -n '^# References|^\| synced \||^[0-9]+\. (\[.\]|removed:)|^## R[0-9]+:|\b(UR|SR|RRD)[0-9]+\b' "$d" --glob '*.md' --glob '!artifacts/**'; rg --files-without-match '^## Problem:' "$d/requirement-def.md"
+d=.dev-notes/activities/<slug>; ls -A "$d" "$d/artifacts"; head -n 14 "$d/activity.md"; rg -n '^# References|^\| synced \||^[0-9]+\. (\[.\]|removed:)|^## R[0-9]+:|\b(UR|SR|RRD)[0-9]+\b' "$d" --glob '*.md' --glob '!artifacts/**'; rg --files-without-match '^## Problem:' "$d/requirement-def.md"; [ -f "$d/design.md" ] && rg -n '^- DC[0-9]|^### DD[0-9]' "$d/design.md"; rg -n '^- (\[[ xX]\] )?M[0-9]+:|^[[:space:]]*- reads:' "$d/activity.md"
 ```
 
 The `head` output is the metadata table, so the first read of `activity.md`
@@ -36,6 +36,10 @@ any of these shows:
   numbered milestone, an `R<n>` heading, or a `UR`, `SR`, or `RRD` ID;
 - `requirement-def.md` listed as having no `## Problem:` heading;
 - `plan-outline.md` missing while `stage` is `design` and the status is not
-  `Complete`.
+  `Complete`;
+- `design.md` has a `^- DC` line and no `^### DD` line;
+- `stage` is `design`, and a milestone line is not `TBD (design stage)` or
+  `removed`, and no `reads:` line appears before the next milestone or `#`
+  heading.
 
 With no marker, go on.

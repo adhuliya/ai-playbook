@@ -26,7 +26,7 @@ from their file name are listed.
 | `conventions` | Rules, Setup, Isolated setup |
 | `design-choices` | Design Decisions |
 | `engineering` | Engineering while focused |
-| `ids` | IDs, Citing and reading by ID |
+| `ids` | IDs, Citing and reading by ID, Milestone read |
 | `inflight` | Inflight pipelines |
 | `journal` | Journal policy |
 | `launch` | Prompt shape, Plan packet |

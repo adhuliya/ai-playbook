@@ -23,8 +23,9 @@ journal. Afterwards tell the user, in three lines or fewer, what changed.
 - `design.md` missing (**Design document**): create it with the `# Design`
   H1. Migrate the body
   of `activity.md`'s `# Current Design` section into its Current Design
-  section. Synthesize a Decisions section from `design-choices.md` by
-  level. Add an empty Test Plan (`TBD` lines per RD) and an empty
+  section. Synthesize Decisions as `### DD<n>:` blocks from
+  `design-choices.md` by level, each with `- cites:` set to the `DC` it
+  comes from. Add an empty Test Plan (`TBD` lines per RD) and an empty
   Traceability section (`TBD` rows from RD). Then
   replace `# Current Design` in `activity.md` with the one-line pointer
   `See \`design.md\`.`. Show the new `design.md` once.
@@ -52,3 +53,20 @@ journal. Afterwards tell the user, in three lines or fewer, what changed.
 - Legacy `artifacts/self-review.md` and `artifacts/self-review/` are old
   review records. Do not apply them; `delete-tmp-files` lists them
   (default delete).
+
+**Milestone reads and DD.** Run when `design.md` Decisions has a `- DC`
+bullet and no `### DD` heading, or when `stage` is `design` and a real
+milestone (not `TBD (design stage)`, not `removed`) has no `reads:` line.
+Skip the `reads:` fill while `stage` is `requirements`.
+
+1. In Decisions, replace each `- DC<nn>` bullet with the next `### DD<n>:
+   <title>` in file order, a `- cites: DC<nn>` bullet, and the old line as
+   the body. A summary bullet with no `DC` id becomes a `DD` with no
+   `cites:` line. Leave a `TBD` Decisions section as `TBD`.
+2. For each real design-stage milestone that lacks `reads:`, set the line
+   from Traceability: every `RD` whose row has a case tagged with that `M`
+   (`planned for`, `done by`, or `implemented by`). Do not add `DD` ids.
+   When no row matches, write `reads: none`.
+3. Tell the user which milestones have `reads:` and no `DD`.
+
+Do not renumber in this pass. `fix-activity` step 7 renumbers.

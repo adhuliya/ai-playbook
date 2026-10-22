@@ -5,10 +5,13 @@ review. It is derived: `activity.md` wins on conflict, and the outline is
 rewritten. Shape: `shapes/plan-outline.md`.
 
 - **Content:** about 100 words on what the activity builds, the approach,
-  and the final check. Then a list, with sub-lists where it helps, that
+  and the final check, in plain words a reader can follow without the
+  other activity files. Then a list, with sub-lists where it helps, that
   shows how the plan is structured: one item per milestone `M<n>` with its
-  parts, the key `RD` and `DC` IDs, and the test tiers. Each group points to
-  the place for detail (`activity.md` `# Milestones`, `M<n>`).
+  outcome, parts, and test tiers. Name decisions in words, including what
+  they rule out. An `RD` or `DD` id may follow a name in parentheses. Each
+  group points to the place for detail (`activity.md` `# Milestones`,
+  `M<n>`). Use `.dev-notes/vocabulary.md` terms when that file exists.
 - **Structure only.** No done marks, no dates, no copied detail. Drop a
   `removed` milestone from the list.
 - **Write** it when the plan is first drafted (design stage of create,

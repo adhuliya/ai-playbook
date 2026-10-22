@@ -16,4 +16,5 @@ words per entry. `level` is exactly one of:
   `design.md`.
 
 When unsure between adjacent levels, pick the higher; the user may
-downgrade.
+downgrade. A `DD<n>` in `design.md` cites the current entry. The
+`alternatives` list is the work a milestone must not do, and why.

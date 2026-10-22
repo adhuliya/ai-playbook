@@ -18,9 +18,12 @@ files, activity records, and sub-agent reports. It does not apply to
 - No pronoun without a clear referent.
 - State a fact once, in its home section; elsewhere, refer to it. Repeat
   only when the repeat makes the text clearer.
-- Prefer to cite entries by ID (`RD3`, `DC02`, `M3`) with a few words of
-  gloss on first mention, and to read one entry by ID instead of the whole
-  file (`policy/ids.md`). Recommended, not strict.
+- Prefer to cite entries by ID (`RD3`, `DD2`, `DC02`, `M3`) with a few
+  words of gloss on first mention, and to read one entry by ID instead of
+  the whole file (`policy/ids.md`). Recommended, not strict.
+  `plan-outline.md` and `artifacts/detailed-design.md` are prose first.
+  Use vocabulary terms. A sentence there still stands when the reader skips
+  an ID. An ID may follow the name in parentheses.
 - Do not apply the strict STE approved-word dictionary.
 - Write in a clear, readable style using simple, well-formed sentences and
   cohesive paragraphs that flow naturally and make the content easy 

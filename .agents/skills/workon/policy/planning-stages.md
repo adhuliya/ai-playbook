@@ -16,8 +16,8 @@ In `stage: requirements`:
 - Do not draft `design.md`'s Current Design, Test Plan, or Traceability,
   Current Plan, milestones, or `plan-outline.md`. Each holds
   `TBD (design stage)`.
-  `design.md`'s Decisions section mirrors `design-choices.md` as choices
-  are made. `# Next Steps` says `requirements-ok` follows once RD is
+  `design.md`'s Decisions section gains a `DD<n>` citing that `DC` as
+  choices are made. `# Next Steps` says `requirements-ok` follows once RD is
   complete.
 - **File review** covers the Problem header, RD, and Design Decisions
   (below).

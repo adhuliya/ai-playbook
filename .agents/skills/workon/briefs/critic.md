@@ -31,7 +31,7 @@ nothing stands out.
 ## Keep
 ### <short title>
 - weight: load-bearing | strong | nice
-- where: `activity.md` `# …` | `design.md` `## …` | `RD<n>` | `TC<n>` | `DC<nn>` | `CONV<n>` | <path>
+- where: `activity.md` `# …` | `design.md` `## …` | `RD<n>` | `DD<n>` | `TC<n>` | `DC<nn>` | `CONV<n>` | <path>
 - why: <what breaks if removed or churned>
 ```
 
@@ -70,8 +70,8 @@ drift`, judge whether the activity files still match the drifted repo.
 Positive: claims the evidence proves, solid tests, sound setup; work an
 edit must not undo.
 
-**`milestone`** (input: milestone claim, RD and design slices,
-`collate.md`; MAY Read the changed paths). Negative: unmet RD, weak or
+**`milestone`** (input: the milestone slice, `collate.md`; MAY Read the
+changed paths). Negative: unmet RD, weak or
 missing unit or integration tests, new tests that duplicate an existing
 test's goal, convention fights, style that breaks from the surrounding
 code, fragile joins, needless complexity. Positive: clean interfaces, solid

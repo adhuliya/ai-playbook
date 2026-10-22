@@ -1,7 +1,7 @@
 # design.md
 
-Policy: **Design document**. Prose per **Writing style**; cite `DC<nn>` and
-`RD<n>` with a short gloss on first mention (**IDs**).
+Policy: **Design document**. Prose per **Writing style**; cite `DD<n>`,
+`DC<nn>`, and `RD<n>` with a short gloss on first mention (**IDs**).
 
 ```markdown
 # Design
@@ -13,9 +13,13 @@ extend the work. TBD (design stage) before design is drafted.>
 
 ## Decisions
 
-- DC01 (<gloss>): <one line, or the full choice for `design-choice` level>
-- DC02 (<gloss>): <...>
-- Other `implementation-detail` choices: <one summarizing line>
+### DD1: <title>
+- cites: DC01, DC02
+- <Current statement a milestone can build from. Hard max ~200 words.>
+
+### DD2: <title>
+- cites: DC03
+- <One DD may summarize several `implementation-detail` choices.>
 
 ## Test Plan
 

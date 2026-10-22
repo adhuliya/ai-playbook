@@ -1,16 +1,16 @@
 # `artifacts/detailed-design.md`
 
-Policy: `commands/detailed-design.md`. Prose per **Writing style**; `DC<nn>`
-and `RD<n>` citations are fine here (an artifact, not shipped work or
-`guide-for-users.md`). Omit a section with nothing to show.
+Policy: `commands/detailed-design.md`. Prose per **Writing style**. The
+file stands on its own: vocabulary terms, and a sentence that still stands
+when the reader skips an ID. An `RD` or `DD` id may follow a name in
+parentheses. Omit a section with nothing to show.
 
 ```markdown
 # <Feature title>: Detailed Design
 
 ## Overview
 
-<A few sentences: what this builds and how design.md's Current Design maps
-to it.>
+<A few sentences: what this builds and which boundaries it keeps.>
 
 ## Architecture
 
@@ -37,8 +37,8 @@ caption. Use `sequenceDiagram`, `flowchart`, `stateDiagram-v2`, or
 
 ## Decisions in depth
 
-<Expand the DC<nn> entries that need more than design.md's one-line
-synthesis: alternatives considered, why this one won.>
+<The choices in words: what was chosen, what was not built, and why.
+An ID may follow the name in parentheses.>
 
 ## Open questions
 

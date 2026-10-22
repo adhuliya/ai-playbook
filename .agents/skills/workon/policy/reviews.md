@@ -66,13 +66,15 @@ points is valid: close it with each point `noted`, or with `- none`.
 | Target | Edit |
 |---|---|
 | `RD<n>` | Rewrite in place; add `revised-by: RU<n>.<m>`. |
+| `DD<n>` | Rewrite in place. When the choice changes, append a new `DC` and point `cites:` at it. |
 | `DC<nn>` | Append a new `DC` with `replaces: DC<nn>` and `revised-by: RU<n>.<m>`. |
 | `CONV<n>` | Rewrite in place; add `revised-by: RU<n>.<m>`. |
 | `activity.md` section or milestone | Edit in place. A regressed milestone is unchecked with `regressed: <evidence>`. |
 | Code, tests, docs | Review milestone (below). No IDs in shipped work. |
 
 **Review milestone.** When a cycle needs product work (code, tests, docs),
-append the milestone `Apply RU<n>` to `activity.md`; its MECE steps cite
+append the milestone `Apply RU<n>` to `activity.md`; its `reads:` line
+lists the `RD` and `DD` the product work implements, and its MECE steps cite
 the points. A point that adds a test case adds it to the matching `TC<n>` in
 `design.md`'s Test Plan and Traceability too, tagged `(planned for M<n>)`
 like any other (**Design document**, **IDs**). Notes-only edits need no milestone. **Material-change** still

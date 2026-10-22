@@ -45,15 +45,17 @@ Work runs in three phases:
 Each folder holds a fixed set of files. The shape of each is in `shapes/`.
 
 - `activity.md`: the current truth (status, goal, scope, a pointer to
-  design, plan, milestones `M1`, `M2`, …, next steps). `plan-outline.md`: a
-  short overview of that plan.
-- `design.md`: the lean design reference (invariants, a decision synthesis,
-  and a requirement-to-test-to-path trace). `detailed-design.md` (in
-  `artifacts/`): a diagram-rich expansion, written only by
-  `detailed-design`.
+  design, plan, milestones `M1`, `M2`, …, next steps). Each real milestone
+  has a `reads:` line. `plan-outline.md`: a short overview of that plan, in
+  plain words.
+- `design.md`: the lean design reference (invariants, current `DD<n>`
+  statements, and a requirement-to-test-to-path trace). `detailed-design.md`
+  (in `artifacts/`): a diagram-rich expansion, written only by
+  `detailed-design`, readable without the IDs.
 - `journal.md`: the append-only event timeline.
 - `requirement-def.md`, `design-choices.md`, `conventions.md`: numbered
-  entries (`RD<n>`, `DC<nn>`, `CONV<n>`) that the plan cites by ID.
+  entries (`RD<n>`, `DC<nn>`, `CONV<n>`). A milestone cites `RD` and `DD`
+  from its `reads:` line. `DC` stays the choice history a `DD` cites.
 - `references.md` (`REF<n>`), `reviews.md` (`RU<n>`), `notes-by-user.md`
   (the user's), `guide-for-users.md` (written for humans when the work
   ships).

@@ -26,9 +26,13 @@ Current Design, Current Plan, Milestones, Next Steps. References live in
   pointer only if it goes stale.
 - **Milestones:** MECE outcomes with **Test evidence**, numbered `M1`,
   `M2`, … in order. Always write the `M` prefix, in this file and in every
-  citation. On reopen, keep checked items, append new ones, and mark removed
-  work `superseded`; do not delete. Milestone numbers are stable: a
-  `fix-activity` prune replaces a milestone body with a one-line
+  citation. Each real milestone has a `reads:` line (**IDs**): the `RD` and
+  `DD` it implements, plus a `CONV` or `REF` when that rule or reference is
+  load-bearing for it. Leave `AC`, `TC`, and `DC` off the line. Use
+  `reads: none` when it implements no RD. A `TBD (design stage)` milestone
+  has no `reads:` line. On reopen, keep checked items, append new ones, and
+  mark removed work `superseded`; do not delete. Milestone numbers are
+  stable: a `fix-activity` prune replaces a milestone body with a one-line
   `M<n>: removed: <why>` stub. Review milestones: **Reviews**.
 - In `stage: requirements`, Current Design points at `design.md`, whose
   Current Design, Test Plan, and Traceability hold `TBD (design stage)`;

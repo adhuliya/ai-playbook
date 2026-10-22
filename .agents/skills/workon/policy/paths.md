@@ -14,6 +14,7 @@ file under `briefs/`.
 | review synthesizer | `synthesizer` | `review/report.md` | `^# Review report` | `review/synth/` |
 | fix-cycle review (all four roles above) | same | same names under `fix/review/` | same | same names under `fix/review/` |
 | plan packet (parent) | — | `verify-plan/packet.md`, `review/packet.md`, `fix/review/packet.md` | none | none |
+| milestone slice (parent) | — | `bg/M<n>/slice.md` | none | none |
 | comment snapshot (parent) | — | `comments/before/<path>` | none | none |
 | comment editor | `comment-editor` | `comments/job-<k>.md` + assigned files (comments only) | `^# Comments job` | `comments/job-<k>/` |
 | comment verifier | `comment-verifier` | `comments/verify.md` | `^# Comments verify` | none |

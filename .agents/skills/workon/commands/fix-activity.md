@@ -94,9 +94,10 @@ D. **Source drift.** Each `fail` milestone in `drift.md` is a plan-impacting
 3. List the other triage findings, one line each, without acting on them.
    Offer `fix-activity` for drift or `fix-activity tidy` once.
 
-**Tidy path.** The inline path with steps 1, 3, and 7 included. Report
-triage drift but do not fix it; when drift exists, recommend a resync
-first.
+**Tidy path.** The inline path with steps 1, 3, and 7 included. Before
+step 7, read `repair.md` and run its Milestone reads and DD steps when a
+marker is present. Report triage drift but do not fix it; when drift
+exists, recommend a resync first.
 
 **Resync path.**
 
@@ -178,8 +179,10 @@ tidy path; otherwise offer `fix-activity tidy` once after step 8.
    DC, or CONV entries, and applied targeted requests, as `user` points of
    one new closed regular `RU<n>` cycle (`applied → <IDs>`), and append its
    `Review` event. No such items → no cycle.
-7. **Renumber** `RD`, `DC`, `CONV`, and `REF` IDs to close gaps (never `RU`
-   IDs or milestone numbers). Update every reference in the scope files.
+7. **Renumber** `RD`, `DD`, `DC`, `CONV`, and `REF` IDs to close gaps
+   (never `RU` IDs or milestone numbers). Update every reference in the
+   scope files, including `reads:` lines, `cites:` lines, and the `AC` and
+   `TC` that share an `RD` number.
    Append the old → new map to `reviews.md` (**Reviews** renumber log),
    show it, and append a one-line `Renumber` event that points at the log.
 8. If `notes-by-user.md` cites removed or renumbered IDs or broken paths,

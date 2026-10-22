@@ -20,10 +20,11 @@ The order is mandatory:
    facts; the user corrects.
 4. If the user cited files, run **Cited context**.
 5. Draft Goal (RD summary), `design.md` (**Design document**: Current
-   Design, a Decisions synthesis, a `TC<n>` Test Plan, and a Traceability
-   table with every case tagged `(planned for M<n>)`), Plan, MECE
-   milestones (`M1`, `M2`, …), evidence, Next Steps, and
-   `plan-outline.md`. Cited sources go to
+   Design, `DD<n>` blocks that cite their `DC` entries, a `TC<n>` Test
+   Plan, and a Traceability table with every case tagged `(planned for
+   M<n>)`), Plan, MECE milestones (`M1`, `M2`, …), evidence, Next Steps,
+   and `plan-outline.md`. Each real milestone has a `reads:` line
+   (**activity.md**). Cited sources go to
    `references.md`. Each milestone lists unit cases per part and
    integration cases for the boundaries it completes; the last names the e2e
    (and any interface fake). Use the same case names in the milestone test

@@ -11,13 +11,17 @@ Traceability.
 
 - **Current Design:** the execution handoff (invariants, boundaries,
   evidence signals) that `# Current Design` used to hold in `activity.md`.
+  About 150 words. These are the invariants every milestone honors.
+  A decision only some milestones need is a `DD<n>` under Decisions.
   Chosen-vs-alternatives still live only in `design-choices.md`.
-- **Decisions:** a synthesis of `design-choices.md`, grouped by `level`
-  (**Design Decisions**): every `design-choice` entry in full,
-  `major-implementation-detail` entries named individually, and
-  `implementation-detail` entries summarized as one line, not copied.
-  Cite each by `DC<nn>`. Rewrite this section whenever an entry is added or
-  superseded; do not let it drift from `design-choices.md`.
+- **Decisions:** one `### DD<n>: <title>` per current statement (**IDs**).
+  Rewrite the block in place when that statement changes. Hard max ~200
+  words. A bullet `- cites: DC01, DC02` names the `DC<nn>` entries it rests
+  on. Those entries hold the alternatives and why they lost. A milestone
+  lists the `DD` on its `reads:` line and does not list the `DC`. Several
+  `implementation-detail` choices may share one DD. When a `DC` is
+  superseded, point `cites:` at the new entry and rewrite the DD body.
+  Keep the DD in agreement with `design-choices.md`.
 - **Test Plan:** one `TC<n>` line per `RD<n>` (**IDs**: shares `RD<n>`'s
   number), naming the unit, integration, e2e, and interface-fake cases
   planned for it (**Test evidence**). Drafted with the milestones
@@ -36,8 +40,8 @@ Traceability.
   whatever the Test Plan and milestones say.
 
 In `stage: requirements`, Current Design, Test Plan, and Traceability hold
-`TBD (design stage)`; Decisions mirrors `design-choices.md` as choices are
-made (**Planning stages**).
+`TBD (design stage)`. Decisions still gains a `DD<n>` when a choice is
+made, citing that `DC<nn>` (**Planning stages**).
 
 Update at the same checkpoints as `activity.md` (**Update cadence**), plus
 whenever a `design-choices.md` entry is added or superseded, and whenever
