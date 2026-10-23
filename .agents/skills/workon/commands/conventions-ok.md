@@ -1,7 +1,7 @@
 # `conventions-ok`
 
-Status: `Planning`, `Approved`. If already `conventions: ok`, report and
-stop (**Execution gate**).
+Status: `Planning`, `Approved`. Also `Active` when `kind` is `thin`. If
+already `conventions: ok`, report and stop (**Execution gate**).
 
 Reads: policy/conventions.md, policy/execution-gate.md
 
@@ -10,5 +10,7 @@ Reads: policy/conventions.md, policy/execution-gate.md
    ask the user to review and write `conventions-ok` again. Stop. If the
    fill was already shown, go to step 2.
 2. Set `conventions: ok` in `agent-activity.md`. No journal, no status change.
-3. If `Approved`, or if `kind` is `thin` and the status is `Planning`,
-   ask for `start-building`.
+3. If `kind` is `full` and the status is `Planning`, prompt
+   `approve-plan`. If `Approved`, or if `kind` is `thin` and the status
+   is `Planning`, ask for `start-building`. Thin and `Active`: no further
+   keyword.

@@ -11,7 +11,9 @@ other repo walk.
    **Stops**.
 4. **Question gate:** answer from session knowledge and patch
    `synthesis.md`. Grill the rest one at a time (**Asking**) and
-   patch again. Unanswered items stay out of apply. `- none` → skip.
+   patch again. Unanswered items stay out of apply. `- none` → delete
+   `inflight.md` and skip step 5.
 5. Show `## Proposals`. Ask all / some / none. Never apply in the turn of
    the first Read. Record each proposal as an `agent` point: accepted ones
    per **Reviews** (where points go), rejected ones `rejected: <why>`.
+   Then delete `inflight.md`.

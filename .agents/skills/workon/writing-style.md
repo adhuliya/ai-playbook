@@ -20,7 +20,7 @@ files, activity records, and sub-agent reports. It does not apply to
   only when the repeat makes the text clearer.
 - Prefer to cite entries by ID (`RD3`, `DD2`, `DC02`, `M3`) with a few
   words of gloss on first mention, and to read one entry by ID instead of
-  the whole file (`policy/ids.md`). Recommended, not strict.
+  the whole file. Recommended, not strict.
   `spec-plan-outline.md` and `artifacts/detailed-design.md` are prose first.
   Use vocabulary terms. A sentence there still stands when the reader skips
   an ID. An ID may follow the name in parentheses.

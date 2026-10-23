@@ -32,8 +32,9 @@ Current Design, Current Plan, Milestones, Next Steps. References live in
   `DD` it implements, plus a `CONV` or `REF` when that rule or reference is
   load-bearing for it. Leave `AC`, `TC`, and `DC` off the line. Use
   `reads: none` when it implements no RD. A `TBD (design stage)` milestone
-  has no `reads:` line. On reopen, keep checked items, append new ones, and
-  mark removed work `superseded`; do not delete. Milestone numbers are
+  has no `reads:` line. On reopen, `replan-work`, or `make-full`, keep
+  checked items, append new ones, and mark removed work `superseded`; do
+  not delete. Milestone numbers are
   stable: a `fix-activity` prune replaces a milestone body with a one-line
   `M<n>: removed: <why>` stub. Review milestones: **Reviews**.
 - In `stage: requirements`, Current Design points at `spec-design.md`, whose

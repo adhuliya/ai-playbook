@@ -7,24 +7,33 @@ Reads: policy/activity-kind.md, policy/planning-quality-bar.md, policy/planning-
 This is the in-flight **Material-change**.
 
 1. If the status is not `Planning`, set `Planning` now (this stops
-   engineering) and record the reason in `agent-activity.md`. Clear
-   `prior:` and any blocker from `notes`.
-2. When the user asks to reopen requirements, set `kind: full` and
-   `stage: requirements` first (**Planning stages**). Remind the strong
-   model. Run steps 1–4 of the **Planning quality bar**. Run **Cited
+   engineering) and record the reason in `agent-activity.md`. Remove
+   `prior:` and any blocker line from `notes`. Leave other notes text.
+   A pause does not have to be resumed first. This command is the exit
+   from `Paused` when the scope itself changes.
+2. When the user asks to reopen requirements, or `stage` is already
+   `requirements`, set `kind: full` and `stage: requirements` first
+   (**Planning stages**). Remind the strong model. Run steps 1–4 of the
+   **Planning quality bar** for open branches only. Run **Cited
    context** when files are cited, and refresh stale references
-   (**Refresh**). Append a `Replan` event. Prompt `requirements-ok`.
-   Stop. Do not rewrite the design or prompt `start-building`.
+   (**Refresh**). Append a `Replan` event. Do not rewrite the design
+   files or prompt `start-building`. When a grill branch is open, name
+   that question and stop. When none is open, prompt `requirements-ok`
+   and stop.
 3. Otherwise follow **Activity kind**. When the new scope is unsafe and
    the user has not picked, append the `Replan` event and stop on the
    choice in **Activity kind**. A later `thin` reply continues at step 4
    and skips the `Replan` event in step 5. Otherwise, on `full`, remind the strong
-   model and re-run the **Planning quality bar** from the top. On
-   `thin`, keep the rewrite short. Run **Cited context** when files are
+   model and re-run the **Planning quality bar** for open branches only.
+   On `thin`, do not run that bar and do not invent test tiers. Keep code
+   already written. Keep requirements, choices, and constraints that the
+   new scope still includes. Run **Cited context** when files are
    cited, and refresh stale references (**Refresh**).
 4. Rewrite RD, `# Scope`, the affected `agent-activity.md` sections,
    `spec-design.md` (**Design document**), and `spec-plan-outline.md`
-   (design stage). Append Design Decisions. Update Conventions (rules
+   (design stage). Keep checked milestones (**agent-activity.md**). Append
+   new ones, and mark removed work `superseded`. Append Design Decisions.
+   Update Conventions (rules
    and Setup) from observed facts and user-confirmed rules. If the Goal
    changed, patch that one **Catalog** entry.
 5. Append a `Replan` event: why, changed IDs, old status (**Journal

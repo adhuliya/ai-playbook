@@ -46,4 +46,6 @@ Design Decisions. The user
 challenges RD, Conventions, Setup, and the plan before `approve-plan` and
 `conventions-ok`. Feedback goes per **Reviews** (where points go);
 `start-review` is not required. File review is done when the user has seen
-the files and every feedback round is recorded. Then run the revision loop.
+the files and every feedback round is recorded. Stay `Planning`.
+Prompt `requirements-ok` in the requirements stage, `approve-plan` on a
+full design, or `start-building` on thin.

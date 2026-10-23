@@ -16,7 +16,7 @@ Each file holds one concept, so a read costs only what the turn needs. Put
 a new rule in the file that owns its concept; start a new file when a
 concept has no home. Keep `SKILL.md`, `always.md`, `writing-style.md`,
 and `policy/session-start.md` near their current size: together they load
-on every session (about 3.9k tokens in `o200k_base`).
+on every session (about 5.0k tokens in `o200k_base`).
 
 Each file in `commands/` starts with `# \`keyword\``, a `Status:` paragraph,
 and one `Reads:` line of paths relative to this folder, separated by

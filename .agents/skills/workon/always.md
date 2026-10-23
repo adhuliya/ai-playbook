@@ -12,7 +12,7 @@ except `help`, `import-activity`, `create`, `list`, `query-work`,
 `no-query-work`, `teach-off`, `teach-brief`, and `teach-deep`. When the
 status is not on the file's `Status:` line,
 report the status and stop. `start-review`, `apply-review`, `verify-plan`,
-and **draft-check** are four distinct steps; do not treat one as another.
+and `draft-check` are four distinct steps; do not treat one as another.
 
 ## Stops
 
@@ -20,23 +20,24 @@ and **draft-check** are four distinct steps; do not treat one as another.
   switch replaces the focus; announce it. Never silently edit a non-focused
   activity. In a new chat without a named activity, `list` and ask.
 - **Keyword gate** holds. A Goal or Scope rewrite, an RD change after
-  approval, or new durable work is a **Material-change**
-  (`policy/material-change.md`): read it and prompt the choice; do not
+  approval, or new durable work is a material change
+  (`policy/material-change.md`): read that file and prompt the choice; do not
   rewrite scope first.
 - No dates in `agent-activity.md` or `agent-journal.md` unless asked.
 - `agent-activity.md` is the current execution truth; rewrite stale sections.
-  Every status or direction change writes the journal (**Journal policy**,
-  `policy/journal.md`).
-- No product engineering before `start-building` (**Execution gate**,
-  `policy/execution-gate.md`). On `full`, `approve-plan` and
-  `conventions-ok` come first. Records and replies follow **Writing
-  style**; handoff files follow **Portability** (`policy/portability.md`).
+  Every status or direction change writes the journal. Read
+  `policy/journal.md` when the status changes.
+- No product engineering before `start-building`. Read
+  `policy/execution-gate.md` before any product work. On `full`,
+  `approve-plan` and `conventions-ok` come first. Records and replies
+  follow **Writing style**; handoff files follow `policy/portability.md`,
+  read when you hand off.
 - **Guide the user** on every reply that runs a command or meets an unusual
   situation.
 - On `full`, delegate through **Background sub-agents**. On `thin`, plan
-  and build inline (**Activity kind**). Edit records at **Update
-  cadence** checkpoints (`policy/update-cadence.md`), not as micro-edits.
-  Never bulk-read the **Catalog**; use `list` and `rg`.
+  and build inline. Edit records at checkpoints, not as micro-edits.
+  Read `policy/update-cadence.md` at a checkpoint. Never bulk-read the
+  catalog; use `list` and `rg`.
 - **Query mode.** `query-work` sets a session flag that blocks every
   mutation until `no-query-work` or session end; its file lists what stays
   allowed. On a blocked request, say query mode is on and ask for
@@ -49,13 +50,15 @@ and **draft-check** are four distinct steps; do not treat one as another.
   tradeoffs) in replies; default `off`. Independent of query mode and user
   away; never adds teaching prose to records. See `commands/teach-mode.md`.
 - **Pipeline in flight.** While `artifacts/inflight.md` exists, a pipeline
-  of background sub-agents is running (**Inflight pipelines**,
-  `policy/inflight.md`). Activity files are frozen except for the parent's
+  of background sub-agents is running. Read `policy/inflight.md` while
+  that file exists. Activity files are frozen except for the parent's
   own steps of that pipeline; skip session start; refuse mutating keywords
-  and name the pipeline. Allowed: `help`, `query-work`, `no-query-work`,
-  list, details, reads. In a new chat with `inflight.md` present, name the
-  pipeline from it and ask whether to wait or abandon; abandon deletes
-  `inflight.md`.
+  and name the pipeline. Say they can wait, or ask to abandon. Do not
+  invent a keyword. Allowed: `help`, `query-work`, `no-query-work`,
+  list, details, reads. In a new chat with `inflight.md` present, or when
+  the user asks to stop the pipeline, name it and ask whether to wait or
+  abandon. Abandon deletes `inflight.md`, leaves the status unchanged, and
+  leaves an unchecked milestone unchecked.
 
 ## Keyword gate
 
@@ -66,7 +69,7 @@ want to replan, write \`replan-work\`.` A plain "Resume <slug>" means switch
 plus context reload; when the status is `Paused`, `Blocked`, or `Complete`,
 prompt `resume-work`.
 
-Exceptions: the agent MAY run the **Consistency check**
+Exceptions: the agent MAY run the consistency check
 (`policy/consistency-check.md`) without a keyword, and `mark-completed`
 runs the `delete-tmp-files` flow. Both confirm each item. A `yes` to the
 `approve-plan` conventions offer counts as `conventions-ok`.
@@ -78,11 +81,17 @@ always know where the activity stands and what to type next.
 
 - After each command or pipeline step, end with at most three lines: what
   just happened, the current state (status, stage, open cycle, pipeline),
-  and the next one or two exact keywords or replies.
+  and the next one or two exact keywords or replies. The command that just
+  ran names that keyword. If it names none, use the first matching `help`
+  row. An optional reminder is a second line and is never required.
+- Once per session, one of those lines may be: type `help intro` for the
+  basic path.
+- Under **User away**, skip this guide until the user sends a message.
 - On the first use of a concept this session (cycle, fix cycle, stage,
   review comments, inflight pipeline), explain it in one plain sentence.
 - On a refused or gated request, say why in one sentence and give the exact
-  keyword that unlocks it.
+  keyword that unlocks it. A pipeline refusal names wait or abandon, not a
+  new keyword.
 - Map an exceptional situation onto the defined set (a status, a command, a
   cycle kind, or a **Stops** rule) and name the mapping in one sentence:
   "This is source drift; `fix-activity` handles it." Never invent a flow,
@@ -137,5 +146,5 @@ On `full`, delegate work by default: give each sub-agent one
 self-contained part, keep write paths disjoint, and use files as the
 handoff. Work inline for a few tool calls, or when a split would overlap
 writes. For full planning, launch explores, then grill, then end the
-turn. Judge with the **critic pair**, never with one agent. On `thin`,
+turn. Judge with the critic pair, never with one agent. On `thin`,
 do not launch explores or a pipeline unless the user typed that keyword.

@@ -21,6 +21,10 @@ without the line (legacy) is `closed`.
 | `verify-plan` apply | add `agent` points; apply only via `apply-review` | new cycle, closed and applied this turn |
 | `fix-activity` inline path | new closed cycle (user edits already in the files) | same |
 
+A same-turn apply that would add or uncheck a milestone while the status
+is `Complete` does not apply that change. Leave those points `open` and
+prompt `apply-review`.
+
 **Fix cycle.** Only `fix-activity` opens one, on its fix-cycle path. It
 holds only drift findings (`scope: drift`); other feedback
 goes to the regular cycle. Refresh it by re-running `fix-activity`, never
@@ -79,7 +83,10 @@ the points. A point that adds a test case adds it to the matching `TC<n>` in
 `spec-design.md`'s Test Plan and Traceability too, tagged `(planned for M<n>)`
 like any other (**Design document**, **IDs**). Notes-only edits need no milestone. **Material-change** still
 applies: a point that changes Goal or Scope, or a material RD change after
-`approve-plan`, needs the prompt.
+`approve-plan`, needs the prompt. Apply the other open points. Leave that
+point `open`. When `replan-work`, a stay-on-slug reopen, or
+`create-sibling` has covered it, the next `apply-review` marks it
+`noted: covered` or `applied → <IDs>`.
 
 **Journal.** Each cycle close, and each re-close after a reopen, appends one
 `Review` event (**Journal policy**). A status change writes the resume

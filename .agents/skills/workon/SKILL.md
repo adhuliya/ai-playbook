@@ -82,14 +82,15 @@ reset. Never bulk-read a folder.
    names, just before you reach it.** A `Reads:` line is the up-front set;
    the steps name the rest.
 5. **When a bold name has no owner among the files you read,** read
-   `index.md` and find it.
+   `index.md` and find it. Do this when you reach the step that uses the
+   name.
 
 | Phase or action | Read after the base files |
 |---|---|
 | Planning: `create`, `replan-work`, `create-sibling`, `import-activity` | the command file and its `Reads:`; open each `shapes/` file when you write that record |
 | Gates: `requirements-ok`, `approve-plan`, `conventions-ok`, `start-building`, `make-full` | the command file and its `Reads:` (a few policies) |
 | Building: `build` | the command file and its `Reads:`; on `full`, the launch kit and `pipelines/milestone.md` just before the first sub-agent launch |
-| Review: `start-review`, `apply-review`, `verify-plan` | the command file and its `Reads:` (review policies, the launch kit, the matching `pipelines/` file) |
+| Review: `start-review`, `apply-review`, `verify-plan` | the command file and its `Reads:`. `verify-plan` includes the launch kit. `start-review` names the kit at its launch step |
 | Sub-agent launch | the launch kit (**Background sub-agents** in `always.md`). Sub-agents read their own `briefs/` files; the parent does not |
 | Upkeep: `fix-activity`, `compact-journal`, `update-convention`, `add-ac` | the command file and its `Reads:`; `fix-activity` names its pipelines at the step that needs them |
 | Output and cleanup: `create-guide`, `detailed-design` | the command file and its `Reads:` |

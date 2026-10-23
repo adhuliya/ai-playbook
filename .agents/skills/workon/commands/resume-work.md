@@ -13,16 +13,25 @@ Reads: policy/activity-kind.md, policy/paused-blocked.md, policy/material-change
    discoveries, remaining work, next action, branch hint. `Blocked`: restate
    the blocker.
 3. Wait for explicit confirmation (`Blocked`: that the blocker is resolved).
-4. Restore `prior:` (**Paused vs Blocked**) and append the resume recap.
-5. Reminders: `full` and `Planning` → strong model; `thin` and `Planning`
-   → `start-building`; `Approved` → `conventions-ok` / `start-building`.
+4. Restore `prior:` (**Paused vs Blocked**). When that policy says to ask,
+   ask and stop. Append the resume recap only after the status is restored.
+5. Name the next keyword. Also remind the strong model when `kind` is
+   `full` and the status is `Planning`.
+   - `stage: requirements`: an `open question:` in `# Next Steps` is
+     repeated. When RD looks complete and no branch is open, prompt
+     `requirements-ok`. Do not prompt `start-building`.
+   - `full`, `Planning`, and `stage: design`: prompt `approve-plan`.
+   - `thin` and `Planning`: an `unfinished requirement:` is repeated.
+     Otherwise prompt `start-building`.
+   - `Approved` and `conventions: pending`: prompt `conventions-ok`.
+   - `Approved` and `conventions: ok`: prompt `start-building`.
+   - `Active`: prompt `continue`.
 
 ## `Planning` / `Approved` / `Active`
 
 Reload context only: steps 1–2 above. No status change, no journal.
-`Planning` with `stage: requirements`: remind `requirements-ok` when RD
-looks complete. Do not prompt `start-building` in that stage. `Planning`
-with `kind: thin`: prompt `start-building`.
+Use step 5 for the next keyword. Do not prompt `start-building` while
+`stage` is `requirements`.
 
 ## `Complete`
 

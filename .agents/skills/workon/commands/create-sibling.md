@@ -34,7 +34,10 @@ Reads: policy/activity-kind.md, policy/planning-quality-bar.md, policy/planning-
 7. In-flight parent only: mark moved RD entries and milestones `superseded`
    in the parent; status unchanged; no parent journal. If the parent Goal
    changes, that is a **Material-change** (`replan-work`).
-8. Switch focus to the sibling and announce it. On `stage: requirements`,
-   prompt `requirements-ok`. On `full` and `stage: design`, **File review**
-   and the revision loop. On `thin`, show the outline and prompt
+8. If step 7 asked for a parent `replan-work`, name that slug and switch
+   focus back to it before the keyword. The sibling may already exist.
+   Skip the rest of this step.
+   Switch focus to the sibling and announce it. Prompt `requirements-ok`
+   when `stage` is `requirements`. On `full` and `stage: design`, run
+   **File review**. On `thin`, show the outline and prompt
    `start-building`.

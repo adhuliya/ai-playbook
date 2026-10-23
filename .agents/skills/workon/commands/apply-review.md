@@ -16,9 +16,15 @@ first). The keyword is the nod when the points already answer the questions.
    only the gaps the points do not settle (one round), then stop; after the
    answers, apply next turn with no new keyword. With no gaps, apply in
    this turn.
-2. An `open` point that is a **Material-change** → apply nothing; ask
-   `replan-work` or `create-sibling` (`Complete`: `create-sibling` only).
-   Stop. The cycle stays `open`; no status change, no journal.
+2. Mark a material point already covered by `replan-work`, a stay-on-slug
+   reopen, or `create-sibling` as `noted: covered` or `applied → <IDs>`.
+   When no material point remains `open`, continue at step 3.
+   When one is still a **Material-change**, do not apply it and do not
+   rewrite Goal or Scope. Give every other `open` point an outcome and
+   apply its edit. Leave the material point `open`. Do not close the
+   cycle, change status, or journal. Ask `replan-work` or
+   `create-sibling`. On `Complete`, also name `resume-work` for
+   stay-on-slug. Stop.
 3. Give every `open` point an outcome (**Reviews** outcome). Apply notes
    edits as each point's `where` says (**Reviews** where a change lands).
    Product work → a review milestone `Apply RU<n>`; those points are
@@ -29,7 +35,8 @@ first). The keyword is the nod when the points already answer the questions.
      step 5, without the grill. Append the resume recap citing `RU<n>`.
      Then the **Execution gate**.
    - Any other case (including `Paused` / `Blocked`, and `Complete` without
-     product work): no status change; append the `Review` event.
+     product work): no status change; append the `Review` event. On
+     `Paused` or `Blocked`, prompt `resume-work`.
 5. **Fix cycle only:** run the **Reviews**
    recheck on the open regular cycle and show the result. Say that the next
    `fix-activity` runs the deferred housekeeping.

@@ -27,8 +27,9 @@ Traceability.
   planned for it (**Test evidence**). Drafted with the milestones
   (**Planning quality bar** step 5) and kept in the same words as the
   matching milestone test bullets in `agent-activity.md`; this is the single
-  list of case names, not a second plan. Grows only when the plan grows
-  (`replan-work`, a review milestone).
+  list of case names, not a second plan. It grows when the plan grows
+  (`replan-work`, a review milestone), and when an applied review point
+  or an in-scope plan edit adds a case the user stated.
 - **Traceability:** one row per `RD<n>` / `TC<n>` pair, listing the Test
   Plan's case names for it. Each case name carries a status tag:
   `(planned for M<n>)` once its milestone is drafted, flipped to `(done by

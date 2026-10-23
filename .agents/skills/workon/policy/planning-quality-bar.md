@@ -46,5 +46,6 @@ Required intake prompt (or equivalent):
 > out-of-scope boundaries, constraints, and what "done" looks like.
 
 If the current message already supplied both, acknowledge and continue
-grilling. On `make-full`, an answer already written in the records counts
-as supplied. Grill only open branches. Do not re-ask a settled fact.
+grilling. On `make-full`, `replan-work`, and a requirements reopen, an
+answer already in the records counts as supplied. Grill only open
+branches. Do not re-ask a settled fact.

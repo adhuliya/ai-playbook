@@ -12,7 +12,7 @@ Printed by `help all`. Keep one row per command; `help.md` names this file.
 | | `import-activity` | Adopt activity files from elsewhere → `Planning` (`Complete` kept) |
 | Gates and lifecycle | `approve-plan` | Full only: `Planning` → `Approved`. Thin: prompt `make-full` or `start-building` |
 | | `conventions-ok` | Sign off rules + Setup (one-time) |
-| | `start-building` | Thin: `Planning` → `Active`. Full: `Approved` → `Active`; needs `conventions: ok` |
+| | `start-building` | Thin: `Planning` → `Active`. Full: `Approved` → `Active`; needs `conventions: ok`. Refuses `stage: requirements`. |
 | | `pause-work` | → `Paused` + journal recap |
 | | `resume-work` | Unpause, unblock, reopen `Complete`, or reload context |
 | | `mark-completed` | → `Complete` + journal + cleanup |

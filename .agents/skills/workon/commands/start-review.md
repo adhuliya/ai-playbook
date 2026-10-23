@@ -21,15 +21,16 @@ This command works on the regular cycle only and never touches a fix cycle
 2. **Mode.** Automated unless the user asks for a manual review (`manual`,
    or plain words such as "I will review it myself"). Manual: mark `open`
    `agent` points from an earlier scope `noted: out of scope`; tell the user
-   to add points in `reviews.md` or in chat. Stop.
+   to add points in `reviews.md` or in chat, then run `apply-review`. Stop.
 3. **Automated.** Read the launch kit and `pipelines/review.md`
    (**Background sub-agents**). Write `inflight.md` (**Inflight
    pipelines**), then run the **Review** pipeline. A re-run overwrites
    `artifacts/review/`.
 4. The parent Reads `review/report.md`, or `review/env.md` when `blocked`
-   (then record `- none (env blocked)` and stop). Replace the cycle's
+   (then record `- none (env blocked)`). Replace the cycle's
    `open` `agent` points with the report's points (`open`); keep every
-   `user` point. A `- none` report → record `- none (agent)`. Delete
+   `user` point. A `- none` report → record `- none (agent)`. On env
+   `blocked`, keep the `- none (env blocked)` line. Delete
    `inflight.md`.
 5. Show the cycle. Say the user MAY add, edit, or strike points, then run
    `apply-review`. Stop.

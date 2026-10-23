@@ -17,6 +17,8 @@
    **Catalog** entry.
 4. On `thin`, show `spec-plan-outline.md` and the Goal, then prompt
    `start-building`. When this message already contains `start-building`,
-   read `commands/start-building.md` and follow it. On `full`, **File
-   review** (`policy/planning-stages.md`), then the revision loop, then
+   read `commands/start-building.md` and follow it. On `full` and
+   `stage: requirements`, prompt `requirements-ok` once no grill branch
+   is open. Do not prompt `approve-plan` in that stage. On `full` and
+   `stage: design`, **File review** (`policy/planning-stages.md`), then
    the **Execution gate**.

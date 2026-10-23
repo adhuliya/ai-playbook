@@ -49,7 +49,11 @@ before that keyword. When the create message already contains
 `start-building`, run this pass and then that command in one turn.
 
 Show `spec-plan-outline.md` and the Goal, then prompt `start-building`.
-The user may correct the files first.
+The user may correct the files first. A later chat note that adds a
+requirement, a constraint, or a design note on the same Goal updates
+the records in place. Say that it stays on this activity. Name
+`make-full` only when they ask for a stricter plan, or the scope is
+unsafe.
 
 After `start-building`, build inline. Do not launch explores or the
 milestone, review, or plan pipelines unless the user typed that keyword.

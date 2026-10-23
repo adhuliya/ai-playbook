@@ -3,7 +3,7 @@
 Status: any. User-invoked only. No status change. Never edits product code.
 Usage: `fix-activity [<what to fix> | tidy]`.
 
-Reads: policy/reviews.md, policy/apply-timing.md, policy/consistency-check.md, policy/activity-md.md, policy/design-document.md, policy/journal.md, policy/ids.md
+Reads: policy/reviews.md, policy/consistency-check.md, policy/activity-md.md, policy/design-document.md, policy/journal.md, policy/ids.md
 
 Before step B or E2, also read the launch kit (**Background sub-agents**)
 and the pipeline file: `pipelines/drift.md` for B, `pipelines/review.md` for
@@ -173,7 +173,10 @@ tidy path; otherwise offer `fix-activity tidy` once after step 8.
    | `shorten` | `rewrite` | `fix: <new value>` | `flag: <unresolved>`),
    why. Ask yes / no / mods (**Asking**). A change to Goal or Scope is a
    **Material-change** (`policy/material-change.md`): skip it and prompt.
-6. **Apply** only confirmed items. Append-only and `superseded` rules do not
+6. **Apply** only confirmed items. When the status is `Complete` and an
+   item adds or unchecks a milestone, do not apply that item. Record it
+   as an `open` point and prompt `apply-review`. Append-only and
+   `superseded` rules do not
    block pruning; git is the archive. A plan edit also rewrites
    `spec-plan-outline.md`. Then record confirmed clear user edits (from C) to RD,
    DC, or CONV entries, and applied targeted requests, as `user` points of

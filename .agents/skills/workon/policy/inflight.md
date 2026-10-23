@@ -13,8 +13,10 @@ starts, overwriting any old one, and record the pipeline, the unit
 final file, and short working notes. Before launch, set `agent-activity.md`
 `# Next Steps` item 1 to `In progress: <pipeline> <unit>` so the user sees
 it. Delete it when the parent reads the final file (for a milestone, after
-the checkpoint that checks it), or when the pipeline ends early (env
-`blocked`, abandon), then refresh `# Next Steps`.
+the checkpoint that checks it). For `verify-plan`, delete it only after
+all / some / none is recorded, or when synthesis is `- none`. Also delete
+it when the pipeline ends early (env `blocked`, abandon), then refresh
+`# Next Steps`.
 
 While a pipeline is in flight, activity files are frozen except for the
 parent's own steps of that pipeline (such as a milestone checkpoint). A
