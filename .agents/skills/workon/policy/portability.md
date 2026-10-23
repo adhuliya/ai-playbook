@@ -1,8 +1,8 @@
 # Portability
 
-The handoff is `activity.md` + `journal.md` + `requirement-def.md` +
-`design-choices.md` + `design.md` + `conventions.md` + `references.md` +
-`notes-by-user.md`. `plan-outline.md`, `reviews.md`, `guide-for-users.md`,
+The handoff is `agent-activity.md` + `agent-journal.md` + `spec-req-def.md` +
+`spec-design-choice.md` + `spec-design.md` + `conventions.md` + `references.md` +
+`notes-by-user.md`. `spec-plan-outline.md`, `reviews.md`, `artifacts/guide-for-users.md`,
 and `artifacts/detailed-design.md` are extra; the handoff must not depend
 on them.
 
@@ -16,4 +16,4 @@ on them.
   evidence.
 
 Resume loads the handoff files, so keep them lean: delete stale prose when
-you rewrite `activity.md`. Do not load `activities.md` on resume.
+you rewrite `agent-activity.md`. Do not load `activities.md` on resume.

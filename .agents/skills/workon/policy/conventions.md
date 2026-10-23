@@ -6,7 +6,7 @@ exact; when over budget, trim rules before commands.
 It has two H2 kinds. `## CONV<n>: <short title>` entries are binding
 **rules**: a living list, not a decision log. `## Setup, build, test and
 install notes` holds the commands, cwd, and toolchain for this activity.
-Each fact lives in one place: do not duplicate into `activity.md`, do not
+Each fact lives in one place: do not duplicate into `agent-activity.md`, do not
 duplicate rules into Setup, and do not put commands only in rules or
 constraints only in Setup.
 

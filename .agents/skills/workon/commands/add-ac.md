@@ -6,7 +6,7 @@ already excludes notes edits).
 Reads: policy/requirement-def.md, policy/ids.md, policy/design-document.md
 
 By default, acceptance criteria stay informal: `RD<n>`'s test case set
-(`TC<n>` in `design.md`) is its acceptance evidence (**Test evidence**).
+(`TC<n>` in `spec-design.md`) is its acceptance evidence (**Test evidence**).
 `add-ac` makes it explicit for the RDs that lack it, as `AC<n>` (**IDs**:
 shares `RD<n>`'s number, not a separate sequence).
 

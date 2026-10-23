@@ -4,7 +4,7 @@ Applies to planning, building, `start-review`, `verify-plan`, and
 `mark-completed`. Plan every tier during planning; write the tests as each
 milestone is built. Evidence bullets name the runnable command and the
 case list per tier. Follow the repo's test layout, naming, and helpers.
-Use the same case name in the milestone's test bullets and in `design.md`'s
+Use the same case name in the milestone's test bullets and in `spec-design.md`'s
 `TC<n>` Test Plan line and Traceability row (**Design document**,
 **IDs**); the two never list the case under different names.
 
@@ -19,7 +19,7 @@ Use the same case name in the milestone's test bullets and in `design.md`'s
 - **End-to-end (last milestone, or a dedicated final one):** one or more
   tests that confirm the Goal as a whole. `mark-completed` MUST NOT proceed
   without that named, runnable e2e unless the user explicitly drops it
-  (reason in `activity.md`). Run the command when the env can; a user nod
+  (reason in `agent-activity.md`). Run the command when the env can; a user nod
   does not replace a missing e2e name, and the user drop is the only
   waiver.
 - **`software-interface` peers you cannot run live:** emulate them with the

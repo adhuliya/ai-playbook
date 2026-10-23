@@ -1,6 +1,6 @@
 # Notes files
 
-Authoring rules for `requirement-def.md`, `design-choices.md`,
+Authoring rules for `spec-req-def.md`, `spec-design-choice.md`,
 `conventions.md`, and `notes-by-user.md`. They and `references.md` exist
 from birth. Shapes: `shapes/notes-files.md`.
 

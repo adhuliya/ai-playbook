@@ -23,17 +23,18 @@ and **draft-check** are four distinct steps; do not treat one as another.
   approval, or new durable work is a **Material-change**
   (`policy/material-change.md`): read it and prompt the choice; do not
   rewrite scope first.
-- No dates in `activity.md` or `journal.md` unless asked.
-- `activity.md` is the current execution truth; rewrite stale sections.
+- No dates in `agent-activity.md` or `agent-journal.md` unless asked.
+- `agent-activity.md` is the current execution truth; rewrite stale sections.
   Every status or direction change writes the journal (**Journal policy**,
   `policy/journal.md`).
-- No product engineering before `approve-plan`, `conventions-ok`, and
-  `start-building` (**Execution gate**, `policy/execution-gate.md`).
-  Records and replies follow **Writing style**; handoff files follow
-  **Portability** (`policy/portability.md`).
+- No product engineering before `start-building` (**Execution gate**,
+  `policy/execution-gate.md`). On `full`, `approve-plan` and
+  `conventions-ok` come first. Records and replies follow **Writing
+  style**; handoff files follow **Portability** (`policy/portability.md`).
 - **Guide the user** on every reply that runs a command or meets an unusual
   situation.
-- Delegate through **Background sub-agents**. Edit records at **Update
+- On `full`, delegate through **Background sub-agents**. On `thin`, plan
+  and build inline (**Activity kind**). Edit records at **Update
   cadence** checkpoints (`policy/update-cadence.md`), not as micro-edits.
   Never bulk-read the **Catalog**; use `list` and `rg`.
 - **Query mode.** `query-work` sets a session flag that blocks every
@@ -132,8 +133,9 @@ the file in `pipelines/` for the pipeline you run. Read the kit before you
 launch any sub-agent, not before. A command whose steps always launch lists
 the kit in its `Reads:`.
 
-Delegate work by default: give each sub-agent one self-contained part, keep
-write paths disjoint, and use files as the handoff. Work inline for a few
-tool calls, or when a split would overlap writes. For planning, launch
-explores, then grill, then end the turn. Judge with the **critic pair**,
-never with one agent.
+On `full`, delegate work by default: give each sub-agent one
+self-contained part, keep write paths disjoint, and use files as the
+handoff. Work inline for a few tool calls, or when a split would overlap
+writes. For full planning, launch explores, then grill, then end the
+turn. Judge with the **critic pair**, never with one agent. On `thin`,
+do not launch explores or a pipeline unless the user typed that keyword.

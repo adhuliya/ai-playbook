@@ -5,7 +5,7 @@ not judge. Read-only for source and activity files. You may split evidence
 runs into children per the common brief. Input: the scope (paths or areas
 the user named, plus paths the parent's basic checks flagged, or `all`),
 `base-branch`, each milestone with its paths and evidence commands, the
-paths cited in `design.md`'s Current Design section and `REF<n>` entries, and the Setup build
+paths cited in `spec-design.md`'s Current Design section and `REF<n>` entries, and the Setup build
 and test commands.
 
 - Changed paths: for each scope path, `git log --oneline -n 10 -- <path>`

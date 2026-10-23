@@ -10,8 +10,8 @@ and the pipeline file: `pipelines/drift.md` for B, `pipelines/review.md` for
 E2.
 
 This command brings the activity files back in line with reality after
-changes the agent did not see. Scope files: `activity.md`,
-`plan-outline.md`, `design.md`, RD, Design Decisions, Conventions, `references.md`,
+changes the agent did not see. Scope files: `agent-activity.md`,
+`spec-plan-outline.md`, `spec-design.md`, RD, Design Decisions, Conventions, `references.md`,
 `reviews.md`. `notes-by-user.md` is input only. The journal is never
 rewritten here (that is `compact-journal`); this command appends only
 `Review` and `Renumber` events. Drift comes from user edits to activity
@@ -143,7 +143,7 @@ tidy path; otherwise offer `fix-activity tidy` once after step 8.
 1. **Prune.** Find redundant entries, entries that fold into another, nits
    recoverable from code or covered elsewhere, superseded entries, and
    stale prose. A pruned milestone keeps its number as a `removed` stub
-   (**`activity.md`** Milestones).
+   (**`agent-activity.md`** Milestones).
 2. **Verify** facts against the repo with read-only checks; run nothing
    that changes state:
    - Repo paths in any scope file exist; moved paths resolve via `git log
@@ -163,7 +163,7 @@ tidy path; otherwise offer `fix-activity tidy` once after step 8.
    **Asking**).
 4. **Impact test.** A finding is plan-impacting when both hold (step D
    failures always are): it changes an `RD<n>`, a `CONV<n>` rule, Setup, or
-   another load-bearing assumption (a `design.md` Current Design invariant
+   another load-bearing assumption (a `spec-design.md` Current Design invariant
    or a Background fact); and the change affects `# Current Plan`,
    `# Milestones`, or `# Next Steps`. On the inline path, a new
    plan-impacting finding from steps 1 or 3 goes to gate 2; when the user
@@ -175,7 +175,7 @@ tidy path; otherwise offer `fix-activity tidy` once after step 8.
    **Material-change** (`policy/material-change.md`): skip it and prompt.
 6. **Apply** only confirmed items. Append-only and `superseded` rules do not
    block pruning; git is the archive. A plan edit also rewrites
-   `plan-outline.md`. Then record confirmed clear user edits (from C) to RD,
+   `spec-plan-outline.md`. Then record confirmed clear user edits (from C) to RD,
    DC, or CONV entries, and applied targeted requests, as `user` points of
    one new closed regular `RU<n>` cycle (`applied → <IDs>`), and append its
    `Review` event. No such items → no cycle.

@@ -1,6 +1,6 @@
 # Journal policy
 
-`<slug>/journal.md` is the append-only event timeline. `activity.md` holds
+`<slug>/agent-journal.md` is the append-only event timeline. `agent-activity.md` holds
 current state and `reviews.md` holds review detail; the journal records
 each event that changes direction or status: what happened, why, and
 pointers (IDs, paths, commands). A fresh agent reads it to learn how the
@@ -16,6 +16,7 @@ Write one entry per event, in the same turn:
 | `Milestone` | checkpoint that checks a milestone |
 | `Review` | every `RU<n>` cycle close, whatever the source (`apply-review`, chat feedback, `verify-plan`, `fix-activity` inline) |
 | `Replan` | `replan-work` |
+| `Make-full` | `make-full` |
 | `Blocked` | entering `Blocked` |
 | `Pause` / `Resume` | `pause-work` / status change by `resume-work`, or `apply-review` reopening `Complete` (the recap replaces the `Review` event and cites `RU<n>`) |
 | `Complete` | `mark-completed` |

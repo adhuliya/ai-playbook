@@ -8,15 +8,16 @@ brief next and follow both.
 
 Write only your assigned files, creating directories as needed. Start each
 output file with the role's H1 and no preamble; an empty section holds
-`- none`. Name a `where` as an activity-file entry (`activity.md` `# …`,
+`- none`. Name a `where` as an activity-file entry (`agent-activity.md` `# …`,
 `RD<n>`, `DD<n>`, `DC<nn>`, `CONV<n>`) or a product path.
 
-Never write an activity file: `activity.md`, `journal.md`,
-`requirement-def.md`, `design-choices.md`, `conventions.md`,
-`notes-by-user.md`, `reviews.md`, `references.md`, `plan-outline.md`,
-`guide-for-users.md`, `activities.md`. Never
-read `requirement-def.md`, `design-choices.md`, `notes-by-user.md`,
-`reviews.md`, or `journal.md`; the parent pastes the excerpts you need or lists a packet file in `inputs`.
+Never write an activity file: `agent-activity.md`, `agent-journal.md`,
+`spec-req-def.md`, `spec-design-choice.md`, `spec-design.md`, `conventions.md`,
+`notes-by-user.md`, `reviews.md`, `references.md`, `spec-plan-outline.md`,
+`artifacts/guide-for-users.md`, `artifacts/detailed-design.md`,
+`activities.md`. Never
+read `spec-req-def.md`, `spec-design-choice.md`, `notes-by-user.md`,
+`reviews.md`, or `agent-journal.md`; the parent pastes the excerpts you need or lists a packet file in `inputs`.
 Read another agent's file only when the prompt lists it as input. Never
 read a slice directory that is not yours. Never read or write
 `inflight.md`. You may read `conventions.md` when the prompt gives its path.

@@ -1,4 +1,4 @@
-# journal.md
+# agent-journal.md
 
 Events, write-on, and caps: **Journal policy**. A normal event is a `##`
 heading plus at most 3 bullets.

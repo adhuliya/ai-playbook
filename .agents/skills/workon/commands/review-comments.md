@@ -2,8 +2,7 @@
 
 Status: `Active`, `Paused`, `Blocked`, `Complete`. No status change, no
 journal. Comment-only edits need neither the **Execution gate**
-(`policy/execution-gate.md`) nor a `Complete` reopen. Levels:
-**Engineering while focused** (`policy/engineering.md`) comments.
+(`policy/execution-gate.md`) nor a `Complete` reopen. Levels: **Comments** (`policy/comments.md`).
 
 Reads: policy/comments.md, policy/launch.md, policy/inflight.md, policy/paths.md, policy/parent-reads.md, policy/critic-pair.md, pipelines/comments.md
 
@@ -11,7 +10,7 @@ Reads: policy/comments.md, policy/launch.md, policy/inflight.md, policy/paths.md
 then sets `review-comments: on`. `remove-review-comments` trims them to
 default level, then sets `review-comments: off`.
 
-1. Resolve `base-branch` (`activity.md`), else `origin/<base-branch>`.
+1. Resolve `base-branch` (`agent-activity.md`), else `origin/<base-branch>`.
    Neither exists → say so, suggest fixing the row, stop. Empty activity
    diff → say so; stop.
 2. Write `inflight.md` (**Inflight pipelines**). Run the **Comments**

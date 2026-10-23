@@ -39,8 +39,8 @@ keep the e2e completion rule for that reason.
 | Rules that hold every turn: stops, keyword gate, guiding, asking, fewer prompts | `always.md` |
 | A new bold name, or a moved one | `index.md` |
 | Status changes, gates, reminders, journal, update cadence, consistency check, session start | `policy/` (one file per concept) |
-| Activity folder, `activity.md`, IDs, catalog, guide for users, portability, references, plan outline | `policy/` |
-| Create, derive, replan, planning stages, cited context | `policy/` |
+| Activity folder, `agent-activity.md`, IDs, catalog, guide for users, portability, references, plan outline | `policy/` |
+| Create, derive, replan, planning stages, cited context, activity kind | `policy/` (`activity-kind.md` for thin vs full) |
 | Review cycles and apply timing | `policy/reviews.md`, `policy/apply-timing.md` |
 | Test tiers, engineering, comment levels | `policy/test-evidence.md`, `policy/engineering.md`, `policy/comments.md` |
 | Launch, prompt shape, inflight scratch, paths, parent reads | `policy/launch.md`, `inflight.md`, `paths.md`, `parent-reads.md` |
@@ -77,7 +77,10 @@ the condition unclear.
 
 Check every path on every `Reads:` line exists. Search for old paths and
 names (`scripts/`, `templates.md`, `commands.md`, `lifecycle.md`,
-`synced`, `user-guide`). Check that each bold name resolves through the
+`synced`, `user-guide`). Old record names (`activity.md`, `journal.md`,
+`plan-outline.md`, `requirement-def.md`, `design.md`, `design-choices.md`, and a root
+`guide-for-users.md`) may appear only as legacy markers in `repair.md`,
+`policy/session-start.md`, and this list. Check that each bold name resolves through the
 Index in `index.md`. Check that `help all` still prints the command map.
 Run the session-start command from `policy/session-start.md` against a
 sample activity. Measure `SKILL.md`, `always.md`, and the touched files with

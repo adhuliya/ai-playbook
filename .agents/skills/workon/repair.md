@@ -1,34 +1,56 @@
 # Repair
 
 Run this only when **Session start** found a legacy marker. Fix every
-marker in one pass, with batched calls (**Fewer prompts**). Do not edit the
-journal. Afterwards tell the user, in three lines or fewer, what changed.
+marker in one pass, with batched calls (**Fewer prompts**). Do not edit
+the journal, except the filename-token rename below. Afterwards tell the
+user, in three lines or fewer, what changed.
+
+**Record filenames.** Do this before the other fixes. `git mv` when the
+file is tracked. If the new path already exists, do not overwrite; tell
+the user.
+
+| Old name | New name |
+|---|---|
+| `activity.md` | `agent-activity.md` |
+| `journal.md` | `agent-journal.md` |
+| `plan-outline.md` | `spec-plan-outline.md` |
+| `requirement-def.md` | `spec-req-def.md` |
+| `design.md` | `spec-design.md` |
+| `design-choices.md` | `spec-design-choice.md` |
+| `guide-for-users.md` (activity root) | `artifacts/guide-for-users.md` |
+
+Replace those filename tokens in markdown under the slug, including the
+journal and `artifacts/`. Longest token first. Do not change
+`detailed-design.md` or a name that is already new. Do not rewrite
+sentences, regenerate sections, or renumber. When `kind` is missing, add
+`kind | full`. That row is the only new text.
 
 **Current-layout renames and moves:**
 
-- `user-guide.md`: rename to `guide-for-users.md` (`git mv` if tracked).
+- `user-guide.md`: rename to `artifacts/guide-for-users.md` (`git mv` if tracked).
 - Numbered milestones: in `# Milestones`, rewrite `<n>. [ ] <text>` as
   `- [ ] M<n>: <text>` and `<n>. removed: <why>` as `- M<n>: removed: <why>`.
-  Keep the checked state. Update milestone citations in `activity.md` and
+  Keep the checked state. Update milestone citations in `agent-activity.md` and
   `reviews.md` (`milestone 3` → `M3`). Leave old `artifacts/bg/milestone-<n>/`
   and `artifacts/review/milestone-<n>.md` for `delete-tmp-files`.
-- `# References` in `activity.md`: move each bullet to `references.md` in the
+- `# References` in `agent-activity.md`: move each bullet to `references.md` in the
   **References** shape and number any bullet without a `REF<n>`. Remove the
-  section from `activity.md`. Keep `derived-from:` as the last entry.
+  section from `agent-activity.md`. Keep `derived-from:` as the last entry.
 - `synced` row: delete it. When `refs/workon/<slug>` exists, remove it with
   `git update-ref -d refs/workon/<slug>`.
-- `plan-outline.md` missing, `stage: design`, and the status is not
+- `spec-plan-outline.md` missing, `stage: design`, and the status is not
   `Complete`: draft it from `# Current Plan` and `# Milestones` (**Plan
   summary**). Show it once with the next **File review**.
-- `design.md` missing (**Design document**): create it with the `# Design`
+- `spec-design.md` missing (**Design document**): skip this when `kind`
+  is `thin` (session start creates the H1 only). Otherwise create it with the `# Design`
   H1. Migrate the body
-  of `activity.md`'s `# Current Design` section into its Current Design
+  of `agent-activity.md`'s `# Current Design` section into its Current Design
   section. Synthesize Decisions as `### DD<n>:` blocks from
-  `design-choices.md` by level, each with `- cites:` set to the `DC` it
+  `spec-design-choice.md` by level, each with `- cites:` set to the `DC` it
   comes from. Add an empty Test Plan (`TBD` lines per RD) and an empty
   Traceability section (`TBD` rows from RD). Then
-  replace `# Current Design` in `activity.md` with the one-line pointer
-  `See \`design.md\`.`. Show the new `design.md` once.
+  replace `# Current Design` in `agent-activity.md` with the one-line pointer
+  `See \`spec-design.md\`.`. Show the new `spec-design.md` once.
 
 **Older layouts:**
 
@@ -39,9 +61,9 @@ journal. Afterwards tell the user, in three lines or fewer, what changed.
 - Legacy `user-notes.md`: rename to `notes-by-user.md` (`git mv` if
   tracked) and change the H1 `# User Notes` to `# Notes by User`. Keep the
   body.
-- Legacy `requirements.md`: rename to `requirement-def.md` (`git mv` if
+- Legacy `requirements.md`: rename to `spec-req-def.md` (`git mv` if
   tracked). Keep the body.
-- `requirement-def.md` without a **Problem header**: draft one from
+- `spec-req-def.md` without a **Problem header**: draft one from
   `# Scope`, `# Goal`, and `.dev-notes/definition.md`. Show it once and ask
   the user to confirm or correct it.
 - Entries or References bullets without **IDs**: number them in file
@@ -54,7 +76,7 @@ journal. Afterwards tell the user, in three lines or fewer, what changed.
   review records. Do not apply them; `delete-tmp-files` lists them
   (default delete).
 
-**Milestone reads and DD.** Run when `design.md` Decisions has a `- DC`
+**Milestone reads and DD.** Run when `spec-design.md` Decisions has a `- DC`
 bullet and no `### DD` heading, or when `stage` is `design` and a real
 milestone (not `TBD (design stage)`, not `removed`) has no `reads:` line.
 Skip the `reads:` fill while `stage` is `requirements`.

@@ -14,7 +14,7 @@ Reads: policy/journal.md
    shipped outcomes (paths, behavior, decisions, accepted gaps); one line
    per milestone or review cycle (`M2: <outcome>`, `RU3: 4
    applied, 1 rejected`); one line `paused N, resumed N, completed N`. Drop
-   plan and status prose that `activity.md` already holds.
+   plan and status prose that `agent-activity.md` already holds.
 4. Show the proposed compacted file. Write in place only after the user
    nods. Git is the archive unless the user asks for an `artifacts/`
    snapshot.

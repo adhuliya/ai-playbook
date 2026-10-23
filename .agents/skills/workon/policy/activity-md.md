@@ -1,11 +1,13 @@
-# `activity.md`
+# `agent-activity.md`
 
 Title plus metadata table in the first ~10 lines. Shape:
-`shapes/activity.md`. Required rows: `status`, `stage`, `conventions`,
+`shapes/activity.md`. Required rows: `status`, `kind`, `stage`, `conventions`,
 `review-comments`, `slug`, `branch`, `base-branch`, `ticket`, `notes`.
 `ticket` and `branch` may be `none`; `notes` may be empty.
 
-`stage` is `requirements` or `design` (**Planning stages**). `branch` is a
+`kind` is `thin` or `full` (**Activity kind**). A missing `kind` means
+`full` until session start adds the row. `stage` is `requirements` or
+`design` (**Planning stages**). `branch` is a
 hint; do not auto-create or check out branches. `base-branch` is the parent
 branch the activity diffs against (default `main`); the activity diff is
 `git diff $(git merge-base HEAD <base-branch>)` plus new untracked files.
@@ -20,7 +22,7 @@ Current Design, Current Plan, Milestones, Next Steps. References live in
   the next checkpoint.
 - **Scope:** one or two paragraphs after the first grill, then near-fixed.
   A major in-flight change is a **Material-change**.
-- **Current Design:** a one-line pointer to `design.md` (**Design
+- **Current Design:** a one-line pointer to `spec-design.md` (**Design
   document**), which now holds the execution handoff, the decision
   synthesis, and the requirement-to-test-to-path trace. Rewrite the
   pointer only if it goes stale.
@@ -34,6 +36,6 @@ Current Design, Current Plan, Milestones, Next Steps. References live in
   mark removed work `superseded`; do not delete. Milestone numbers are
   stable: a `fix-activity` prune replaces a milestone body with a one-line
   `M<n>: removed: <why>` stub. Review milestones: **Reviews**.
-- In `stage: requirements`, Current Design points at `design.md`, whose
+- In `stage: requirements`, Current Design points at `spec-design.md`, whose
   Current Design, Test Plan, and Traceability hold `TBD (design stage)`;
   Current Plan and Milestones hold `TBD (design stage)` too.

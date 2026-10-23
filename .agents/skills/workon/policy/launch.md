@@ -25,15 +25,15 @@ inputs: <paths the brief may read>
 **Plan packet.** The critics and the synthesizer of `verify-plan` and review
 read one packet file, not pasted text. Before it launches the critics, the
 parent writes the packet once per pipeline run and lists its path in
-`inputs`. The packet holds the `activity.md` sections Goal, Scope, Current
+`inputs`. The packet holds the `agent-activity.md` sections Goal, Scope, Current
 Plan, Milestones, and Next Steps, then the full RD (with the
-Problem header), the full Design Decisions, and the full `design.md`
+Problem header), the full Design Decisions, and the full `spec-design.md`
 (**Design document**). The `DD` blocks are the current statements. The
-choice history stays in `design-choices.md`. Build it in one shell call,
+choice history stays in `spec-design-choice.md`. Build it in one shell call,
 so the text never passes through your context:
 
 ```bash
-s=.dev-notes/activities/<slug>; mkdir -p "$s/artifacts/<dir>"; { awk '/^# /{p=/^# (Goal|Scope|Current Plan|Milestones|Next Steps)/} p' "$s/activity.md"; cat "$s/requirement-def.md" "$s/design-choices.md" "$s/design.md"; } > "$s/artifacts/<dir>packet.md"
+s=.dev-notes/activities/<slug>; mkdir -p "$s/artifacts/<dir>"; { awk '/^# /{p=/^# (Goal|Scope|Current Plan|Milestones|Next Steps)/} p' "$s/agent-activity.md"; cat "$s/spec-req-def.md" "$s/spec-design-choice.md" "$s/spec-design.md"; } > "$s/artifacts/<dir>packet.md"
 ```
 
 `<dir>` is the pipeline directory with its slash (`verify-plan/`, `review/`,

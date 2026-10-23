@@ -1,4 +1,4 @@
-# guide-for-users.md
+# artifacts/guide-for-users.md
 
 Policy: **Guide for users**. Prose per **Writing style**; omit empty sections.
 

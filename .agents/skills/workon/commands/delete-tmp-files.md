@@ -17,8 +17,8 @@ Status: any. Also run by `mark-completed`. No status change, no journal.
    - Untracked or gitignored leftovers (scratch dirs, sample outputs,
      dumped test artifacts, isolated-setup envs): default **delete**.
    - Uncertain items: default **keep**.
-   - Never list activity files (`activity.md`, `journal.md`, notes files,
-     `references.md`, `plan-outline.md`, `reviews.md`, `guide-for-users.md`),
+   - Never list activity files (`agent-activity.md`, `agent-journal.md`, notes files,
+     `references.md`, `spec-plan-outline.md`, `spec-design.md`, `reviews.md`, `artifacts/guide-for-users.md`, `artifacts/detailed-design.md`),
      `.agents/`, `.cursor/`, shipped
      source, real tests, docs, or scripts. List other tracked files only if
      the user points at them.

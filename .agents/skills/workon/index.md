@@ -22,7 +22,7 @@ from their file name are listed.
 
 | File | Other names |
 |---|---|
-| `activity-md` | `activity.md`, Milestones |
+| `activity-md` | `agent-activity.md`, Milestones |
 | `conventions` | Rules, Setup, Isolated setup |
 | `design-choices` | Design Decisions |
 | `engineering` | Engineering while focused |

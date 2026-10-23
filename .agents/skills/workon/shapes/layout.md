@@ -4,25 +4,25 @@
 .dev-notes/activities/
     activities.md
     <slug>/
-        activity.md
-        plan-outline.md         # design stage on; not in the handoff
-        design.md
-        journal.md
-        requirement-def.md
-        design-choices.md
+        agent-activity.md
+        spec-plan-outline.md         # design stage on; not in the handoff
+        spec-design.md
+        agent-journal.md
+        spec-req-def.md
+        spec-design-choice.md
         conventions.md
         references.md
         notes-by-user.md
         reviews.md              # lazy
-        guide-for-users.md      # create-guide only
         artifacts/              # copies flat; reserved names below
+            guide-for-users.md  # create-guide only
             detailed-design.md  # detailed-design only
 ```
 
 A whole copy sits at the artifacts root as `<basename>`; an excerpt is
 `<stem>-excerpt.md` with a header that names the source and what was kept.
 The reserved directories are `verify-plan/`, `bg/`, `review/`, `comments/`,
-and `fix/`, and the reserved files are `inflight.md` and
+and `fix/`, and the reserved files are `inflight.md`, `guide-for-users.md`, and
 `detailed-design.md`; never use a reserved name for a cited copy. File
 roles: **Paths and readiness**. `inflight.md` is parent scratch
 (**Inflight pipelines**):

@@ -6,20 +6,20 @@ whole file.
 
 | ID | Entry | Home |
 |---|---|---|
-| `RD<n>` | Requirement Definition | `requirement-def.md` `## RD<n>: <title>` |
-| `DD<n>` | current design statement | `design.md` `### DD<n>: <title>` under `## Decisions` |
-| `DC<nn>` | design choice (two digits, append-only) | `design-choices.md` `## DC<nn>: <title>` |
+| `RD<n>` | Requirement Definition | `spec-req-def.md` `## RD<n>: <title>` |
+| `DD<n>` | current design statement | `spec-design.md` `### DD<n>: <title>` under `## Decisions` |
+| `DC<nn>` | design choice (two digits, append-only) | `spec-design-choice.md` `## DC<nn>: <title>` |
 | `CONV<n>` | convention rule (Setup H2 has no ID) | `conventions.md` `## CONV<n>: <title>` |
 | `REF<n>` | reference | `references.md` `- REF<n>:` entry |
 | `RU<n>`, `RU<n>.<m>` | Review Update: review cycle, point | `reviews.md` |
-| `M<n>` | milestone | `activity.md` `# Milestones` |
-| `AC<n>` | acceptance criteria for `RD<n>` | `requirement-def.md`, `AC<n>:` under `## RD<n>` |
-| `TC<n>` | test case set for `RD<n>` | `design.md` `## Test Plan`, `TC<n>:` line |
+| `M<n>` | milestone | `agent-activity.md` `# Milestones` |
+| `AC<n>` | acceptance criteria for `RD<n>` | `spec-req-def.md`, `AC<n>:` under `## RD<n>` |
+| `TC<n>` | test case set for `RD<n>` | `spec-design.md` `## Test Plan`, `TC<n>:` line |
 
 Assign the next free number. Do not reuse a retired (superseded or removed)
 ID, except through `fix-activity` renumbering. `replaces:` names the old
-ID. IDs stay out of shipped work and `guide-for-users.md`
-(**Engineering while focused**). `plan-outline.md` and
+ID. IDs stay out of shipped work and `artifacts/guide-for-users.md`
+(**Engineering while focused**). `spec-plan-outline.md` and
 `artifacts/detailed-design.md` stay readable without IDs (**Writing style**).
 
 `AC<n>` and `TC<n>` are not independently numbered: each always shares its
@@ -35,7 +35,7 @@ alternatives and why they lost. `DC<nn>` stays the append-only history.
 
 ## Citing and reading by ID
 
-Recommended, not strict. `plan-outline.md` and `detailed-design.md` are the
+Recommended, not strict. `spec-plan-outline.md` and `artifacts/detailed-design.md` are the
 exception in **Writing style**.
 
 - **Cite by ID** in records and replies instead of repeating the title or
@@ -47,28 +47,28 @@ exception in **Writing style**.
   what you need:
 
   ```bash
-  awk '/^## /{p=($2 ~ /^(RD3|RD5):$/)} p' .dev-notes/activities/<slug>/requirement-def.md
+  awk '/^## /{p=($2 ~ /^(RD3|RD5):$/)} p' .dev-notes/activities/<slug>/spec-req-def.md
   ```
 
   Use the same call for `DC`, `CONV`, and `RU` entries in their files. A
   `DD<n>` entry is a `###` block:
 
   ```bash
-  awk '/^### /{p=($2 ~ /^(DD2|DD4):$/)} p' .dev-notes/activities/<slug>/design.md
+  awk '/^### /{p=($2 ~ /^(DD2|DD4):$/)} p' .dev-notes/activities/<slug>/spec-design.md
   ```
 
   For `REF<n>` and `M<n>`, which are list items, use `rg -n -A 8 'REF2:'` or
   `rg -n -A 12 'M3:'`. For `AC<n>` and `TC<n>`, which are lines or lists
-  inside another entry, use `rg -n -A 4 'AC3:'` on `requirement-def.md` or
-  `rg -n -A 2 'TC3:'` on `design.md`. When `AC3:` is absent, stop after the
+  inside another entry, use `rg -n -A 4 'AC3:'` on `spec-req-def.md` or
+  `rg -n -A 2 'TC3:'` on `spec-design.md`. When `AC3:` is absent, stop after the
   `RD3` block.
 - Read a whole notes file only to grill, review, or rewrite it as a whole.
 
 ## Milestone read
 
 Run this before splitting a milestone's jobs (**Milestone**). It writes
-`artifacts/bg/M<n>/slice.md`. Read that file. Do not Read `requirement-def.md`,
-`design.md`, or `design-choices.md` for that milestone. Pass the slice path
+`artifacts/bg/M<n>/slice.md`. Read that file. Do not Read `spec-req-def.md`,
+`spec-design.md`, or `spec-design-choice.md` for that milestone. Pass the slice path
 in the workers' and milestone critics' `inputs`.
 
 The slice holds, in order: `## Current Design`; the milestone block; each
@@ -91,7 +91,7 @@ set `m` to the milestone id (`M2` in the copy).
 s=.dev-notes/activities/<slug>
 m=M2
 mkdir -p "$s/artifacts/bg/$m"
-awk -v m="$m" -v act="$s/activity.md" -v des="$s/design.md" -v rd="$s/requirement-def.md" -v dc="$s/design-choices.md" -v ref="$s/references.md" -v ru="$s/reviews.md" '
+awk -v m="$m" -v act="$s/agent-activity.md" -v des="$s/spec-design.md" -v rd="$s/spec-req-def.md" -v dc="$s/spec-design-choice.md" -v ref="$s/references.md" -v ru="$s/reviews.md" '
 function load(path,    line, n) {
   n = 0
   while ((getline line < path) > 0) {
@@ -216,7 +216,7 @@ BEGIN {
   }
   print "# Slice " m
   print ""
-  if (N[des] < 1) { print "missing: design.md"; print "" }
+  if (N[des] < 1) { print "missing: spec-design.md"; print "" }
   else if (emit(des, "^## Current Design$", "^## ")) print ""
   if (p) { printf "%s", block; print "" }
   else { print "missing: milestone " m; print "" }

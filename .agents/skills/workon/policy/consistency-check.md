@@ -3,13 +3,13 @@
 Agent-run after user edits, and step 0 of `fix-activity`. No keyword, no
 status change, no journal.
 
-1. Check `activity.md`, RD, Design Decisions, Conventions, `design.md`, and
+1. Check `agent-activity.md`, RD, Design Decisions, Conventions, `spec-design.md`, and
    `reviews.md` against each other: broken or duplicate **IDs**, Problem
-   header vs Goal and Scope, Goal vs RD, `design.md`'s Current Design and
-   Decisions vs `design-choices.md`, plan and milestones vs RD, Setup vs
+   header vs Goal and Scope, Goal vs RD, `spec-design.md`'s Current Design and
+   Decisions vs `spec-design-choice.md`, plan and milestones vs RD, Setup vs
    rules. A real milestone (not `TBD (design stage)`, not `removed`) with
    no `reads:` line is a fix. A missing `AC<n>` is not a finding. Flag, as
-   a suggestion (not a block), a `design.md` Traceability row that is stale
+   a suggestion (not a block), a `spec-design.md` Traceability row that is stale
    against the milestones and paths (a `TC<n>` tag that still says
    `planned for` after its milestone is checked, or vice versa), an
    `AC<n>` no `TC<n>` or path satisfies, a `reads:` line with no `DD`, a

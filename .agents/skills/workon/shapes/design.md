@@ -1,4 +1,4 @@
-# design.md
+# spec-design.md
 
 Policy: **Design document**. Prose per **Writing style**; cite `DD<n>`,
 `DC<nn>`, and `RD<n>` with a short gloss on first mention (**IDs**).

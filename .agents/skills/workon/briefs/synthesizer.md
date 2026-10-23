@@ -23,7 +23,7 @@ both critics missed.
 ## Proposals
 ### <short title>
 - severity: must | should
-- where: `activity.md` `# …` | `RD<n>` | `DD<n>` | `DC<nn>` | `CONV<n>` | <path>
+- where: `agent-activity.md` `# …` | `RD<n>` | `DD<n>` | `DC<nn>` | `CONV<n>` | <path>
 - change: <the edit>
 - why: <one line>
 - from: negative | synth

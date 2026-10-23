@@ -6,7 +6,7 @@ description: >-
   guide for users). Use when the user manages or imports an activity, or
   issues a workon keyword: help, requirements-ok, approve-plan,
   conventions-ok, start-building, pause-work, resume-work, mark-completed,
-  replan-work, create-sibling, import-activity, start-review, apply-review,
+  replan-work, create-sibling, import-activity, make-full, start-review, apply-review,
   verify-plan, update-convention, add-review-comments,
   remove-review-comments, fix-activity, compact-journal, create-guide,
   detailed-design, add-ac, delete-tmp-files, query-work, no-query-work,
@@ -22,42 +22,41 @@ resume the work months later.
 
 ## How it works
 
+`kind` is `thin` or `full` (**Activity kind**). Both use the same records.
+A thin activity is the default for a clear small request: one short
+planning pass, then `start-building`, then inline work. A full activity
+grills, passes `approve-plan` and `conventions-ok`, then `start-building`,
+and builds through sub-agents. `make-full` upgrades a thin activity in
+place and returns it to `Planning`.
+
 An activity moves through `Planning → Approved → Active → Complete`, with
-optional `Paused` or `Blocked` stops. The user drives each transition with a
-reserved keyword such as `approve-plan`, `start-building`, or
-`mark-completed`. The agent plans, builds, and keeps the records current,
-but never crosses a gate on its own.
+optional `Paused` or `Blocked` stops. A thin activity skips `Approved`.
+The user drives each transition with a reserved keyword. The agent plans,
+builds, and keeps the records current, but never crosses a gate on its own.
 
-Work runs in three phases:
-
-- **Planning.** The agent grills the user and drafts the records. The user
-  reviews them. Planning may split into a requirements stage and a design
-  stage (**Planning stages**).
-- **Gates.** The user approves the plan and the conventions, then starts the
-  build.
-- **Building.** The agent runs milestones through sub-agents, collects test
-  evidence, and reviews the result. Reviews, plan checks, and drift repair
-  run as pipelines of background sub-agents that write files. The parent
-  reads only the final file.
+On a full activity, reviews, plan checks, and drift repair run as
+pipelines of background sub-agents that write files. The parent reads only
+the final file. Planning may split into a requirements stage and a design
+stage (**Planning stages**).
 
 ## Records
 
 Each folder holds a fixed set of files. The shape of each is in `shapes/`.
 
-- `activity.md`: the current truth (status, goal, scope, a pointer to
+- `agent-activity.md`: the current truth (status, goal, scope, a pointer to
   design, plan, milestones `M1`, `M2`, …, next steps). Each real milestone
-  has a `reads:` line. `plan-outline.md`: a short overview of that plan, in
+  has a `reads:` line. `spec-plan-outline.md`: a short overview of that plan, in
   plain words.
-- `design.md`: the lean design reference (invariants, current `DD<n>`
+- `spec-design.md`: the lean design reference (invariants, current `DD<n>`
   statements, and a requirement-to-test-to-path trace). `detailed-design.md`
   (in `artifacts/`): a diagram-rich expansion, written only by
   `detailed-design`, readable without the IDs.
-- `journal.md`: the append-only event timeline.
-- `requirement-def.md`, `design-choices.md`, `conventions.md`: numbered
+- `agent-journal.md`: the append-only event timeline.
+- `spec-req-def.md`, `spec-design-choice.md`, `conventions.md`: numbered
   entries (`RD<n>`, `DC<nn>`, `CONV<n>`). A milestone cites `RD` and `DD`
   from its `reads:` line. `DC` stays the choice history a `DD` cites.
 - `references.md` (`REF<n>`), `reviews.md` (`RU<n>`), `notes-by-user.md`
-  (the user's), `guide-for-users.md` (written for humans when the work
+  (the user's), `artifacts/guide-for-users.md` (written for humans when the work
   ships).
 - `artifacts/`: cited copies and sub-agent output.
 
@@ -88,8 +87,8 @@ reset. Never bulk-read a folder.
 | Phase or action | Read after the base files |
 |---|---|
 | Planning: `create`, `replan-work`, `create-sibling`, `import-activity` | the command file and its `Reads:`; open each `shapes/` file when you write that record |
-| Gates: `requirements-ok`, `approve-plan`, `conventions-ok`, `start-building` | the command file and its `Reads:` (a few policies) |
-| Building: `build` | the command file and its `Reads:`; the launch kit and `pipelines/milestone.md` just before the first sub-agent launch |
+| Gates: `requirements-ok`, `approve-plan`, `conventions-ok`, `start-building`, `make-full` | the command file and its `Reads:` (a few policies) |
+| Building: `build` | the command file and its `Reads:`; on `full`, the launch kit and `pipelines/milestone.md` just before the first sub-agent launch |
 | Review: `start-review`, `apply-review`, `verify-plan` | the command file and its `Reads:` (review policies, the launch kit, the matching `pipelines/` file) |
 | Sub-agent launch | the launch kit (**Background sub-agents** in `always.md`). Sub-agents read their own `briefs/` files; the parent does not |
 | Upkeep: `fix-activity`, `compact-journal`, `update-convention`, `add-ac` | the command file and its `Reads:`; `fix-activity` names its pipelines at the step that needs them |

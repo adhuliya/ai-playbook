@@ -7,7 +7,7 @@ Controls how much the agent teaches the domain and engineering content of
 the current task in its replies: design rationale, implementation
 concepts, and tradeoffs. It does not change the one-time workon-concept
 gloss in **Guide the user**, and it never adds teaching prose to records
-(`activity.md`, `design.md`, code comments follow **Comments** and
+(`agent-activity.md`, `spec-design.md`, code comments follow **Comments** and
 **Writing style** regardless of level).
 
 - **`teach-off`** (default): state design and implementation facts

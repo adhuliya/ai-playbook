@@ -1,4 +1,4 @@
-# activity.md
+# agent-activity.md
 
 The title and metadata table sit in the first ~10 lines so listing stays
 greppable.
@@ -9,6 +9,7 @@ greppable.
 | Key | Value |
 |---|---|
 | status | Planning |
+| kind | thin |
 | stage | design |
 | conventions | pending |
 | review-comments | on |
@@ -20,7 +21,7 @@ greppable.
 
 # Goal
 
-<Short summary of requirement-def.md. RD is authoritative.>
+<Short summary of spec-req-def.md. RD is authoritative.>
 
 # Scope
 
@@ -32,7 +33,7 @@ greppable.
 
 # Current Design
 
-See `design.md`.
+See `spec-design.md`.
 
 # Current Plan
 

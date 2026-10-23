@@ -7,10 +7,10 @@ and an open review cycle that waits for `apply-review` is not a unit of
 work.
 
 `inflight.md` is parent-only scratch (shape: `shapes/layout.md`). Sub-agents never read or write it, and it is never shown as status;
-`activity.md` is the user's view of progress. Create it fresh when a unit
+`agent-activity.md` is the user's view of progress. Create it fresh when a unit
 starts, overwriting any old one, and record the pipeline, the unit
 (`RU<n>`, `M<n>`, or command), the launched steps, the expected
-final file, and short working notes. Before launch, set `activity.md`
+final file, and short working notes. Before launch, set `agent-activity.md`
 `# Next Steps` item 1 to `In progress: <pipeline> <unit>` so the user sees
 it. Delete it when the parent reads the final file (for a milestone, after
 the checkpoint that checks it), or when the pipeline ends early (env

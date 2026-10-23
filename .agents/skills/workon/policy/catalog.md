@@ -4,7 +4,7 @@
 it lazily (`# Activities`). Append new entries at the end; do not rewrite or
 reorder the file unless asked. An entry is `## <slug>: Short title` plus one
 high-level paragraph with no **IDs** and no milestone numbers. It is not a
-substitute for `activity.md`. Shape: `shapes/catalog.md`.
+substitute for `agent-activity.md`. Shape: `shapes/catalog.md`.
 
 On create, derive, or import, append without reading the catalog:
 

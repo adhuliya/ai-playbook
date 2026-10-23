@@ -1,6 +1,6 @@
 # References
 
-`references.md` holds every `REF<n>` of the activity; `activity.md` has no
+`references.md` holds every `REF<n>` of the activity; `agent-activity.md` has no
 References section. Shape: `shapes/references.md`. Cite a reference by its
 ID. Numbering: **IDs**.
 
@@ -42,4 +42,4 @@ when `fetched:` is about a week old or older, or the source is volatile
 (open ticket, pull request, draft document). Update the artifact, `fetched:`,
 and the learned lines. When the new content changes a requirement, follow
 **Material-change**. A refresh writes no journal event. `references.md` MAY
-carry dates; the no-dates rule covers only `activity.md` and `journal.md`.
+carry dates; the no-dates rule covers only `agent-activity.md` and `agent-journal.md`.

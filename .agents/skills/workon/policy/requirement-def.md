@@ -1,4 +1,4 @@
-# `requirement-def.md` (RD)
+# `spec-req-def.md` (RD)
 
 **RD** (Requirement Definition) means the `RD<n>` entries in this file, one
 or all. H1: `# Requirement Definition`. Parent-only.
@@ -30,7 +30,7 @@ same for `DC` and `CONV`). A material RD change after approval follows
 
 An entry MAY carry an `AC<n>` list (**IDs**: shares `RD<n>`'s number):
 short, checkable pass/fail conditions. By default this stays informal —
-the milestone's test cases (`TC<n>` in `design.md`) are the RD's
-acceptance evidence (**Test evidence**, `design.md` Traceability). `add-ac`
+the milestone's test cases (`TC<n>` in `spec-design.md`) are the RD's
+acceptance evidence (**Test evidence**, `spec-design.md` Traceability). `add-ac`
 drafts and appends `AC<n>` for the RDs that lack it; nothing else writes
 it.
