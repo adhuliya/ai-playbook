@@ -16,11 +16,13 @@ the user.
 | `plan-outline.md` | `spec-plan-outline.md` |
 | `requirement-def.md` | `spec-req-def.md` |
 | `design.md` | `spec-design.md` |
-| `design-choices.md` | `spec-design-choice.md` |
+| `design-choices.md` | `spec-design-choices.md` |
+| `spec-design-choice.md` | `spec-design-choices.md` |
 | `guide-for-users.md` (activity root) | `artifacts/guide-for-users.md` |
 
 Replace those filename tokens in markdown under the slug, including the
-journal and `artifacts/`. Longest token first. Do not change
+journal and `artifacts/`. Longest token first. A `design-choices.md`
+match inside `spec-design-choices.md` stays. Do not change
 `detailed-design.md` or a name that is already new. Do not rewrite
 sentences, regenerate sections, or renumber. When `kind` is missing, add
 `kind | full`. That row is the only new text.
@@ -46,7 +48,7 @@ sentences, regenerate sections, or renumber. When `kind` is missing, add
   H1. Migrate the body
   of `agent-activity.md`'s `# Current Design` section into its Current Design
   section. Synthesize Decisions as `### DD<n>:` blocks from
-  `spec-design-choice.md` by level, each with `- cites:` set to the `DC` it
+  `spec-design-choices.md` by level, each with `- cites:` set to the `DC` it
   comes from. Add an empty Test Plan (`TBD` lines per RD) and an empty
   Traceability section (`TBD` rows from RD). Then
   replace `# Current Design` in `agent-activity.md` with the one-line pointer

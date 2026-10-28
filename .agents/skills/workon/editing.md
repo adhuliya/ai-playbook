@@ -63,7 +63,8 @@ tells the agent when to read that file.
 
 Keep every pipeline step, path row, ready marker, critic kind, weight, and
 output-shape field; sub-agents read them from the briefs, so a missing
-field is a behavior change. The parent never pastes brief text, so a rule
+field is a behavior change. The milestone pipeline has no critic row.
+The parent never pastes brief text, so a rule
 the parent needs stays in `policy/` or `pipelines/` and a rule a sub-agent
 needs stays in its brief.
 
@@ -78,7 +79,8 @@ the condition unclear.
 Check every path on every `Reads:` line exists. Search for old paths and
 names (`scripts/`, `templates.md`, `commands.md`, `lifecycle.md`,
 `synced`, `user-guide`). Old record names (`activity.md`, `journal.md`,
-`plan-outline.md`, `requirement-def.md`, `design.md`, `design-choices.md`, and a root
+`plan-outline.md`, `requirement-def.md`, `design.md`, `design-choices.md`,
+`spec-design-choice.md`, and a root
 `guide-for-users.md`) may appear only as legacy markers in `repair.md`,
 `policy/session-start.md`, and this list. Check that each bold name resolves through the
 Index in `index.md`. Check that `help all` still prints the command map.

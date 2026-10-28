@@ -6,7 +6,7 @@ slug, list the matches and ask.
 
 Commit `.dev-notes/activities/`, including useful `artifacts/` copies and
 the reserved `verify-plan/`, `review/`, `comments/`, `fix/`, and `bg/`
-records, but not `inflight.md` (scratch). The agent does not `git add` or
+records, but not `inflight.md` or `sub-agents-log.txt` (scratch). The agent does not `git add` or
 commit unless asked. Huge generated trees stay out of the repo. A
 gitignored `.dev-notes/` is valid.
 

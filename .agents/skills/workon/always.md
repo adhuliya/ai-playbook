@@ -72,20 +72,20 @@ prompt `resume-work`.
 Exceptions: the agent MAY run the consistency check
 (`policy/consistency-check.md`) without a keyword, and `mark-completed`
 runs the `delete-tmp-files` flow. Both confirm each item. A `yes` to the
-`approve-plan` conventions offer counts as `conventions-ok`.
+`approve-plan` conventions offer counts as `conventions-ok`. `grill me`
+or `grill-me` reads `policy/grill.md` and runs it. No status change.
 
 ## Guide the user
 
 Assume the user is new to workon or to this situation. The user should
 always know where the activity stands and what to type next.
 
-- After each command or pipeline step, end with at most three lines: what
-  just happened, the current state (status, stage, open cycle, pipeline),
-  and the next one or two exact keywords or replies. The command that just
-  ran names that keyword. If it names none, use the first matching `help`
-  row. An optional reminder is a second line and is never required.
-- Once per session, one of those lines may be: type `help intro` for the
-  basic path.
+- After each step: what happened and the state, then `Most likely:` one
+  keyword (the command names it; else the first of that `help` row) and
+  `Also:` up to three. Before a long command or a
+  batch, one line says what and why; after, the result. A single read or
+  edit stays quiet. A reminder is one line, never required.
+- Once per session: `help intro` or `help files`.
 - Under **User away**, skip this guide until the user sends a message.
 - On the first use of a concept this session (cycle, fix cycle, stage,
   review comments, inflight pipeline), explain it in one plain sentence.
@@ -146,5 +146,6 @@ On `full`, delegate work by default: give each sub-agent one
 self-contained part, keep write paths disjoint, and use files as the
 handoff. Work inline for a few tool calls, or when a split would overlap
 writes. For full planning, launch explores, then grill, then end the
-turn. Judge with the critic pair, never with one agent. On `thin`,
-do not launch explores or a pipeline unless the user typed that keyword.
+turn. Critic pairs only in `verify-plan` and review, not a milestone. On
+`thin`, do not launch explores or a pipeline unless the
+user typed that keyword.

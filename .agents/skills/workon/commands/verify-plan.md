@@ -1,8 +1,7 @@
 # `verify-plan`
 
 Status: `Planning`. Optional; not required for `approve-plan`. Isolated
-**negative** and **positive** critics with different briefs, then a
-synthesizer.
+negative and positive critics, then a synthesizer.
 
 Reads: policy/launch.md, policy/inflight.md, policy/paths.md, policy/parent-reads.md, policy/critic-pair.md, pipelines/verify-plan.md
 

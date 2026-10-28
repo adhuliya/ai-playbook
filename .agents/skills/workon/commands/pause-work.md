@@ -18,7 +18,8 @@ Reads: policy/paused-blocked.md, policy/journal.md, policy/reminders.md, policy/
    requirement is `unfinished requirement:` plus the missing point. Do
    not name `start-building` while one remains. `stage: requirements`
    with no open branch names `requirements-ok`. Full `Planning` in
-   `stage: design` names `approve-plan`. `Active` names `continue`.
+   `stage: design` names `approve-plan`. `Active` names `continue`, unless
+   `continue` is `auto`.
    `Approved` with `conventions: pending` names `conventions-ok`.
    `Approved` with `conventions: ok` names `start-building`. Thin
    `Planning` with nothing unfinished names `start-building`.

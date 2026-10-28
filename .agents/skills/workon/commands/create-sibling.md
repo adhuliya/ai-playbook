@@ -10,7 +10,7 @@ Reads: policy/activity-kind.md, policy/planning-quality-bar.md, policy/planning-
    Requirements first sets `kind: full` and `stage: requirements`. On
    `full`, remind the strong model.
 2. Read the source `agent-activity.md`, `spec-req-def.md`,
-   `spec-design-choice.md`, `spec-design.md`, `conventions.md`, and `references.md` once; open its journal only if
+   `spec-design-choices.md`, `spec-design.md`, `conventions.md`, and `references.md` once; open its journal only if
    it has entries. Do not copy `notes-by-user.md` or `reviews.md`.
 3. On `full` and `stage: requirements`, run steps 1–4 of the **Planning
    quality bar**. On `full` and `stage: design`, run the whole bar for

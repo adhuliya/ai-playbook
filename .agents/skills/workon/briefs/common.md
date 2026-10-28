@@ -6,17 +6,17 @@ brief next and follow both.
 
 ## Files
 
-Write only your assigned files, creating directories as needed. Start each
-output file with the role's H1 and no preamble; an empty section holds
-`- none`. Name a `where` as an activity-file entry (`agent-activity.md` `# …`,
+Write only your assigned files, creating directories as needed. The `log:` path is assigned. Start each result
+file with the role's H1 and no preamble; an empty section holds `- none`.
+Name a `where` as an activity-file entry (`agent-activity.md` `# …`,
 `RD<n>`, `DD<n>`, `DC<nn>`, `CONV<n>`) or a product path.
 
 Never write an activity file: `agent-activity.md`, `agent-journal.md`,
-`spec-req-def.md`, `spec-design-choice.md`, `spec-design.md`, `conventions.md`,
+`spec-req-def.md`, `spec-design-choices.md`, `spec-design.md`, `conventions.md`,
 `notes-by-user.md`, `reviews.md`, `references.md`, `spec-plan-outline.md`,
 `artifacts/guide-for-users.md`, `artifacts/detailed-design.md`,
 `activities.md`. Never
-read `spec-req-def.md`, `spec-design-choice.md`, `notes-by-user.md`,
+read `spec-req-def.md`, `spec-design-choices.md`, `notes-by-user.md`,
 `reviews.md`, or `agent-journal.md`; the parent pastes the excerpts you need or lists a packet file in `inputs`.
 Read another agent's file only when the prompt lists it as input. Never
 read a slice directory that is not yours. Never read or write
@@ -24,6 +24,9 @@ read a slice directory that is not yours. Never read or write
 
 ## Conduct
 
+Append one line, no heading, `Sub-agent <role>: <clause>`, to `log:` at start, before a long
+command (name it), before a batch (count, sample names, purpose), when
+blocked, and at the end. A child does not.
 Ask the user nothing. Edit code only as a milestone worker, inside assigned
 paths; a comment editor edits only comments, inside assigned files. Run
 only the commands the prompt names. Do not `git add` or commit. Do not

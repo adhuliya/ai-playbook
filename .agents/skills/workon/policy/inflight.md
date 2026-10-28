@@ -6,8 +6,8 @@ comment, drift, or milestone run. It is in flight while
 and an open review cycle that waits for `apply-review` is not a unit of
 work.
 
-`inflight.md` is parent-only scratch (shape: `shapes/layout.md`). Sub-agents never read or write it, and it is never shown as status;
-`agent-activity.md` is the user's view of progress. Create it fresh when a unit
+`inflight.md` is parent-only scratch (shape: `shapes/layout.md`). Sub-agents never read or write it. Live lines go to `artifacts/sub-agents-log.txt`.
+`agent-activity.md` is the user's view of the activity. Create `inflight.md` fresh when a unit
 starts, overwriting any old one, and record the pipeline, the unit
 (`RU<n>`, `M<n>`, or command), the launched steps, the expected
 final file, and short working notes. Before launch, set `agent-activity.md`

@@ -3,10 +3,7 @@
 Use these steps only when `kind` is `full`: create, `create-sibling`,
 `replan-work`, and `make-full` after the kind change. A thin activity
 does not run them. In `stage: requirements`, run steps 1–4 only
-(**Planning stages**). Grill with
-[`grill-me`](../../grill-me/SKILL.md): one question at a time, asked per
-**Asking** (recommended option first), and explore the repo instead of
-asking. Do not skip grilling to draft files.
+(**Planning stages**). Run **Grill**. Do not skip it to draft files.
 
 The order is mandatory:
 

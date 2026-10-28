@@ -6,7 +6,7 @@ status change, no journal.
 1. Check `agent-activity.md`, RD, Design Decisions, Conventions, `spec-design.md`, and
    `reviews.md` against each other: broken or duplicate **IDs**, Problem
    header vs Goal and Scope, Goal vs RD, `spec-design.md`'s Current Design and
-   Decisions vs `spec-design-choice.md`, plan and milestones vs RD, Setup vs
+   Decisions vs `spec-design-choices.md`, plan and milestones vs RD, Setup vs
    rules. A real milestone (not `TBD (design stage)`, not `removed`) with
    no `reads:` line is a fix. A missing `AC<n>` is not a finding. Flag, as
    a suggestion (not a block), a `spec-design.md` Traceability row that is stale

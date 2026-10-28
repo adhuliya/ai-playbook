@@ -9,7 +9,7 @@
         spec-design.md
         agent-journal.md
         spec-req-def.md
-        spec-design-choice.md
+        spec-design-choices.md
         conventions.md
         references.md
         notes-by-user.md
@@ -22,8 +22,9 @@
 A whole copy sits at the artifacts root as `<basename>`; an excerpt is
 `<stem>-excerpt.md` with a header that names the source and what was kept.
 The reserved directories are `verify-plan/`, `bg/`, `review/`, `comments/`,
-and `fix/`, and the reserved files are `inflight.md`, `guide-for-users.md`, and
-`detailed-design.md`; never use a reserved name for a cited copy. File
+and `fix/`, and the reserved files are `inflight.md`, `sub-agents-log.txt`,
+`guide-for-users.md`, and `detailed-design.md`; never use a reserved name
+for a cited copy. File
 roles: **Paths and readiness**. `inflight.md` is parent scratch
 (**Inflight pipelines**):
 

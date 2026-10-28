@@ -2,7 +2,7 @@
 
 `<slug>/spec-design.md` is the lean design reference, for an agent (or a
 technical reader) to load instead of re-deriving the design from
-`spec-design-choice.md` and the code. Parent-only. Shape: `shapes/design.md`.
+`spec-design-choices.md` and the code. Parent-only. Shape: `shapes/design.md`.
 It replaces the old `# Current Design` section of `agent-activity.md`;
 `agent-activity.md` keeps that heading only as a one-line pointer to this file.
 
@@ -13,7 +13,7 @@ Traceability.
   evidence signals) that `# Current Design` used to hold in `agent-activity.md`.
   About 150 words. These are the invariants every milestone honors.
   A decision only some milestones need is a `DD<n>` under Decisions.
-  Chosen-vs-alternatives still live only in `spec-design-choice.md`.
+  Chosen-vs-alternatives still live only in `spec-design-choices.md`.
 - **Decisions:** one `### DD<n>: <title>` per current statement (**IDs**).
   Rewrite the block in place when that statement changes. Hard max ~200
   words. A bullet `- cites: DC01, DC02` names the `DC<nn>` entries it rests
@@ -21,7 +21,7 @@ Traceability.
   lists the `DD` on its `reads:` line and does not list the `DC`. Several
   `implementation-detail` choices may share one DD. When a `DC` is
   superseded, point `cites:` at the new entry and rewrite the DD body.
-  Keep the DD in agreement with `spec-design-choice.md`.
+  Keep the DD in agreement with `spec-design-choices.md`.
 - **Test Plan:** one `TC<n>` line per `RD<n>` (**IDs**: shares `RD<n>`'s
   number), naming the unit, integration, e2e, and interface-fake cases
   planned for it (**Test evidence**). Drafted with the milestones
@@ -45,7 +45,7 @@ In `stage: requirements`, Current Design, Test Plan, and Traceability hold
 made, citing that `DC<nn>` (**Planning stages**).
 
 Update at the same checkpoints as `agent-activity.md` (**Update cadence**), plus
-whenever a `spec-design-choice.md` entry is added or superseded, and whenever
+whenever a `spec-design-choices.md` entry is added or superseded, and whenever
 a milestone is checked (flip its Traceability tags from `planned for` to
 `done by`/`implemented by` and fill Paths). Keep it in sync before pause,
 complete, or handoff.

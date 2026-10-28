@@ -39,11 +39,9 @@ the turn; the next turn reads `drift.md`, runs D and step 2, grills unclear
 findings, and routes. The fix-cycle route stops at gate 2. Then the
 fix-cycle path (E1–E4) or the inline path (which reuses T and step 2) runs.
 
-**Grill rule.** Grill with [`grill-me`](../../grill-me/SKILL.md), asked per
-**Asking**, on every unclear finding before the route, and on every
-plan-impacting finding before proposing its fix. One question at a time;
-explore the repo first. Classify each answer as plan-impacting, a clear
-user edit, or a step 5 item.
+**Grill rule.** **Grill** every unclear finding before the route, and every
+plan-impacting finding before proposing its fix. Classify each answer as
+plan-impacting, a clear user edit, or a step 5 item.
 
 ## Triage and scans
 
@@ -113,8 +111,8 @@ Otherwise → inline path. An `all` scope with no checked milestone: inline
 path, verify every fact in step 2, skip the Setup build.
 
 G2. **Gate 2** (fix-cycle route only). List the findings and the route
-    reason. Describe the review (env agent, tests, critic pair,
-    synthesizer) and ask `review` (run E1–E4), `inline`, or `stop`. Stop
+    reason. Describe the review (env agent, tests, then critics and
+    the synthesizer) and ask `review` (run E1–E4), `inline`, or `stop`. Stop
     the turn. On `inline`, run the inline path; plan-impacting findings
     join the step 5 proposal with their plan edits.
 

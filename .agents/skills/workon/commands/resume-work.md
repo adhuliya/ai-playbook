@@ -25,7 +25,7 @@ Reads: policy/activity-kind.md, policy/paused-blocked.md, policy/material-change
      Otherwise prompt `start-building`.
    - `Approved` and `conventions: pending`: prompt `conventions-ok`.
    - `Approved` and `conventions: ok`: prompt `start-building`.
-   - `Active`: prompt `continue`.
+   - `Active`: follow **Continue mode**.
 
 ## `Planning` / `Approved` / `Active`
 

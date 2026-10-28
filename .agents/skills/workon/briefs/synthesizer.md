@@ -1,7 +1,7 @@
 # Synthesizer brief
 
-You reconcile a critic pair into one list of proposals. Input: the same
-packet the critics had, plus both critic files. For `pipeline: review`, the
+You reconcile the critics into one list of proposals. Input: the same
+packet the critics had, plus every critic file. For `pipeline: review`, the
 input also has `env.md` and the test reports, and you write the evidence
 section from them.
 
@@ -12,7 +12,7 @@ item depend on user intent, write a question and propose no change. Output
 changes only; do not write "negative says" or "positive says". Mention a
 Keep only as `keep: honored` or `overridden` on a change that touches it.
 Only the synthesizer may add one item (`from: synth`) for an evident `must`
-both critics missed.
+every negative critic missed.
 
 ## Shapes
 

@@ -2,8 +2,8 @@
 
 Run this before splitting a milestone's jobs (**Milestone**). It writes
 `artifacts/bg/M<n>/slice.md`. Read that file. Do not Read `spec-req-def.md`,
-`spec-design.md`, or `spec-design-choice.md` for that milestone. Pass the slice path
-in the workers' and milestone critics' `inputs`.
+`spec-design.md`, or `spec-design-choices.md` for that milestone. Pass the slice path
+in the workers' `inputs`.
 
 The slice holds, in order: `## Current Design`; the milestone block; each
 `RD` on the `reads:` line (the `AC` list is included when present); the
@@ -25,7 +25,7 @@ set `m` to the milestone id (`M2` in the copy).
 s=.dev-notes/activities/<slug>
 m=M2
 mkdir -p "$s/artifacts/bg/$m"
-awk -v m="$m" -v act="$s/agent-activity.md" -v des="$s/spec-design.md" -v rd="$s/spec-req-def.md" -v dc="$s/spec-design-choice.md" -v ref="$s/references.md" -v ru="$s/reviews.md" '
+awk -v m="$m" -v act="$s/agent-activity.md" -v des="$s/spec-design.md" -v rd="$s/spec-req-def.md" -v dc="$s/spec-design-choices.md" -v ref="$s/references.md" -v ru="$s/reviews.md" '
 function load(path,    line, n) {
   n = 0
   while ((getline line < path) > 0) {

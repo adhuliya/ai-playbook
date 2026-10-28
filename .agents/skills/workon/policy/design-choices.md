@@ -1,4 +1,4 @@
-# `spec-design-choice.md`
+# `spec-design-choices.md`
 
 H1: `# Design Decisions`. Entries: `## DC<nn>: <title>`. Parent-only and
 append-only (except `fix-activity`): append when a real choice is made,

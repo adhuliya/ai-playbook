@@ -13,6 +13,7 @@ greppable.
 | stage | design |
 | conventions | pending |
 | review-comments | on |
+| continue | ask |
 | slug | my-activity |
 | branch | none |
 | base-branch | main |

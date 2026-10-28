@@ -2,11 +2,11 @@
 
 Status: any; read-only; no focused activity needed.
 
-- `help`: tell the user what to do next in the current state; cap ~5 lines:
-  one state line (slug, status, `kind`, `stage` when `Planning`, `conventions`), then 1–3 next actions from
-  the state table. Check rows top-down; the first match wins. End with one
-  line: `help intro` for basics, `help all` for every command.
-- `help intro`: teach the basic path in ≤ 8 lines, and no other commands:
+- `help`: one state line (slug, status, `kind`, `stage` when `Planning`,
+  `conventions`). First matching row wins. Use the **Guide the user**
+  close. In flight, name `artifacts/sub-agents-log.txt`. End with
+  `help intro`, `help files`, `help all`.
+- `help intro`: teach the basic path in ≤ 8 lines, and no other commands.
   1. Describe the work in plain words (e.g. `workon add CSV export`).
      A clear small request stays `thin`: short files, no grill.
   2. Review the files, then `start-building`. Full: `approve-plan`, then
@@ -19,9 +19,12 @@ Status: any; read-only; no focused activity needed.
   activity is focused, mark the commands its status allows (`Status:` lines
   in the command files). Rows with `Status: any`, `n/a`, or no heading (natural
   language) are always allowed.
+- `help files`: explain the folder from `SKILL.md` Records and
+  `shapes/layout.md`, plus `artifacts/sub-agents-log.txt`. Name the slug.
+  No file bodies.
 - `help <command>`: explain that command in 2–5 sentences from its file
   (`commands/<command>.md`): when to use it, what it changes, and what it needs
-  first.
+  first. `files` is the folder mode above, not a command name.
 
 | State | Next actions |
 |---|---|
@@ -34,7 +37,7 @@ Status: any; read-only; no focused activity needed.
 | `Planning`, `kind: thin` | Review the short files (start with `spec-plan-outline.md`). A chat note on the same goal updates those files. Then `start-building`. |
 | `Planning` | Answer open questions; review the files (start with `spec-plan-outline.md`) and give feedback. Then `approve-plan` (it offers to accept the conventions if `pending`). |
 | `Approved` | `conventions-ok` if `pending`; then `start-building`. |
-| `Active` | Reply `continue`, or `mark-completed` when the milestones and the e2e pass. `pause-work` to stop. |
+| `Active` | `continue` when that row is `ask` or missing. When `auto`, the next work starts in this turn. `mark-completed` when the milestones and the e2e pass. `pause-work` to stop. |
 | `Paused` | `resume-work`. |
 | `Blocked` | Resolve the blocker in `notes` (quote it); then `resume-work`. |
 | `Complete` | `resume-work` to fix or extend; `create-guide` if `artifacts/guide-for-users.md` is missing. |

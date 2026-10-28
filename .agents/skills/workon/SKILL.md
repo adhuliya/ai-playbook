@@ -10,7 +10,8 @@ description: >-
   verify-plan, update-convention, add-review-comments,
   remove-review-comments, fix-activity, compact-journal, create-guide,
   detailed-design, add-ac, delete-tmp-files, query-work, no-query-work,
-  user-away, teach-off, teach-brief, teach-deep.
+  user-away, teach-off, teach-brief, teach-deep, grill-me, auto-continue,
+  ask-continue.
 disable-model-invocation: true
 ---
 
@@ -52,7 +53,7 @@ Each folder holds a fixed set of files. The shape of each is in `shapes/`.
   (in `artifacts/`): a diagram-rich expansion, written only by
   `detailed-design`, readable without the IDs.
 - `agent-journal.md`: the append-only event timeline.
-- `spec-req-def.md`, `spec-design-choice.md`, `conventions.md`: numbered
+- `spec-req-def.md`, `spec-design-choices.md`, `conventions.md`: numbered
   entries (`RD<n>`, `DC<nn>`, `CONV<n>`). A milestone cites `RD` and `DD`
   from its `reads:` line. `DC` stays the choice history a `DD` cites.
 - `references.md` (`REF<n>`), `reviews.md` (`RU<n>`), `notes-by-user.md`
@@ -77,7 +78,8 @@ reset. Never bulk-read a folder.
    `add-review-comments` and `remove-review-comments` share
    `review-comments.md`; `query-work` and `no-query-work` share
    `query-work.md`; `teach-off`, `teach-brief`, and `teach-deep` share
-   `teach-mode.md`.
+   `teach-mode.md`; `auto-continue` and `ask-continue` share
+   `continue-mode.md`.
 4. **When a command or `always.md` names a step, read the file that step
    names, just before you reach it.** A `Reads:` line is the up-front set;
    the steps name the rest.

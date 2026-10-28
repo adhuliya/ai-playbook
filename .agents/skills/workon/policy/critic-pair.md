@@ -1,8 +1,7 @@
 # Collect vs evaluate
 
 Use one agent to collect facts: outcomes, paths, pass or fail, and joins.
-Use a **critic pair** to judge quality, rank options, or decide a change;
-never one agent. Launch the pair in one message with the same input and
-opposite `side` values; `briefs/critic.md` carries both briefs and the
-focus list for each pipeline. The reconciler is the synthesizer for
-`verify-plan` and review, and the parent for a milestone.
+A milestone `pass` checks it; do not launch a critic pair there.
+Use critics only in `verify-plan` and review (`start-review` or a fix
+cycle). Always launch both sides. The pipeline step assigns each focus.
+`briefs/critic.md` is the critic brief. The synthesizer reconciles.

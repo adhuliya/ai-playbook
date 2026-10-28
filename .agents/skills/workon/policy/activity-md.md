@@ -12,7 +12,8 @@ hint; do not auto-create or check out branches. `base-branch` is the parent
 branch the activity diffs against (default `main`); the activity diff is
 `git diff $(git merge-base HEAD <base-branch>)` plus new untracked files.
 `conventions` is `pending` or `ok` (**Execution gate**). `review-comments`
-is `on` (default at create) or `off` (**Comments** levels).
+is `on` (default at create) or `off` (**Comments** levels). `continue`
+is `ask` or `auto` (**Continue mode**). A missing row means `ask`.
 
 Required sections, in order: Goal, Scope, Background and Special Notes,
 Current Design, Current Plan, Milestones, Next Steps. References live in

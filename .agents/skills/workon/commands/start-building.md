@@ -13,5 +13,5 @@ Reads: policy/activity-kind.md, policy/engineering.md, policy/comments.md, polic
 2. On `full`, **Optional-remind** `apply-review`.
 3. Set `status` to `Active`. Append a `Building` event. Begin
    engineering. On `thin`, build inline (**Activity kind**).
-4. Work still left: the next reply is `continue`. When the milestones
+4. Work still left: follow **Continue mode**. When the milestones
    and the end-to-end check are done, prompt `mark-completed`.

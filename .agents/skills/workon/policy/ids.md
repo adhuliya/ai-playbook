@@ -8,7 +8,7 @@ whole file.
 |---|---|---|
 | `RD<n>` | Requirement Definition | `spec-req-def.md` `## RD<n>: <title>` |
 | `DD<n>` | current design statement | `spec-design.md` `### DD<n>: <title>` under `## Decisions` |
-| `DC<nn>` | design choice (two digits, append-only) | `spec-design-choice.md` `## DC<nn>: <title>` |
+| `DC<nn>` | design choice (two digits, append-only) | `spec-design-choices.md` `## DC<nn>: <title>` |
 | `CONV<n>` | convention rule (Setup H2 has no ID) | `conventions.md` `## CONV<n>: <title>` |
 | `REF<n>` | reference | `references.md` `- REF<n>:` entry |
 | `RU<n>`, `RU<n>.<m>` | Review Update: review cycle, point | `reviews.md` |

@@ -29,6 +29,8 @@ Printed by `help all`. Keep one row per command; `help.md` names this file.
 | | `detailed-design` | Write a diagram-rich `artifacts/detailed-design.md` from `spec-design.md` |
 | | `delete-tmp-files` | List activity temporaries; delete on confirm |
 | Session | `user-away` | Say you are leaving; the agent takes permissions early and works to a stopping point |
-| | `help` / `help intro` / `help all` / `help <command>` | Next steps / the four-step basic path / this map / explain one command |
+| | `help` / `help intro` / `help files` / `help all` / `help <command>` | Next steps / the basic path / the activity folder and its files / this map / explain one command |
 | | `query-work` / `no-query-work` | Read-only session on / off |
 | | `teach-off` / `teach-brief` / `teach-deep` | How much the agent teaches the task's design and code; default `teach-off` |
+| | `grill me` / `grill-me` | Interview open decision branches, one question at a time |
+| | `auto-continue` / `ask-continue` | After a milestone, start the next one, or wait for `continue` |

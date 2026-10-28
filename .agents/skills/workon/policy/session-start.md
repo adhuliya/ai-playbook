@@ -12,7 +12,7 @@ act="$d/agent-activity.md"; [ -f "$act" ] || act="$d/activity.md"
 rd="$d/spec-req-def.md"; [ -f "$rd" ] || rd="$d/requirement-def.md"
 des="$d/spec-design.md"; [ -f "$des" ] || des="$d/design.md"
 ls -A "$d"; ls -A "$d/artifacts" 2>/dev/null || true
-for f in activity.md journal.md plan-outline.md requirement-def.md design.md design-choices.md guide-for-users.md; do
+for f in activity.md journal.md plan-outline.md requirement-def.md design.md design-choices.md spec-design-choice.md guide-for-users.md; do
   [ -f "$d/$f" ] && echo "legacy $f"
 done
 [ -f "$act" ] && head -n 14 "$act" || echo "missing-activity"
@@ -29,7 +29,7 @@ record is often unnecessary. If any legacy marker below is present, read
 batched step (**Fewer prompts**):
 
 - **Missing notes file:** create it with its H1 only. `spec-req-def.md`:
-  `# Requirement Definition`. `spec-design-choice.md`: `# Design Decisions`.
+  `# Requirement Definition`. `spec-design-choices.md`: `# Design Decisions`.
   `conventions.md`: `# Conventions` plus the empty `## Setup, build, test and
   install notes`. `notes-by-user.md`: `# Notes by User`. `references.md`:
   `# References`. Missing `spec-design.md` is a legacy marker (below), not a
@@ -50,7 +50,7 @@ any of these shows:
   `user-guide.md`, or `artifacts/self-review.md` or `artifacts/self-review/`;
 - a legacy line from the shell (`legacy activity.md`, `journal.md`,
   `plan-outline.md`, `requirement-def.md`, `design.md`,
-  `design-choices.md`, or root `guide-for-users.md`);
+  `design-choices.md`, `spec-design-choice.md`, or root `guide-for-users.md`);
 - `spec-design.md` missing while `spec-req-def.md` exists, and `kind` is
   not `thin` (pre-design-document layout);
 - a line from the `rg` hits: a `# References` heading in the activity
