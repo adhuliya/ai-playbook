@@ -7,7 +7,8 @@ turn.
 
 Follow only the loaded command file and the policies it names; ignore rules
 that belong to another command. Run the steps in order. The word "Stop"
-ends the command and the turn. Every command needs one focused activity,
+ends the turn. It ends the command unless that command says the next
+message resumes it. Every command needs one focused activity,
 except `help`, `import-activity`, `create`, `list`, `query-work`,
 `no-query-work`, `teach-off`, `teach-brief`, and `teach-deep`. When the
 status is not on the file's `Status:` line,
@@ -22,7 +23,10 @@ and `draft-check` are four distinct steps; do not treat one as another.
 - **Keyword gate** holds. A Goal or Scope rewrite, an RD change after
   approval, or new durable work is a material change
   (`policy/material-change.md`): read that file and prompt the choice; do not
-  rewrite scope first.
+  rewrite scope first. A checkpoint refresh so Goal and Scope match RD is
+  not a material change.
+- Passing notes for the current work go in `artifacts/agent-notes.md`. Read
+  that file when you resume the activity, and follow **Agent notes**.
 - No dates in `agent-activity.md` or `agent-journal.md` unless asked.
 - `agent-activity.md` is the current execution truth; rewrite stale sections.
   Every status or direction change writes the journal. Read
@@ -50,15 +54,18 @@ and `draft-check` are four distinct steps; do not treat one as another.
   tradeoffs) in replies; default `off`. Independent of query mode and user
   away; never adds teaching prose to records. See `commands/teach-mode.md`.
 - **Pipeline in flight.** While `artifacts/inflight.md` exists, a pipeline
-  of background sub-agents is running. Read `policy/inflight.md` while
-  that file exists. Activity files are frozen except for the parent's
-  own steps of that pipeline; skip session start; refuse mutating keywords
-  and name the pipeline. Say they can wait, or ask to abandon. Do not
-  invent a keyword. Allowed: `help`, `query-work`, `no-query-work`,
-  list, details, reads. In a new chat with `inflight.md` present, or when
-  the user asks to stop the pipeline, name it and ask whether to wait or
-  abandon. Abandon deletes `inflight.md`, leaves the status unchanged, and
-  leaves an unchecked milestone unchecked.
+  of background sub-agents is running. Read `policy/inflight.md`. Skip
+  session start. Activity files stay frozen except for that pipeline's
+  parent steps. Refuse other mutating keywords and name the pipeline.
+  Allowed: `help`, `query-work`, `no-query-work`, `pause-work`,
+  `resume-work`, list, details, and reads. `pause-work` does not delete
+  `inflight.md`. `Blocked` still cannot pause. While `Paused`, a return
+  does not finish the unit; prompt `resume-work`. In a new chat, or when
+  the user asks to stop, name the pipeline. Waiting works only in the
+  chat that launched it. Otherwise they may abandon. Abandon leaves the
+  status unchanged and leaves an unchecked milestone unchecked. On a
+  comment pipeline, restore each `comments/before/` file first. Then
+  delete `inflight.md`. Follow **Inflight pipelines**.
 
 ## Keyword gate
 
@@ -90,8 +97,8 @@ always know where the activity stands and what to type next.
 - On the first use of a concept this session (cycle, fix cycle, stage,
   review comments, inflight pipeline), explain it in one plain sentence.
 - On a refused or gated request, say why in one sentence and give the exact
-  keyword that unlocks it. A pipeline refusal names wait or abandon, not a
-  new keyword.
+  keyword that unlocks it. A pipeline refusal names wait, abandon, or
+  `pause-work`.
 - Map an exceptional situation onto the defined set (a status, a command, a
   cycle kind, or a **Stops** rule) and name the mapping in one sentence:
   "This is source drift; `fix-activity` handles it." Never invent a flow,

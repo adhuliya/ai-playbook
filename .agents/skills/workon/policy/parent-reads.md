@@ -1,7 +1,9 @@
 # Parent reads
 
 For readiness, read metadata only (`test -f`, size, mtime); when the file
-is missing, say so. Never read a result body to judge readiness.
+is missing, say so. Never read a result body to judge readiness. Size
+alone is not Ready. Ready also needs the marker in **Paths and readiness**,
+or a completion notice.
 
 Read a body only to consume a result: the final file the pipeline step
 names, explore reports while you draft, `env.md` only when it says

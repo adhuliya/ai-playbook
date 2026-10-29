@@ -13,7 +13,7 @@ rewritten. Shape: `shapes/plan-outline.md`.
   group points to the place for detail (`agent-activity.md` `# Milestones`,
   `M<n>`). Use `.dev-notes/vocabulary.md` terms when that file exists.
 - **Structure only.** No done marks, no dates, no copied detail. Drop a
-  `removed` milestone from the list.
+  `removed` or `superseded` milestone from the list.
 - **Write** it when the plan is first drafted (design stage of create,
   `create-sibling`, `replan-work`, `import-activity`). **Rewrite** it in the
   same edit whenever `# Current Plan` or `# Milestones` changes (**Update

@@ -2,9 +2,9 @@
 
 The `stage` row in `agent-activity.md` is `requirements` or `design`. The default
 is `design`: the whole **Planning quality bar** runs in one pass. Both
-stages keep the status `Planning`. `stage: requirements` is always
-`kind: full`. When a record has that stage and `kind: thin`, set
-`kind: full`. A user who wants to settle requirements first says so at
+stages keep the status `Planning`. `stage: requirements` belongs on
+a `full` activity. When a record has that stage and `kind: thin`, do not
+write `kind`. Prompt `make-full`. A user who wants to settle requirements first says so at
 create, or on an existing activity through `replan-work` or `make-full`.
 Set `kind: full` and `stage: requirements` (**Activity kind**). The exit
 keyword is `requirements-ok`.
@@ -35,8 +35,9 @@ In `stage: requirements`:
 - To reopen requirements, the user asks in `Planning`, or runs
   `replan-work`, which sets `stage: requirements` on request. Drafted design
   stays until the user revises it.
-- `create-sibling` and `import-activity` start at `stage: design`, unless
-  the user asked for requirements first.
+- `create-sibling` starts at `stage: design`, unless the user asked for
+  requirements first. `import-activity` keeps `stage: requirements` when
+  the imported record has it. Otherwise it sets `design`.
 
 ## File review
 
@@ -44,8 +45,9 @@ In `stage: design`, show `spec-plan-outline.md` first, then the other
 drafted files. In `stage: requirements`, show the Problem header, RD, and
 Design Decisions. The user
 challenges RD, Conventions, Setup, and the plan before `approve-plan` and
-`conventions-ok`. Feedback goes per **Reviews** (where points go);
+`conventions-ok`. Feedback goes per **Agent notes**.
 `start-review` is not required. File review is done when the user has seen
 the files and every feedback round is recorded. Stay `Planning`.
-Prompt `requirements-ok` in the requirements stage, `approve-plan` on a
-full design, or `start-building` on thin.
+Prompt `make-full` on thin requirements, `requirements-ok` on full
+requirements, `approve-plan` on a full design, or `start-building` on
+thin design.

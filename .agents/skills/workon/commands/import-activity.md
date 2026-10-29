@@ -22,12 +22,15 @@ Reads: repair.md, policy/catalog.md, policy/journal.md, policy/execution-gate.md
    **Repair** (migrates or creates `spec-design.md` if missing). Reconcile
    drift into `agent-activity.md`, `spec-design.md`, RD, and Conventions. Set
    `status` to `Planning` and `conventions: pending`, unless imported as
-   `Complete` (keep both), and `stage: design`. Keep `kind` when present.
-   When `kind` is missing, set `full`. Clear `prior:` and any
+   `Complete` (keep both). Keep `stage` when it is `requirements`.
+   Otherwise set `stage: design`. Keep `kind` when present. Do not flip
+   `kind`. When `kind` is missing, set `full`. Clear `prior:` and any
    blocker from `notes`. Keep `review-comments` (session-start default if
    missing). Ask
    the user to confirm `base-branch` for this repo. Open review cycles stay
    `open`; report them. Append a **Catalog** entry if no heading exists.
    Append a `Created` event: source and drift found.
-6. Wait for the **Execution gate**. If `Complete` and new work is wanted:
-   `resume-work`.
+6. Do not start product engineering (**Execution gate**). Prompt the
+   next keyword. `Complete`: `resume-work`. `stage: requirements` and
+   thin: `make-full`. `stage: requirements` and full: `requirements-ok`.
+   Other full: `approve-plan`. Other thin: `start-building`.

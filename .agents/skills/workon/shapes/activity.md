@@ -1,7 +1,7 @@
 # agent-activity.md
 
-The title and metadata table sit in the first ~10 lines so listing stays
-greppable.
+The title and metadata table run through the `notes` row (15 lines in the
+shape below), so listing stays greppable.
 
 ```markdown
 # <Human Title>

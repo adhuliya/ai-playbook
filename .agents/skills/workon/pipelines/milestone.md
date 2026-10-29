@@ -11,8 +11,11 @@ types `start-review` to review checked work.
    `inputs`.
 3. All job reports ready → launch the collator (milestone claim, test
    cases, evidence commands, job report paths).
-4. The parent Reads only `collate.md`. `fail` or `conflict` → a new job
-   round or an inline fix; do not check the milestone while a job round is
+4. If `status` is `Paused`, prompt `resume-work` and stop (**Inflight
+   pipelines**). The parent Reads only `collate.md`. On the first `fail` or
+   `conflict`, fix inline when the repair is a few tool calls, or when a
+   split would overlap writes. Launch a new job round when the repair is a
+   fresh slice of work. Do not check the milestone while a job round is
    open. When that same milestone is `fail` or `conflict` again after the
    repair, and an inline fix cannot land it, set `Blocked` with
    `prior: Active` (**Paused vs Blocked**), delete `inflight.md`, and

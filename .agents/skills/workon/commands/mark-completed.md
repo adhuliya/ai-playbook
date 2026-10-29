@@ -20,15 +20,18 @@ Reads: policy/journal.md, policy/portability.md, policy/reminders.md, policy/act
    `agent-activity.md` as a maintenance handoff:
    - **Milestones:** checked or dropped, with evidence commands or artifact
      pointers.
-   - **Next Steps:** the minor-fix runway (small follow-ups, fastest checks,
-     safest first edit targets).
+   - **Next Steps:** item 1 is `resume-work`. Then the minor-fix runway
+     (small follow-ups, fastest checks, safest first edit targets).
 3. Set `status` to `Complete`. The handoff follows **Portability**. Leave
    `spec-plan-outline.md` as the plan overview; rewrite it only if the plan
    changed.
 4. Append the `Complete` journal entry (**Journal policy**).
-   **Optional-remind** `create-guide`, `remove-review-comments`, and
-   `detailed-design` (when `spec-design.md`'s Decisions section has grown past
-   a few entries).
+   If `artifacts/guide-for-users.md` is missing, the next keyword is
+   `create-guide`. Otherwise the status is `Complete`, and `resume-work`
+   is the way back in.
+   **Optional-remind** `remove-review-comments` and `detailed-design`
+   (when `spec-design.md`'s Decisions section has grown past a few
+   entries).
 5. **Cleanup:** run the `delete-tmp-files` flow.
 6. Later fixes: `resume-work` (`Complete` path), then the **Execution gate** (`policy/execution-gate.md`),
    then `mark-completed` again.

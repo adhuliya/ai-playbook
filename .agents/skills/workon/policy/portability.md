@@ -3,7 +3,7 @@
 The handoff is `agent-activity.md` + `agent-journal.md` + `spec-req-def.md` +
 `spec-design-choices.md` + `spec-design.md` + `conventions.md` + `references.md` +
 `notes-by-user.md`. `spec-plan-outline.md`, `reviews.md`, `artifacts/guide-for-users.md`,
-and `artifacts/detailed-design.md` are extra; the handoff must not depend
+`artifacts/detailed-design.md`, and `artifacts/agent-notes.md` are extra; the handoff must not depend
 on them.
 
 - Inline load-bearing facts. No "as discussed".

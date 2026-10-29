@@ -6,14 +6,18 @@ Reads: policy/activity-kind.md, policy/planning-quality-bar.md, policy/planning-
 
 This is the in-flight **Material-change**.
 
-1. If the status is not `Planning`, set `Planning` now (this stops
-   engineering) and record the reason in `agent-activity.md`. Remove
-   `prior:` and any blocker line from `notes`. Leave other notes text.
-   A pause does not have to be resumed first. This command is the exit
-   from `Paused` when the scope itself changes.
-2. When the user asks to reopen requirements, or `stage` is already
-   `requirements`, set `kind: full` and `stage: requirements` first
-   (**Planning stages**). Remind the strong model. Run steps 1–4 of the
+1. On `Blocked`, quote the blocker and prompt `resume-work`. Stop. Do not
+   set `Planning`. Otherwise, if the status is not `Planning`, set `Planning` now
+   (this stops engineering) and record the reason in `agent-activity.md`.
+   Remove `prior:` from `notes`. Leave other notes text. A pause does not
+   have to be resumed first. This command is the exit from `Paused` when
+   the scope itself changes.
+2. When `stage` is `requirements` and `kind` is `thin`, and the user did
+   not ask to reopen requirements, prompt `make-full`. Stop. Do not set
+   `kind`. When the user asks to reopen requirements, set `kind: full`
+   and `stage: requirements` first (**Planning stages**). When `kind` is
+   `full` and `stage` is `requirements`, keep `kind`. Follow **Agent
+   notes** (`policy/reviews.md`). Remind the strong model. Run steps 1–4 of the
    **Planning quality bar** for open branches only. Run **Cited
    context** when files are cited, and refresh stale references
    (**Refresh**). Append a `Replan` event. Do not rewrite the design
@@ -25,11 +29,12 @@ This is the in-flight **Material-change**.
    choice in **Activity kind**. A later `thin` reply continues at step 4
    and skips the `Replan` event in step 5. Otherwise, on `full`, remind the strong
    model and re-run the **Planning quality bar** for open branches only.
-   On `thin`, do not run that bar and do not invent test tiers. Keep code
+   On `thin`, do not run that bar and do not invent test tiers. The e2e
+   name follows **Test evidence**. Keep code
    already written. Keep requirements, choices, and constraints that the
    new scope still includes. Run **Cited context** when files are
    cited, and refresh stale references (**Refresh**).
-4. Rewrite RD, `# Scope`, the affected `agent-activity.md` sections,
+4. Follow **Agent notes** (`policy/reviews.md`). Rewrite RD, `# Scope`, the affected `agent-activity.md` sections,
    `spec-design.md` (**Design document**), and `spec-plan-outline.md`
    (design stage). Keep checked milestones (**agent-activity.md**). Append
    new ones, and mark removed work `superseded`. Append Design Decisions.

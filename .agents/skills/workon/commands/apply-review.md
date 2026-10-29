@@ -10,6 +10,7 @@ This command applies and closes one cycle, which the user may have edited. The
 target is the open fix cycle, else the open regular cycle (**Reviews** fix
 first). The keyword is the nod when the points already answer the questions.
 **Apply timing**, **Journal policy**, and **Complete stay-on-slug** apply.
+Follow **Agent notes** before step 1.
 
 1. Read the target cycle. Restate each `open` point with its planned
    outcome, plus remaining work, next action, and any status change. Ask
@@ -23,8 +24,9 @@ first). The keyword is the nod when the points already answer the questions.
    rewrite Goal or Scope. Give every other `open` point an outcome and
    apply its edit. Leave the material point `open`. Do not close the
    cycle, change status, or journal. Ask `replan-work` or
-   `create-sibling`. On `Complete`, also name `resume-work` for
-   stay-on-slug. Stop.
+   `create-sibling`. On `Blocked`, name `resume-work` before
+   `replan-work`. On `Complete`, ask `create-sibling` or `resume-work`.
+   Do not ask `replan-work`. Stop.
 3. Give every `open` point an outcome (**Reviews** outcome). Apply notes
    edits as each point's `where` says (**Reviews** where a change lands).
    Product work → a review milestone `Apply RU<n>`; those points are
@@ -32,8 +34,9 @@ first). The keyword is the nod when the points already answer the questions.
 4. **Status and journal:** one entry only.
    - `Complete` with a new review milestone: `Complete` → `Planning`.
      Rewrite `# Current Plan` / `# Next Steps` as `resume-work` `Complete`
-     step 5, without the grill. Append the resume recap citing `RU<n>`.
-     Then the **Execution gate**.
+     step 5, without the grill. Item 1 of `# Next Steps` is the exit
+     keyword. Append the resume recap citing `RU<n>`. Then `resume-work`
+     `Complete` step 6.
    - Any other case (including `Paused` / `Blocked`, and `Complete` without
      product work): no status change; append the `Review` event. On
      `Paused` or `Blocked`, prompt `resume-work`.

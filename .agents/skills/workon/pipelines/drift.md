@@ -8,4 +8,6 @@ build and test commands.
 
 1. Delete the old `fix/drift.md` and `fix/drift/` (keep `fix/review/`).
    Launch the scanner.
-2. Ready → the parent Reads only `fix/drift.md` (`fix-activity` step B).
+2. If `status` is `Paused`, prompt `resume-work` and stop (**Inflight
+   pipelines**). Ready → the parent Reads only `fix/drift.md`
+   (`fix-activity` step B).

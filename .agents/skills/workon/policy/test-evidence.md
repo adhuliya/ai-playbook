@@ -2,7 +2,9 @@
 
 Applies to planning, building, `start-review`, `verify-plan`, and
 `mark-completed`. Plan every tier during planning; write the tests as each
-milestone is built. Evidence bullets name the runnable command and the
+milestone is built. On `thin`, do not invent unit or integration cases.
+On `thin`, name the runnable e2e, or record the user's drop in
+`agent-activity.md`, while the plan is written. Evidence bullets name the runnable command and the
 case list per tier. Follow the repo's test layout, naming, and helpers.
 Use the same case name in the milestone's test bullets and in `spec-design.md`'s
 `TC<n>` Test Plan line and Traceability row (**Design document**,

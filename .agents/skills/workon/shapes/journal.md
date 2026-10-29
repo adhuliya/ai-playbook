@@ -13,7 +13,7 @@ heading plus at most 3 bullets.
 
 Pause / resume recaps:
 
-The pause arrow uses the real from status (`Planning`, `Approved`, or `Active`). The resume arrow's `<prior>` is the restored status.
+The pause arrow uses the real from status (`Planning`, `Approved`, or `Active`). The resume arrow's left side is the status being left (`Paused` or `Blocked`). Its `<prior>` is the restored status. A `Complete` → `Planning` `next:` is the exit keyword (`approve-plan`, `start-building`, or `make-full`).
 
 ```markdown
 ## Pause: <short why> (<from> → Paused)
@@ -26,6 +26,7 @@ The pause arrow uses the real from status (`Planning`, `Approved`, or `Active`).
 
 ```markdown
 ## Resume: <short title> (Paused → <prior>)
+## Resume: <short title> (Blocked → <prior>)
 
 - done: <1–3 bullets>
 - next: <single start step>
@@ -36,7 +37,7 @@ The pause arrow uses the real from status (`Planning`, `Approved`, or `Active`).
 
 - why: <the understood issue>
 - delta: <what the new work is>
-- next: <start step of new implementation>
+- next: <exit keyword: approve-plan, start-building, or make-full>
 - watch: <legacy verify, or omit>
 ```
 

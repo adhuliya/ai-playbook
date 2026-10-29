@@ -1,6 +1,6 @@
 # `agent-activity.md`
 
-Title plus metadata table in the first ~10 lines. Shape:
+Title plus metadata table through the `notes` row. Shape:
 `shapes/activity.md`. Required rows: `status`, `kind`, `stage`, `conventions`,
 `review-comments`, `slug`, `branch`, `base-branch`, `ticket`, `notes`.
 `ticket` and `branch` may be `none`; `notes` may be empty.
@@ -20,7 +20,7 @@ Current Design, Current Plan, Milestones, Next Steps. References live in
 `references.md`.
 
 - **Goal** summarizes RD. On conflict, RD wins; refresh Goal and Scope at
-  the next checkpoint.
+  the next checkpoint. That refresh is not a **Material-change**.
 - **Scope:** one or two paragraphs after the first grill, then near-fixed.
   A major in-flight change is a **Material-change**.
 - **Current Design:** a one-line pointer to `spec-design.md` (**Design
@@ -33,11 +33,14 @@ Current Design, Current Plan, Milestones, Next Steps. References live in
   `DD` it implements, plus a `CONV` or `REF` when that rule or reference is
   load-bearing for it. Leave `AC`, `TC`, and `DC` off the line. Use
   `reads: none` when it implements no RD. A `TBD (design stage)` milestone
-  has no `reads:` line. On reopen, `replan-work`, or `make-full`, keep
+  has no `reads:` line. A `removed` milestone and a `superseded` milestone
+  have no `reads:` line. On reopen, `replan-work`, or `make-full`, keep
   checked items, append new ones, and mark removed work `superseded`; do
   not delete. Milestone numbers are
   stable: a `fix-activity` prune replaces a milestone body with a one-line
   `M<n>: removed: <why>` stub. Review milestones: **Reviews**.
+- **Next Steps:** while `Planning`, item 1 is the exit keyword. Work
+  steps follow it. On `Complete`, item 1 is `resume-work`.
 - In `stage: requirements`, Current Design points at `spec-design.md`, whose
   Current Design, Test Plan, and Traceability hold `TBD (design stage)`;
   Current Plan and Milestones hold `TBD (design stage)` too.

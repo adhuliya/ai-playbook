@@ -16,13 +16,15 @@ changes the agent did not see. Scope files: `agent-activity.md`,
 rewritten here (that is `compact-journal`); this command appends only
 `Review` and `Renumber` events. Drift comes from user edits to activity
 files, from source changes (user edits, rebase, merge, pulled commits), or
-as **major drift** (new repo, restructured tree, drastic early changes).
+as **major drift** (missing `base-branch`, a failed Setup or test, many
+missing paths, or a changed top-level layout).
 There is no stored baseline: the user says what changed, and cheap checks
 fill the gaps.
 
 **Terms** (this command only). **Known changes**: the user's answer to
 step Q. **Drift scope**: the paths or areas that the known changes and the
 basic checks flag, or `all`. **Major drift**: `drift.md` says `major: yes`.
+A clean `all` scan is not major.
 **Plan-impacting finding**: passes the step 4 test. **Unclear finding**: a
 user edit with two plausible readings, a source change of unknown intent, or
 a fact the repo cannot settle.
@@ -33,11 +35,11 @@ plain words such as "out of date". **Tidy**: `tidy`, or plain words that
 ask to prune, rewrite, or renumber. A mixed request runs the targeted part
 first, then offers the rest.
 
-**Turn order.** Turn 1: classify, ask Q (Resync only), run T, then the
-targeted path, the tidy path, or gate 1. When gate 1 answers `scan`, B ends
-the turn; the next turn reads `drift.md`, runs D and step 2, grills unclear
-findings, and routes. The fix-cycle route stops at gate 2. Then the
-fix-cycle path (E1–E4) or the inline path (which reuses T and step 2) runs.
+**Turn order.** You are here. After you classify, stop at that path's
+gate. Resync turn 1 asks `scan`, `inline`, or `stop`. After `scan`, the
+next turn reads `drift.md`, runs D and step 2, grills unclear findings,
+and routes. That route asks `review`, `inline`, or `stop`. E4 asks for
+`apply-review`. The inline path reuses T and step 2.
 
 **Grill rule.** **Grill** every unclear finding before the route, and every
 plan-impacting finding before proposing its fix. Classify each answer as
@@ -46,8 +48,8 @@ plan-impacting, a clear user edit, or a step 5 item.
 ## Triage and scans
 
 Q. **Known changes** (Resync only; skip when the user already said what
-   changed). Ask what changed that the agent may not know: source areas,
-   activity files edited by hand, a pulled or rebased branch. Options:
+   changed). Ask whether the user is aware of manual changes the agent
+   did not see. Options:
    `Nothing I know of (Recommended)` (run the basic checks only), `Source
    changed` (the user names where), `Activity files edited`, and `Not sure`
    (verify everything). The user's own words refine the answer.
@@ -67,8 +69,9 @@ T. **Triage** (parent, inline, read-only; no sub-agent). Run one batched
    scope. An empty scope with no findings and no targeted request → say the
    files are in line. Stop.
 B. **Drift scan.** Write `inflight.md` (**Inflight pipelines**) and run the
-   **Drift** pipeline with the drift scope. Next turn, the parent Reads only
-   `fix/drift.md` and deletes `inflight.md`.
+   **Drift** pipeline with the drift scope. Next turn, if `status` is
+   `Paused`, prompt `resume-work` and stop. Otherwise the parent Reads
+   only `fix/drift.md` and deletes `inflight.md`.
 C. **Notes drift** (parent). Uncommitted edits in the activity folder
    (`git diff HEAD -- .dev-notes/activities/<slug>/`, limited to the scope
    files) plus the edits Q names. An edit with no matching journal event,
@@ -124,7 +127,8 @@ E1. Open the fix cycle in `reviews.md` (**Reviews** fix cycle), or refresh
     regular open cycle stays as is.
 E2. Write `inflight.md`. Run the **Review** pipeline with `scope: drift`
     (paths under `fix/`). End the turn.
-E3. The parent Reads `fix/review/report.md` and adds its points as `agent`
+E3. If `status` is `Paused`, prompt `resume-work` and stop (**Inflight
+    pipelines**). The parent Reads `fix/review/report.md` and adds its points as `agent`
     points. Env `blocked` → Read `fix/review/env.md`, show it, and add
     `- none (env blocked)` for the report points. Delete `inflight.md`.
     Grill per the grill rule and patch the points with the answers.
@@ -159,27 +163,28 @@ tidy path; otherwise offer `fix-activity tidy` once after step 8.
    referents). Propose a clearer rewrite that keeps the meaning. When the
    meaning itself is unclear, grill first (one question at a time, per
    **Asking**).
-4. **Impact test.** A finding is plan-impacting when both hold (step D
-   failures always are): it changes an `RD<n>`, a `CONV<n>` rule, Setup, or
-   another load-bearing assumption (a `spec-design.md` Current Design invariant
-   or a Background fact); and the change affects `# Current Plan`,
-   `# Milestones`, or `# Next Steps`. On the inline path, a new
-   plan-impacting finding from steps 1 or 3 goes to gate 2; when the user
-   already chose `inline` there, it joins the step 5 proposal with its plan
-   edits.
+4. **Impact test.** A finding is plan-impacting when it changes an
+   `RD<n>`, a `DD<n>`, a `DC<n>`, a `CONV<n>` rule, or Setup. A Current
+   Design invariant or a Background fact is plan-impacting too. A step D
+   failure always is. The fix-cycle path brings those activity files back
+   in line with the repo. On the inline path, a new plan-impacting
+   finding from steps 1 or 3 goes to gate 2; when the user already chose
+   `inline` there, it joins the step 5 proposal with its plan edits.
 5. **Propose** one list: ID or section, action (`delete` | `fold into <ID>`
    | `shorten` | `rewrite` | `fix: <new value>` | `flag: <unresolved>`),
    why. Ask yes / no / mods (**Asking**). A change to Goal or Scope is a
    **Material-change** (`policy/material-change.md`): skip it and prompt.
 6. **Apply** only confirmed items. When the status is `Complete` and an
    item adds or unchecks a milestone, do not apply that item. Record it
-   as an `open` point and prompt `apply-review`. Append-only and
+   as an `open` point on an `open` regular cycle. Do not put that point
+   in a closed cycle. Prompt `apply-review` (**Reviews**). Append-only and
    `superseded` rules do not
    block pruning; git is the archive. A plan edit also rewrites
    `spec-plan-outline.md`. Then record confirmed clear user edits (from C) to RD,
    DC, or CONV entries, and applied targeted requests, as `user` points of
    one new closed regular `RU<n>` cycle (`applied → <IDs>`), and append its
-   `Review` event. No such items → no cycle.
+   `Review` event. Skip that closed cycle when the only points are the
+   `open` ones above. No such items → no cycle.
 7. **Renumber** `RD`, `DD`, `DC`, `CONV`, and `REF` IDs to close gaps
    (never `RU` IDs or milestone numbers). Update every reference in the
    scope files, including `reads:` lines, `cites:` lines, and the `AC` and

@@ -5,7 +5,8 @@ before `start-building`.
 
 On `thin`, `approve-plan` and `conventions-ok` are not required.
 `conventions: pending` does not block. `start-building` runs from
-`Planning`.
+`Planning` when `stage` is `design`. `stage: requirements` prompts
+`make-full`.
 
 On `full`, no product engineering until `approve-plan`, `conventions-ok`,
 and then `start-building`. `conventions-ok` may come before or after

@@ -1,8 +1,9 @@
 # `make-full`
 
-Status: `Planning`, `Approved`, `Active`. `Paused` or `Blocked`: prompt
-`resume-work` and stop. `Complete`: prompt `resume-work` and stop.
-`kind: full`: say so and stop.
+Status: `Planning`, `Approved`, `Active`. `kind: full`: say so and stop,
+including when `Complete`. `Paused` or `Blocked`: prompt `resume-work`
+and stop. Thin `Complete`: prompt `resume-work` and stop. Do not upgrade
+while `Complete`.
 
 Reads: policy/activity-kind.md, policy/planning-quality-bar.md, policy/planning-stages.md, policy/execution-gate.md, policy/journal.md
 

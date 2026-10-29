@@ -10,12 +10,11 @@ Each fact lives in one place: do not duplicate into `agent-activity.md`, do not
 duplicate rules into Setup, and do not put commands only in rules or
 constraints only in Setup.
 
-For this activity, the rules take precedence over project and repo
+**Rules** take precedence, for this activity, over project and repo
 conventions, style guides, and agent rules (`AGENTS.md`, `.agents/rules/`,
 tool-specific rule files) where they conflict. Workon **Stops**, safety,
 and git safety still win. Where the rules are silent, repo rules apply.
-
-**Rules** have 2–5 bullets each and use `replaces: CONV<n>` only when
+Each rule has 2–5 bullets and uses `replaces: CONV<n>` only when
 splitting or renaming. Seed them from observed repo and activity facts; no
 taste-only rules, and no forced conventions interview in Planning. Write
 them without a keyword while `conventions: pending` (planning grill,

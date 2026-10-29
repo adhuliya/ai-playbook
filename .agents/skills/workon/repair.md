@@ -42,7 +42,7 @@ sentences, regenerate sections, or renumber. When `kind` is missing, add
   `git update-ref -d refs/workon/<slug>`.
 - `spec-plan-outline.md` missing, `stage: design`, and the status is not
   `Complete`: draft it from `# Current Plan` and `# Milestones` (**Plan
-  summary**). Show it once with the next **File review**.
+  outline**). Show it once with the next **File review**.
 - `spec-design.md` missing (**Design document**): skip this when `kind`
   is `thin` (session start creates the H1 only). Otherwise create it with the `# Design`
   H1. Migrate the body
@@ -80,7 +80,7 @@ sentences, regenerate sections, or renumber. When `kind` is missing, add
 
 **Milestone reads and DD.** Run when `spec-design.md` Decisions has a `- DC`
 bullet and no `### DD` heading, or when `stage` is `design` and a real
-milestone (not `TBD (design stage)`, not `removed`) has no `reads:` line.
+milestone (not `TBD (design stage)`, not `removed`, not `superseded`) has no `reads:` line.
 Skip the `reads:` fill while `stage` is `requirements`.
 
 1. In Decisions, replace each `- DC<nn>` bullet with the next `### DD<n>:

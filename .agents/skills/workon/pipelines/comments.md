@@ -15,5 +15,6 @@ Target level: review (`add-review-comments`) or default
    <file>`; a new file is one hunk). Launch all editors.
 4. All job reports ready → launch the verifier (file list, snapshot root,
    Setup build and test commands).
-5. The parent Reads only `comments/verify.md` (`add-review-comments` /
-   `remove-review-comments` steps 3–4).
+5. If `status` is `Paused`, prompt `resume-work` and stop (**Inflight
+   pipelines**). The parent Reads only `comments/verify.md`
+   (`add-review-comments` / `remove-review-comments` steps 3–4).

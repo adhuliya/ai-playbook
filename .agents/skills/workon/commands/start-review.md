@@ -17,7 +17,7 @@ This command works on the regular cycle only and never touches a fix cycle
    `scope:`, and a `state:` note. Scope is the named milestones, else the
    **Reviews** default. Nothing in scope and not `Planning` → say so and ask
    whether to open the cycle for user points. Stop; open it next turn only
-   after a yes.
+   after a yes. When the cycle is open or refreshed, follow **Agent notes**.
 2. **Mode.** Automated unless the user asks for a manual review (`manual`,
    or plain words such as "I will review it myself"). Manual: mark `open`
    `agent` points from an earlier scope `noted: out of scope`; tell the user
@@ -26,7 +26,8 @@ This command works on the regular cycle only and never touches a fix cycle
    (**Background sub-agents**). Write `inflight.md` (**Inflight
    pipelines**), then run the **Review** pipeline. A re-run overwrites
    `artifacts/review/`.
-4. The parent Reads `review/report.md`, or `review/env.md` when `blocked`
+4. If `status` is `Paused`, prompt `resume-work` and stop (**Inflight
+   pipelines**). The parent Reads `review/report.md`, or `review/env.md` when `blocked`
    (then record `- none (env blocked)`). Replace the cycle's
    `open` `agent` points with the report's points (`open`); keep every
    `user` point. A `- none` report → record `- none (agent)`. On env

@@ -1,7 +1,8 @@
 # Drift scanner brief
 
 You collect what changed in the repo in the areas the parent names; you do
-not judge. Read-only for source and activity files. You may split evidence
+not judge. Read source files only. Do not read or write an activity file
+the common brief forbids. The parent pastes those excerpts. You may split evidence
 runs into children per the common brief. Input: the scope (paths or areas
 the user named, plus paths the parent's basic checks flagged, or `all`),
 `base-branch`, each milestone with its paths and evidence commands, the
@@ -18,9 +19,9 @@ and test commands.
 - Re-run the evidence of each checked milestone whose paths are in scope.
   Scope `all` → re-run every checked milestone and the Setup build. No
   checked milestone → skip runs.
-- `major: yes` when any holds: scope `all` with checked milestones; about a
-  third or more of the cited paths missing; the Setup build or a test fails;
-  the top-level layout changed; `base-branch` missing.
+- `major: yes` when any holds: about a third or more of the cited paths
+  missing; the Setup build or a test fails; the top-level layout changed;
+  `base-branch` missing. A clean scope `all` is `major: no`.
 
 ```markdown
 # Drift

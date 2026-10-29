@@ -7,7 +7,7 @@ status change, no journal.
    `reviews.md` against each other: broken or duplicate **IDs**, Problem
    header vs Goal and Scope, Goal vs RD, `spec-design.md`'s Current Design and
    Decisions vs `spec-design-choices.md`, plan and milestones vs RD, Setup vs
-   rules. A real milestone (not `TBD (design stage)`, not `removed`) with
+   rules. A real milestone (not `TBD (design stage)`, not `removed`, not `superseded`) with
    no `reads:` line is a fix. A missing `AC<n>` is not a finding. Flag, as
    a suggestion (not a block), a `spec-design.md` Traceability row that is stale
    against the milestones and paths (a `TC<n>` tag that still says
@@ -18,8 +18,9 @@ status change, no journal.
 2. For each issue, name the ID or section, the smallest edit, and why. Ask
    yes / no / mods. Apply only confirmed fixes; do not reword beyond the
    fix.
-3. A fix that changes Goal or Scope is a **Material-change**: skip it and
-   prompt.
+3. A fix that rewrites Goal or Scope beyond matching RD is a
+   **Material-change**: skip it and prompt. A refresh so they match RD
+   is not one. Do that refresh.
 4. `notes-by-user.md` is input only. If it cites stale IDs or contradicts
    the files, tell the user; do not edit it.
 

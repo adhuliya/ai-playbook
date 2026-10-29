@@ -10,7 +10,10 @@ Reads: policy/conventions.md, policy/execution-gate.md
    ask the user to review and write `conventions-ok` again. Stop. If the
    fill was already shown, go to step 2.
 2. Set `conventions: ok` in `agent-activity.md`. No journal, no status change.
-3. If `kind` is `full` and the status is `Planning`, prompt
-   `approve-plan`. If `Approved`, or if `kind` is `thin` and the status
-   is `Planning`, ask for `start-building`. Thin and `Active`: no further
-   keyword.
+3. If `stage` is `requirements` and `kind` is `thin`, prompt
+   `make-full`. If `stage` is `requirements` and `kind` is `full`,
+   prompt `requirements-ok`. If `kind` is `full`, the status is
+   `Planning`, and `stage` is `design`, prompt `approve-plan`. If
+   `Approved`, or if `kind` is `thin`, the status is `Planning`, and
+   `stage` is `design`, ask for `start-building`. Thin
+   and `Active`: no planning keyword. Follow **Continue mode**.

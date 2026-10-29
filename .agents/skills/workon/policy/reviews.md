@@ -17,17 +17,34 @@ without the line (legacy) is `closed`.
 | Source | Open regular cycle exists | None open |
 |---|---|---|
 | `start-review` | refresh it | open a new one |
-| chat feedback on activity files or built work | add `user` points; apply only via `apply-review` | new cycle, closed and applied this turn |
+| chat feedback on activity files or built work | follow **Agent notes**; do not open a cycle | same |
 | `verify-plan` apply | add `agent` points; apply only via `apply-review` | new cycle, closed and applied this turn |
 | `fix-activity` inline path | new closed cycle (user edits already in the files) | same |
 
 A same-turn apply that would add or uncheck a milestone while the status
-is `Complete` does not apply that change. Leave those points `open` and
-prompt `apply-review`.
+is `Complete` does not apply that change. Leave those points `open`.
+The cycle that holds them stays `open`. Do not close it this turn.
+Prompt `apply-review`.
+
+**Agent notes.** `artifacts/agent-notes.md` is parent scratch for the current work. Sub-agents do not read or write it. Create the file on the first note. Its H1 is `# Agent notes`. The handoff does not include it (**Portability**).
+
+Write `working: <point>` for a passing note the current work still needs. Write `deferred: <point>` for a review or replan point the user did not take. Do not copy an in-place edit into this file. Read the file when you resume the activity.
+
+A chat note does not open a regular cycle. Only `start-review` opens a regular cycle. When a note should be a review point or a replan, suggest the keyword for this status. In flight: `start-review` or `replan-work`. On `Complete`: `start-review` for a bug fix or other minor in-scope point, or `resume-work` / `create-sibling` per **Material-change**. Never suggest `replan-work` on `Complete`. If the user keeps working, append a `deferred` line. Do not apply that note. If the user agrees to add the note to an open regular cycle, append the `user` point. Do not write a `deferred` line for it.
+
+On `thin`, with the same Goal, update the records in place. This includes a requirement, a constraint, or a design note. Say that the note stays on this activity. On full `Planning`, update detail in place when it does not add, drop, or reword an RD. These edits open no cycle.
+
+A Goal or Scope rewrite is a **Material-change**. A material RD change after approval is a **Material-change**. Do not park that note in this file.
+
+`verify-plan` still opens its own cycle when the user types it. `fix-activity` still opens its own cycle when the user types it. A fix cycle does not take these notes. `fix-activity` leaves this file.
+
+Before recording points, `start-review`, `replan-work`, `verify-plan`, and a regular `apply-review` read this file. Copy each `deferred` line into that pass, then remove the line. The agent keeps or removes a `working` line as the current work needs. A pass that copies `deferred` lines leaves the `working` lines the agent still needs. Delete the file when no line remains. Leave a `deferred` line when the command stops without recording it.
+
+`start-review` copies each `deferred` line onto the cycle as a `user` point. It does not apply the point. `replan-work` takes each `deferred` line that still fits the rewrite. `verify-plan` copies each `deferred` line onto its cycle as a `user` point before apply. A `- none` verify leaves this file. `apply-review` copies each `deferred` line onto the open regular cycle before its other points. When the target is the fix cycle, leave this file.
 
 **Fix cycle.** Only `fix-activity` opens one, on its fix-cycle path. It
-holds only drift findings (`scope: drift`); other feedback
-goes to the regular cycle. Refresh it by re-running `fix-activity`, never
+holds only drift findings (`scope: drift`). Other feedback follows
+**Agent notes**. Refresh it by re-running `fix-activity`, never
 `start-review`. It never reopens. **Fix first:** while a fix cycle is open,
 `apply-review` applies it and the regular cycle waits, though the user MAY
 still add points. **Recheck:** after a fix cycle closes, recheck each
@@ -38,7 +55,7 @@ changed `user` point is asked about after the close and stays `open` until
 answered.
 
 **Edit while open.** The user adds, edits, or strikes points in
-`reviews.md`, or states them in chat. A `start-review` refresh replaces
+`reviews.md`. A point stated in chat follows **Agent notes**. A `start-review` refresh replaces
 only `agent` points that are still `open`; it never touches `user` points.
 
 **Reopen.** The user MAY add points to the last closed regular cycle when

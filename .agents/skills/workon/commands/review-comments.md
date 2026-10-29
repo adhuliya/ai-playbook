@@ -17,7 +17,8 @@ default level, then sets `review-comments: off`.
    sub-agents**). Write `inflight.md` (`policy/inflight.md`). Run
    `pipelines/comments.md`. Scope: lines the activity added or changed;
    comments outside that scope stay as they are.
-3. The parent Reads only `comments/verify.md`. Restore every `fail` file
+3. If `status` is `Paused`, prompt `resume-work` and stop (**Inflight
+   pipelines**). The parent Reads only `comments/verify.md`. Restore every `fail` file
    from its snapshot. Tests `fail` → restore every file. Delete
    `inflight.md`.
 4. Set the row only if at least one file kept its edits. Report the files

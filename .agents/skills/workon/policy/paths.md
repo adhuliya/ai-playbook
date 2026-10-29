@@ -25,4 +25,6 @@ file under `briefs/`.
 | explore | `explore` | `bg/<name>.md` (optional) | none | `bg/<name>/` |
 
 **Ready** means a completion notice, or `test -f` plus `rg -l '<marker>'`
-on the assigned file. Missing, empty, or no match means not ready.
+on the assigned file. Missing, empty, or no match means not ready. On
+`resume-work`, a marker on disk is not this launch's completion notice
+(**Inflight pipelines**).

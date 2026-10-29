@@ -3,7 +3,7 @@
 Status: any. **Optional-remind** `apply-review` and `fix-activity`; this
 command does not close an open cycle.
 
-Reads: policy/activity-kind.md, policy/paused-blocked.md, policy/material-change.md, policy/journal.md, policy/reminders.md, policy/execution-gate.md, policy/plan-outline.md, policy/design-document.md, shapes/journal.md
+Reads: policy/activity-kind.md, policy/paused-blocked.md, policy/material-change.md, policy/journal.md, policy/reminders.md, policy/execution-gate.md, policy/plan-outline.md, policy/design-document.md, policy/inflight.md, shapes/journal.md
 
 ## `Paused` / `Blocked`
 
@@ -11,18 +11,31 @@ Reads: policy/activity-kind.md, policy/paused-blocked.md, policy/material-change
    stale references (**Refresh**, `policy/references.md`). Open the journal only if it has entries.
 2. Summarize concisely: objective, design, conventions, status,
    discoveries, remaining work, next action, branch hint. `Blocked`: restate
-   the blocker.
+   the blocker. When `inflight.md` exists, name its pipeline and unit.
 3. Wait for explicit confirmation (`Blocked`: that the blocker is resolved).
 4. Restore `prior:` (**Paused vs Blocked**). When that policy says to ask,
    ask and stop. Append the resume recap only after the status is restored.
-5. Name the next keyword. Also remind the strong model when `kind` is
-   `full` and the status is `Planning`.
-   - `stage: requirements`: an `open question:` in `# Next Steps` is
-     repeated. When RD looks complete and no branch is open, prompt
-     `requirements-ok`. Do not prompt `start-building`.
+5. When `artifacts/inflight.md` exists, follow **Inflight pipelines**.
+   Do not continue to step 6.
+   - A completion notice for this launch's final file, in this chat, is
+     a safe finish. Run only that parent end step. Do not relaunch.
+     That step names the next keyword. Follow **Continue mode** only
+     when the status is `Active` and `inflight.md` is gone.
+   - No notice, or a new chat: do not read the final file. Do not follow
+     **Continue mode**. Waiting works only in the launching chat. If
+     they abandon, name the re-run keyword. `auto` does not start work
+     on this turn. Do not launch the re-run in this turn.
+6. Name the next keyword. Also remind the strong model when `kind` is
+   `full` and the status is `Planning`. Skip this step when step 5 ran.
+   - An `open question:` is repeated in every stage. Do not prompt
+     `requirements-ok`, `approve-plan`, or `start-building`.
+   - An `unfinished requirement:` is repeated for any kind. Do not prompt
+     `start-building`.
+   - `stage: requirements` and `kind: thin`: prompt `make-full`.
+   - `stage: requirements`, `kind: full`, no open branch, and RD looks
+     complete: prompt `requirements-ok`.
    - `full`, `Planning`, and `stage: design`: prompt `approve-plan`.
-   - `thin` and `Planning`: an `unfinished requirement:` is repeated.
-     Otherwise prompt `start-building`.
+   - `thin`, `Planning`, and `stage: design`: prompt `start-building`.
    - `Approved` and `conventions: pending`: prompt `conventions-ok`.
    - `Approved` and `conventions: ok`: prompt `start-building`.
    - `Active`: follow **Continue mode**.
@@ -30,8 +43,10 @@ Reads: policy/activity-kind.md, policy/paused-blocked.md, policy/material-change
 ## `Planning` / `Approved` / `Active`
 
 Reload context only: steps 1–2 above. No status change, no journal.
-Use step 5 for the next keyword. Do not prompt `start-building` while
-`stage` is `requirements`.
+When `inflight.md` exists, name the pipeline. They can wait, abandon, or
+`pause-work`. Do not name a gate keyword. Otherwise use step 6 for the
+next keyword. Do not prompt `start-building` while `stage` is
+`requirements`.
 
 ## `Complete`
 
@@ -54,14 +69,16 @@ yet. This is the **Complete stay-on-slug** or sibling fork
    the request is unsafe and the user has not picked, set `# Next Steps`
    to the choice in **Activity kind** and stop before the rewrite. A
    later `thin` reply continues here. Preserve the shipped design and
-   checked milestones. Rewrite
-   `# Current Plan` / `# Next Steps` as a high-level **legacy verify**
-   (re-run or spot-check old evidence; do not redo those milestones), then
-   **delta steps** that start at the new requirement, including steps that
-   undo earlier work. Mark undone milestones `superseded`. Update RD and
+   checked milestones. Rewrite `# Current Plan`. Lead `# Next Steps`
+   with the exit keyword from step 6, then a high-level legacy verify (re-run or
+   spot-check old evidence; do not redo those milestones), then delta
+   steps that start at the new requirement, including steps that undo
+   earlier work. Mark undone milestones `superseded`. Update RD and
    Design Decisions (`replaces:` when a choice flips). Tighten Conventions
    only if the user states a new or changed rule (Setup: best-effort
    refresh) and `spec-plan-outline.md`. Set `stage: design`.
-6. On `full`, **File review** (`policy/planning-stages.md`) and the
-   **Execution gate**. On `thin`, show the delta and prompt
-   `start-building`.
+6. On `full`, **File review** (`policy/planning-stages.md`) and prompt
+   `approve-plan` (**Execution gate**). On `thin`, show the delta and
+   prompt `start-building`. When this resume continues a `make-full`
+   that stopped on `Complete`, prompt `make-full` instead. The exit
+   keyword is item 1 of `# Next Steps`.

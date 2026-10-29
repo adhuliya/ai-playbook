@@ -82,7 +82,7 @@ names (`scripts/`, `templates.md`, `commands.md`, `lifecycle.md`,
 `plan-outline.md`, `requirement-def.md`, `design.md`, `design-choices.md`,
 `spec-design-choice.md`, and a root
 `guide-for-users.md`) may appear only as legacy markers in `repair.md`,
-`policy/session-start.md`, and this list. Check that each bold name resolves through the
+`policy/session-start.md`, `commands/import-activity.md`, and this list. Check that each bold name resolves through the
 Index in `index.md`. Check that `help all` still prints the command map.
 Run the session-start command from `policy/session-start.md` against a
 sample activity. Measure `SKILL.md`, `always.md`, and the touched files with

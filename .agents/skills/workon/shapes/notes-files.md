@@ -1,6 +1,6 @@
 # Notes files
 
-Policy (Repair, enums, precedence, who drafts): **Notes files**. Omit
+Policy: **Notes files** (who drafts). Rule precedence: **Rules**. Omit
 `revised-by:` until a review point changes the entry (RD, CONV) or caused
 it (DC), then list each revising point. Omit `replaces:` on a first
 decision.

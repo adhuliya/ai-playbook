@@ -15,7 +15,7 @@ ls -A "$d"; ls -A "$d/artifacts" 2>/dev/null || true
 for f in activity.md journal.md plan-outline.md requirement-def.md design.md design-choices.md spec-design-choice.md guide-for-users.md; do
   [ -f "$d/$f" ] && echo "legacy $f"
 done
-[ -f "$act" ] && head -n 14 "$act" || echo "missing-activity"
+[ -f "$act" ] && head -n 15 "$act" || echo "missing-activity"
 rg -n '^\| synced \||^[0-9]+\. (\[.\]|removed:)|^## R[0-9]+:|\b(UR|SR|RRD)[0-9]+\b' "$d" --glob '*.md' --glob '!artifacts/**' || true
 [ -f "$act" ] && rg -n '^# References' "$act" || true
 [ -f "$rd" ] && rg --files-without-match '^## Problem:' "$rd" || true
@@ -23,7 +23,7 @@ rg -n '^\| synced \||^[0-9]+\. (\[.\]|removed:)|^## R[0-9]+:|\b(UR|SR|RRD)[0-9]+
 [ -f "$act" ] && rg -n '^- (\[[ xX]\] )?M[0-9]+:|^[[:space:]]*- reads:' "$act" || true
 ```
 
-The `head` output is the metadata table, so the first read of the activity
+The `head` output is the metadata table through the `notes` row, so the first read of the activity
 record is often unnecessary. If any legacy marker below is present, read
 `repair.md` and finish it before the gap fixes. Then fix gaps in one
 batched step (**Fewer prompts**):
@@ -60,8 +60,8 @@ any of these shows:
 - `spec-plan-outline.md` missing while `stage` is `design` and the status is not
   `Complete`;
 - `spec-design.md` has a `^- DC` line and no `^### DD` line;
-- `stage` is `design`, and a milestone line is not `TBD (design stage)` or
-  `removed`, and no `reads:` line appears before the next milestone or `#`
+- `stage` is `design`, and a milestone line is not `TBD (design stage)`,
+  `removed`, or `superseded`, and no `reads:` line appears before the next milestone or `#`
   heading.
 
 With no marker, go on.

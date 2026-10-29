@@ -3,7 +3,9 @@
 You reconcile the critics into one list of proposals. Input: the same
 packet the critics had, plus every critic file. For `pipeline: review`, the
 input also has `env.md` and the test reports, and you write the evidence
-section from them.
+section from them. Write each test result on its `M<n>` line. A test
+`blocked` stays `blocked`. Do not write it as `pass` or `skipped`. Use
+`skipped` when no test agent ran for that milestone.
 
 ## Reconcile
 
@@ -38,7 +40,7 @@ every negative critic missed.
 ## Evidence
 - scope: milestones <list> | plan | drift
 - env: ready | blocked | skipped
-- M<n>: pass | fail | skipped
+- M<n>: pass | fail | blocked | skipped
 ## Proposals
 <same fields as Synthesis; `from: env | tests | negative | synth`>
 ```

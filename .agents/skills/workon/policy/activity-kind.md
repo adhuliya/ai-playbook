@@ -36,7 +36,8 @@ prompt, and the rest of the grill. Skip the strong-model reminder.
 
 Do not invent entries to fill a template. Write an RD for each stated
 requirement. Write a `DC` only when a choice was made. Keep the test plan
-to checks the user named. One milestone is enough for one outcome.
+to checks the user named. The e2e name follows **Test evidence**. One
+milestone is enough for one outcome.
 
 `approve-plan` does not run on a thin activity. Prompt `make-full` or
 `start-building`. `requirements-ok` does not run on a thin activity.
@@ -45,13 +46,7 @@ kind. Do not prompt for it. `conventions` stays `pending` and does not
 block.
 
 Status stays `Planning` until `start-building`. No product engineering
-before that keyword. When the create message already contains
-`start-building`, run this pass and then that command in one turn.
-
-Show `spec-plan-outline.md` and the Goal, then prompt `start-building`.
-The user may correct the files first. A later chat note that adds a
-requirement, a constraint, or a design note on the same Goal updates
-the records in place. Say that it stays on this activity. Name
+before that keyword. A later chat note follows **Agent notes**. Name
 `make-full` only when they ask for a stricter plan, or the scope is
 unsafe.
 
@@ -67,8 +62,5 @@ Build through the **Milestone** pipeline.
 
 ## `make-full`
 
-Same slug. Set `kind: full` and `status: Planning`. Deepen the existing
-records up to the **Planning quality bar**. Grill only open branches. Do
-not re-ask a settled fact. Do not discard code already written. Pause
-product engineering until `approve-plan`, `conventions-ok`, and
-`start-building`.
+Same slug, in place. Follow `commands/make-full.md` for the row changes,
+the grill, and the next keyword. Keep code already written.

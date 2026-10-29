@@ -4,8 +4,7 @@ Only after the **Execution gate**, and outside **Stops** blocks. Update
 records at checkpoints only (**Update cadence**). Apply **Test evidence**
 while building.
 
-Honor the `conventions.md` rules (precedence: **Notes files**) and use the
-Setup commands for build and test. Where the rules are silent, the repo's
+Honor **Rules** and use the Setup commands for build and test. Where the rules are silent, the repo's
 guidelines apply: match the surrounding code (naming, idiom, error
 handling, structure, file layout); keep the diff minimal and in scope, and
 suggest refactors or reformatting of untouched code separately; reuse

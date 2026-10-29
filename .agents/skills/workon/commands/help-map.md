@@ -12,8 +12,8 @@ Printed by `help all`. Keep one row per command; `help.md` names this file.
 | | `import-activity` | Adopt activity files from elsewhere → `Planning` (`Complete` kept) |
 | Gates and lifecycle | `approve-plan` | Full only: `Planning` → `Approved`. Thin: prompt `make-full` or `start-building` |
 | | `conventions-ok` | Sign off rules + Setup (one-time) |
-| | `start-building` | Thin: `Planning` → `Active`. Full: `Approved` → `Active`; needs `conventions: ok`. Refuses `stage: requirements`. |
-| | `pause-work` | → `Paused` + journal recap |
+| | `start-building` | Thin design: `Planning` → `Active`. Full: `Approved` → `Active`; needs `conventions: ok`. Refuses `stage: requirements` and full `Planning`. |
+| | `pause-work` | → `Paused` + journal recap. Allowed while a pipeline is in flight; next keyword is `resume-work` |
 | | `resume-work` | Unpause, unblock, reopen `Complete`, or reload context |
 | | `mark-completed` | → `Complete` + journal + cleanup |
 | Review | `start-review` | Open or refresh a review cycle; automated by default, `manual` on request |

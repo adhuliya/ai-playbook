@@ -14,7 +14,7 @@ Write one entry per event, in the same turn:
 | `Requirements` | `requirements-ok` |
 | `Approved` / `Building` | `approve-plan` / `start-building` |
 | `Milestone` | checkpoint that checks a milestone |
-| `Review` | every `RU<n>` cycle close, whatever the source (`apply-review`, chat feedback, `verify-plan`, `fix-activity` inline) |
+| `Review` | every `RU<n>` cycle close (`apply-review`, `verify-plan`, `fix-activity` inline) |
 | `Replan` | `replan-work` |
 | `Make-full` | `make-full` |
 | `Blocked` | entering `Blocked` |
@@ -32,7 +32,9 @@ the status is unchanged. Then at most three bullets: what happened, IDs /
 paths / evidence command, and `next:` when not obvious. Point at IDs; do
 not copy RD, plans, or review points. No dates unless asked; entry order is
 the timeline. A pause or resume recap stays within ~10 lines and omits
-empty fields. `Complete` is the one thick entry: a project-work write-up of
+empty fields. While a pipeline is in flight, the pause `next:` is
+`resume-work` and `watch` names the pipeline. Do not also write
+`Milestone` or `Review` for that pause. `Complete` is the one thick entry: a project-work write-up of
 what shipped, paths, decisions, and gaps, not a lifecycle novel.
 
 Append at the end. Prior entries are read-only except through

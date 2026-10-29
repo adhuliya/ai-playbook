@@ -14,12 +14,15 @@ Records are for durability, not a live log.
   milestone is
   checked (flip its Traceability tags `planned for` → `done by`, or the
   activity's chosen term, and fill Paths). Always sync it before pause,
-  complete, or handoff, like `agent-activity.md`.
+  complete, or handoff, like `agent-activity.md`, except an inflight
+  `pause-work` (below).
 - RD whenever requirements change; it must be current before `approve-plan`.
 - Design Decisions when an important choice is made.
 - Conventions (rules and Setup) when observed, confirmed, or tightened.
 - `references.md`: when a source is cited or refreshed (**References**).
 - `activities.md`: **Catalog**. `agent-journal.md`: **Journal policy**.
 - `reviews.md`: when points change, follow **Reviews** (where points go).
-- Always sync before `pause-work`, `mark-completed`, or handoff.
+- Always sync before `pause-work`, `mark-completed`, or handoff. Skip
+  that sync when `pause-work` runs while `inflight.md` exists
+  (**Inflight pipelines**).
 - After user edits to activity files, run the **Consistency check**.

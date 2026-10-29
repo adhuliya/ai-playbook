@@ -13,8 +13,8 @@ problem understanding changes; a change to the problem itself is a
 **Material-change**.
 
 Entries follow the header as `## RD<n>: <title>`. Keep them current as
-grilling reveals requirements; the user challenges them before
-`approve-plan`, and you drop or reword on challenge. `kind` is exactly one
+grilling reveals requirements. The user challenges them before
+`approve-plan`. A later chat note follows **Agent notes**. `kind` is exactly one
 of:
 
 - `end-user-interface`: humans (UI, CLI output, docs the user reads).
@@ -32,5 +32,5 @@ An entry MAY carry an `AC<n>` list (**IDs**: shares `RD<n>`'s number):
 short, checkable pass/fail conditions. By default this stays informal —
 the milestone's test cases (`TC<n>` in `spec-design.md`) are the RD's
 acceptance evidence (**Test evidence**, `spec-design.md` Traceability). `add-ac`
-drafts and appends `AC<n>` for the RDs that lack it; nothing else writes
-it.
+drafts and appends `AC<n>` for the RDs that lack it. Nothing else creates
+an `AC` list. Renumbering an `RD` may renumber its `AC` (**IDs**).

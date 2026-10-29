@@ -15,6 +15,7 @@
         notes-by-user.md
         reviews.md              # lazy
         artifacts/              # copies flat; reserved names below
+            agent-notes.md      # parent scratch
             guide-for-users.md  # create-guide only
             detailed-design.md  # detailed-design only
 ```
@@ -23,7 +24,7 @@ A whole copy sits at the artifacts root as `<basename>`; an excerpt is
 `<stem>-excerpt.md` with a header that names the source and what was kept.
 The reserved directories are `verify-plan/`, `bg/`, `review/`, `comments/`,
 and `fix/`, and the reserved files are `inflight.md`, `sub-agents-log.txt`,
-`guide-for-users.md`, and `detailed-design.md`; never use a reserved name
+`guide-for-users.md`, `detailed-design.md`, and `agent-notes.md`; never use a reserved name
 for a cited copy. File
 roles: **Paths and readiness**. `inflight.md` is parent scratch
 (**Inflight pipelines**):

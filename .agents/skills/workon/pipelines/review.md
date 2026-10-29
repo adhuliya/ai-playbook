@@ -8,9 +8,12 @@ activity diff path list (`base-branch`). With `scope: drift`, input adds
 and critics judge whether the activity files still match the drifted repo.
 
 1. `scope: plan` → go to step 3. Else launch the env agent.
-2. `blocked` → the pipeline ends and `<dir>env.md` is its final file: read
-   it, show it, stop. `ready` → launch one test agent per scoped
-   milestone; none → go to step 3.
+2. `blocked` → do not launch tests or critics. If `status` is `Paused`,
+   prompt `resume-work` and stop (**Inflight pipelines**). Otherwise the
+   parent records the cycle (`start-review` step 4, or `fix-activity`
+   E3), including `- none (env blocked)`, and deletes `inflight.md`.
+   `ready` → launch one test agent per scoped milestone; none → go to
+   step 3.
 3. All test reports ready → write `<dir>packet.md` (**Plan packet**), then
    read **Critic focus**. Launch those critics (`pipeline: review`) with
    the packet path plus `env.md` and the test report paths (if any).
@@ -18,6 +21,7 @@ and critics judge whether the activity files still match the drifted repo.
    walk the rest of the repo.
 4. Every critic file ready → launch the synthesizer (same input + every
    critic path).
-5. The parent Reads only `<dir>report.md` and records the points in the
-   cycle that launched the pipeline (`start-review` step 4, or
-   `fix-activity` E3). Never apply in the turn of the first Read.
+5. If `status` is `Paused`, prompt `resume-work` and stop (**Inflight
+   pipelines**). The parent Reads only `<dir>report.md` and records the
+   points in the cycle that launched the pipeline (`start-review` step 4,
+   or `fix-activity` E3). Never apply in the turn of the first Read.
