@@ -9,3 +9,7 @@ Harden playbook/target sync for machine registry, ignores, syncmap, and nested-g
 ## vim-agent: Vim Agent Access
 
 Give classic Vim localized Cursor `agent` access: ask about buffer or selection context, and rewrite text with a review step before applying.
+
+## dev-doc-skill: Formal docs skill (dev-doc)
+
+Ship the `.agents/skills/dev-doc/` skill: Pandoc→Typst reports, Typst/Touying decks, HTML preview, and on-request DOCX/LaTeX/Docs export.

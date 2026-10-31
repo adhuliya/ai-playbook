@@ -1,0 +1,80 @@
+# References
+
+- REF1: Typst CLI and templates
+  - source: https://github.com/typst/typst/blob/main/README.md
+  - kept: excerpt (`artifacts/typst-excerpt.md`)
+  - fetched: 2026-10-31
+  - learned: Compile with `typst compile`. A template is a function applied by `#show`. The official guide describes Typst markup, not a Markdown reader.
+- REF2: Typst template tutorial
+  - source: https://typst.app/docs/tutorial/making-a-template/
+  - kept: excerpt (`artifacts/typst-excerpt.md`)
+  - fetched: 2026-10-31
+  - learned: Per-document arguments go on the template. Import the template file. `#include` does not carry `set` rules back to the caller.
+- REF3: Marp CLI and Marpit directives (historical — dropped from core)
+  - source: https://github.com/marp-team/marp-cli/blob/main/README.md
+  - kept: excerpt (`artifacts/marp-excerpt.md`)
+  - fetched: 2026-10-31
+  - status: superseded by REF15 / DC12. Kept so agents know why Marp was tried and rejected.
+  - learned: Decks are Markdown. PDF and PPTX need a browser. No built-in code line numbers; theme CSS fights custom gutters; diagrams want raster + `--allow-local-files`.
+- REF4: Pandoc user guide, Typst and DOCX
+  - source: https://pandoc.org/MANUAL.html
+  - kept: excerpt (`artifacts/pandoc-excerpt.md`)
+  - fetched: 2026-10-31
+  - learned: `--pdf-engine=typst` or `-t typst` is the Markdown-to-Typst bridge. A DOCX reference file supplies styles, and its body is ignored. Omitted `--pdf-engine` selects pdflatex.
+- REF5: Google Docs and Office files
+  - source: https://support.google.com/docs/answer/9406611
+  - kept: excerpt (`artifacts/gdocs-excerpt.md`)
+  - fetched: 2026-10-31
+  - learned: Open with Google Docs keeps the `.docx`. Save as Google Docs makes a copy. No Docs plugin is available here.
+- REF6: Docs suggestions and Office tracked changes
+  - source: https://support.google.com/docs/answer/6033474
+  - kept: excerpt (`artifacts/gdocs-excerpt.md`)
+  - fetched: 2026-10-31
+  - learned: Tracked changes become suggestions, and suggestions become tracked changes, when a file crosses between Office and Docs.
+- REF7: Beamer and TikZ export pitfalls
+  - source: skill excerpt only (`artifacts/latex-beamer-excerpt.md`); no aparajit `docs/` dependency (CONV4)
+  - kept: excerpt (`artifacts/latex-beamer-excerpt.md`)
+  - learned: `visible on` keeps the TikZ box across overlays. `\only` and `\uncover` around TikZ make the layout jump. `fragile` is required on listings frames. Shared preamble loads after `\documentclass`.
+- REF9: Python 3 cheat sheet layout
+  - source: `/Users/anshumandhuliya/Desktop/python_cheat_sheet_format.png`
+  - kept: copied (`artifacts/python-cheat-sheet-format.png`)
+  - learned: Laurent Pointal, Mémento v2.0.6, CC BY 4.0. Landscape sheet of colored cards, monospace examples, and a title bar. The starter copies this layout, not the Python text. Canonical copy for the skill: `artifacts/python-cheat-sheet-format.png`.
+- REF10: Pointal memento page
+  - source: https://perso.lisn.upsaclay.fr/pointal/python/memento/
+  - kept: context-only
+  - fetched: 2026-10-31
+  - learned: The sheet's current home is linked from this page. The image in REF9 is the English v2.0.6 sheet.
+- REF11: Plain multi-column cheat sheets
+  - source: https://wch.github.io/latexsheet/
+  - kept: context-only
+  - fetched: 2026-10-31
+  - learned: Winston Chang's LaTeX sheet is landscape with three equal columns and little color. The CTAN `cheatsheet` class is the same family. The starter follows REF9 instead.
+- REF12: Typst HTML export
+  - source: https://typst.app/docs/reference/html/
+  - kept: excerpt (`artifacts/browser-preview-excerpt.md`)
+  - fetched: 2026-10-31
+  - learned: HTML export is experimental and needs `--features html`. It is semantic HTML, not the PDF layout. `typst watch` serves a live page only for that HTML output, on port 3000–3005. `--no-serve` writes the file and starts no server.
+- REF13: Marp watch port is not a site (historical — Marp dropped)
+  - source: https://github.com/marp-team/marp-cli/issues/280
+  - kept: excerpt (`artifacts/browser-preview-excerpt.md`)
+  - fetched: 2026-10-31
+  - status: superseded by DC12. Relevant only if someone revives Marp.
+  - learned: Browsing the watch socket returns 426 Upgrade Required. Use `-s` when the browser should show a Marp deck.
+- REF8: Engine note that started this activity
+  - source: `doc-pipeline.md`
+  - kept: context-only
+  - learned: The note names Typst and Marp. Marp was later dropped (DC12). Its claim of a built-in Typst Markdown parser is not in the Typst reference. REF1 and REF4 replace that claim.
+- REF14: Scratch rendering pitfalls for the skill
+  - source: `artifacts/scratch/` (Typst 0.15.1, Pandoc 3.13; Marp CLI 4.5.1 used only during the rejected trial)
+  - kept: excerpt (`artifacts/rendering-pitfalls.md`)
+  - learned: Durable list of fixes: `#show: apply` not `#include`; Pandoc `--standalone`, table stroke, section-numbering; no `@figure` in Markdown; `fit-box` for diagrams; Touying decks share report styles.
+- REF15: Touying (Typst slides)
+  - source: https://touying-typ.github.io/docs/intro and https://typst.app/universe/package/touying/
+  - kept: context + scratch (`artifacts/scratch/deck.typ`)
+  - fetched: 2026-10-31
+  - learned: Import `@preview/touying` and a theme (scratch deck: `themes.metropolis` for pitch parity; earlier trial used `simple`). `aspect-ratio: "16-9"`. Flat decks: `config-common(new-section-slide-fn: none)`. Share `apply` and `fit-box` with reports. Scratch used 0.6.1 on Typst 0.15.1. Tokens/restyle: `artifacts/styling.md`.
+- REF16: Tool installation (macOS, Ubuntu, Windows)
+  - source: Typst README install section; https://pandoc.org/installing.html; Fira OFL / Homebrew font casks; scratch versions Typst 0.15.1, Pandoc 3.13
+  - kept: `artifacts/install.md` (draft of skill `references/install.md`)
+  - fetched: 2026-10-31
+  - learned: Core needs Typst + Pandoc + Fira Sans/Mono; Touying arrives via Typst package fetch. TeX and poppler are optional. Prefer official/binary or brew/winget/snap over stale distro Pandoc when possible.
