@@ -1,0 +1,8 @@
+# Runtime PID files from preview serve
+preview/.serve.pid
+preview/.serve.pid.port
+
+# Regenerated sample binaries (keep sample/README.md)
+sample/*.pdf
+sample/*.docx
+sample/*.tex
