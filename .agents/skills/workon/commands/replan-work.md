@@ -13,8 +13,10 @@ This is the in-flight **Material-change**.
    have to be resumed first. This command is the exit from `Paused` when
    the scope itself changes.
 2. When `stage` is `requirements` and `kind` is `thin`, and the user did
-   not ask to reopen requirements, prompt `make-full`. Stop. Do not set
-   `kind`. When the user asks to reopen requirements, set `kind: full`
+   not ask to reopen requirements, follow **Choose**. A typed `thin` stays
+   thin, names `start-building`, and stops. When the user did not type
+   `thin`, set `kind` to `full`, follow `commands/make-full.md`, and stop.
+   Do not ask the user to type `make-full`. When the user asks to reopen requirements, set `kind: full`
    and `stage: requirements` first (**Planning stages**). When `kind` is
    `full` and `stage` is `requirements`, keep `kind`. Follow **Agent
    notes** (`policy/reviews.md`). Remind the strong model. Run steps 1–4 of the

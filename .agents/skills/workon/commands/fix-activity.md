@@ -32,18 +32,78 @@ a fact the repo cannot settle.
 **Request.** Classify the user's words first. **Targeted**: the user names
 an ID, section, path, or fact to fix. **Resync**: bare `fix-activity`, or
 plain words such as "out of date". **Tidy**: `tidy`, or plain words that
-ask to prune, rewrite, or renumber. A mixed request runs the targeted part
-first, then offers the rest.
+ask to prune, rewrite, or renumber. A mixed request waits for **Depth**.
+The choice selects the path.
 
-**Turn order.** You are here. After you classify, stop at that path's
-gate. Resync turn 1 asks `scan`, `inline`, or `stop`. After `scan`, the
-next turn reads `drift.md`, runs D and step 2, grills unclear findings,
-and routes. That route asks `review`, `inline`, or `stop`. E4 asks for
-`apply-review`. The inline path reuses T and step 2.
+**Depth.** This menu runs only after the user types `fix-activity`. Show
+it once, on that turn. Do not show it again after the user answers. The
+same message may name a scope. A scope is an ID, a section, a path, a
+fact, or `tidy`. Use that scope in the recommended set. The user may
+change that set after the menu.
+
+Stop before any drift scan, critic, or file edit. A cheap read of the
+activity files may build the menu. Do not launch the drift pipeline or
+any sub-agent on this turn.
+
+Build two to four options that can be combined. Omit an option that does
+not apply. Use the first rule that matches. Mark each option in the
+recommended set.
+
+- The user named a target. Offer a fix limited to that target. Name the
+  IDs, paths, or fact. Mark that fix recommended. Offer other consistency
+  issues in the scope files only when some are visible. Offer tidy only
+  when the records are clearly redundant, or when the user also asked for
+  tidy. Offer a drift scan of those paths only when source drift is
+  visible or the user said the source changed.
+- The request is resync and names no target. Offer an inline resync of
+  the files or IDs already visible, and mark it recommended. Name them.
+  Offer a drift scan of those paths. Offer a full scan of every checked
+  milestone only when that visible set is empty or the drift looks major.
+  Label the full scan as the expensive case: it re-runs evidence and runs
+  the Setup build. Offer tidy only when prose or numbering is the visible
+  problem.
+- The user said `tidy`, or asked to prune, rewrite, or renumber. Offer
+  tidy and mark it recommended. Say that tidy will not repair source
+  drift. When drift is also visible, offer a resync of that drift. Say
+  whether that resync scans those paths or fixes them inline.
+
+When two or more options remain, ask one multi-select (**Asking**). The
+question states the recommended set and why in one sentence. Each option
+names the records or paths it covers and what it will check or change.
+Say that it will not edit product code. A scan option reports drift and
+does not apply fixes yet. A fix or tidy option names the edits it expects
+to propose. Selected options are in. Unselected options are dropped.
+Free text replaces the set and is the scope. An empty selection stops
+the command. When fewer than two real options exist, do not invent one.
+State the plan and why, then ask yes / no / mods (**Asking**). `Yes`
+accepts that plan. `No` stops the command. `Modify` replaces the plan.
+
+On the next turn, run what was selected. When both a scan and an inline
+fix of the same paths are selected, the scan wins and the inline fix
+waits for `drift.md`. That result is the **Depth** choice of `scan`. An
+inline fix with no scan is the **Depth** choice of `inline`. A selected
+full scan replaces a selected narrow scan. Tidy never repairs source
+drift. When a scan or an inline fix is selected with tidy, run that scan
+or fix first. When the set settled `scan` versus `inline`, skip **Gate
+1**. When it settled tidy versus resync, do not ask that again. Keep
+**Gate 2** when a plan-impacting finding still needs review versus
+inline. A **Depth** `scan` or `inline` does not settle that choice. Keep
+the **Grill rule**. Ask before a checked milestone is removed.
+
+**Turn order.** You are here. Run **Depth** and stop. On the next turn,
+run the path that matches the choice. **Gate 1** runs only when **Depth**
+left `scan` versus `inline` open. After `scan`, the next turn reads
+`drift.md`, runs D and step 2, grills unclear findings, and routes. That
+route asks `review`, `inline`, or `stop`. E4 asks for `apply-review`.
+The inline path reuses T and step 2.
 
 **Grill rule.** **Grill** every unclear finding before the route, and every
-plan-impacting finding before proposing its fix. Classify each answer as
-plan-impacting, a clear user edit, or a step 5 item.
+plan-impacting finding before proposing its fix. A change that would remove
+a checked milestone is major. Ask the user before that removal. Prefer
+`Superseded by: M<k> — <aspect>` and an appended milestone when another
+milestone replaces an aspect. Grill when the aspect or the replacement is
+unclear. Classify each answer as plan-impacting, a clear user edit, or a
+step 5 item.
 
 ## Triage and scans
 
@@ -79,8 +139,10 @@ C. **Notes drift** (parent). Uncommitted edits in the activity folder
    `In progress:` line. A clear user edit is truth unless it contradicts
    another file; a contradiction is a finding.
 D. **Source drift.** Each `fail` milestone in `drift.md` is a plan-impacting
-   finding; the proposed fix unchecks it with `regressed: <evidence>` and
-   adds a review milestone. Moved and missing paths are step 2 findings.
+   finding. Keep a checked milestone. Propose an appended correction
+   milestone and, when an aspect is replaced, `Superseded by: M<k> — <aspect>`
+   (**Reviews**). Ask before you uncheck or remove that checked milestone.
+   Moved and missing paths are step 2 findings.
 
 ## Paths
 
@@ -93,21 +155,27 @@ D. **Source drift.** Each `fail` milestone in `drift.md` is a plan-impacting
    the named paths as the scope and run B; the next turn continues at the
    route.
 3. List the other triage findings, one line each, without acting on them.
-   Offer `fix-activity` for drift or `fix-activity tidy` once.
+   Offer `fix-activity` for drift or `fix-activity tidy` once. Skip
+   `tidy` when **Depth** already offered it. Skip the drift offer when
+   **Depth** already offered a resync or a scan.
 
 **Tidy path.** The inline path with steps 1, 3, and 7 included. Before
 step 7, read `repair.md` and run its Milestone reads and DD steps when a
 marker is present. Report triage drift but do not fix it; when drift
-exists, recommend a resync first.
+exists, recommend a resync first, unless **Depth** already offered that
+resync and the user selected tidy without it.
 
 **Resync path.**
 
-G1. **Gate 1.** An empty drift scope → skip the gate and run the inline
-    path. Otherwise describe the drift scan (one scanner, evidence re-runs
-    for checked milestones inside the scope, and a review that may follow;
-    for `all`, every checked milestone and the Setup build run, which is
-    the expensive case) and ask `scan`, `inline` (skip the scan), or
-    `stop`. Stop the turn.
+G1. **Gate 1.** When **Depth** already chose `scan` or `inline`, skip this
+    gate and run that choice. Run B for `scan`. Run the inline path for
+    `inline`. When that choice is still open, an empty drift scope →
+    skip the gate and run the inline path. When that choice is still open
+    and the scope is not empty, describe the drift scan (one scanner,
+    evidence re-runs for checked milestones inside the scope, and a
+    review that may follow; for `all`, every checked milestone and the
+    Setup build run, which is the expensive case) and ask `scan`,
+    `inline` (skip the scan), or `stop`. When you ask, stop the turn.
 
 **Route.** Major drift or any plan-impacting finding → fix-cycle path.
 Otherwise → inline path. An `all` scope with no checked milestone: inline
@@ -136,7 +204,8 @@ E4. Show the cycle. Ask for `apply-review`. Stop. The inline path waits
     for the next `fix-activity` after the fix cycle closes.
 
 **Inline path:** steps 0, 2, 4–6, 8. Steps 1, 3, and 7 run only on the
-tidy path; otherwise offer `fix-activity tidy` once after step 8.
+tidy path; otherwise offer `fix-activity tidy` once after step 8. Skip
+that offer when **Depth** already offered tidy.
 
 ## Steps
 
@@ -144,8 +213,10 @@ tidy path; otherwise offer `fix-activity tidy` once after step 8.
    step 5 list as `fix:` items.
 1. **Prune.** Find redundant entries, entries that fold into another, nits
    recoverable from code or covered elsewhere, superseded entries, and
-   stale prose. A pruned milestone keeps its number as a `removed` stub
-   (**`agent-activity.md`** Milestones).
+   stale prose. A pruned unchecked milestone keeps its number as a `removed`
+   stub (**`agent-activity.md`** Milestones). Do not remove a checked
+   milestone unless the user agrees. Ask first. Prefer
+   `Superseded by: M<k> — <aspect>` when a later milestone replaces an aspect.
 2. **Verify** facts against the repo with read-only checks; run nothing
    that changes state:
    - Repo paths in any scope file exist; moved paths resolve via `git log

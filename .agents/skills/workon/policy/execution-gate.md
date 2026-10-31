@@ -5,8 +5,10 @@ before `start-building`.
 
 On `thin`, `approve-plan` and `conventions-ok` are not required.
 `conventions: pending` does not block. `start-building` runs from
-`Planning` when `stage` is `design`. `stage: requirements` prompts
-`make-full`.
+`Planning` when `stage` is `design`. On `stage: requirements`, follow
+**Choose**. A typed `thin` stays thin and names `start-building`.
+Otherwise set `kind` to `full` and follow `commands/make-full.md`.
+Do not prompt `make-full`. Name `requirements-ok`.
 
 On `full`, no product engineering until `approve-plan`, `conventions-ok`,
 and then `start-building`. `conventions-ok` may come before or after

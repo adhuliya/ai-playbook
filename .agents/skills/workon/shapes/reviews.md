@@ -1,9 +1,10 @@
 # reviews.md
 
 Policy: **Reviews**. `status:` is required on every new cycle. `scope:`
-applies to `start-review` and fix cycles; other cycles MAY omit it. `kind:
-fix` appears only on fix cycles. A cycle with no points holds `- none`;
-after an automated pass with no findings, `- none (agent)`; after env
+applies to `start-review`, `agent-review`, and fix cycles; other cycles MAY
+omit it. `kind: fix` appears only on fix cycles. A cycle with no points
+holds `- none`; after `agent-review` finds nothing, `- none (agent-review)`;
+after a fix cycle finds nothing, `- none (agent)`; after env
 `blocked`, `- none (env blocked)`.
 
 ```markdown
@@ -21,6 +22,7 @@ IDs added/changed, work built. 1–2 short paragraphs; deltas only.>
 - RU1.2 (user): <point> — rejected: <why>
 - RU1.3 (agent): <point> — noted: <why no action>
 - RU1.4 (user): <point> — planned → M3
+- RU1.5 (agent-review): <finding from the automated pass> — open
 
 ## RU3: <short drift topic>
 

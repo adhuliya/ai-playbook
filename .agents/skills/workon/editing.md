@@ -64,6 +64,11 @@ tells the agent when to read that file.
 Keep every pipeline step, path row, ready marker, critic kind, weight, and
 output-shape field; sub-agents read them from the briefs, so a missing
 field is a behavior change. The milestone pipeline has no critic row.
+Critics stay on `agent-review` and the fix-cycle review. The plan pass
+still uses `pipelines/verify-plan.md` and `pipeline: verify-plan`. There
+is no `verify-plan` keyword. `start-review` does not launch critics. Do
+not offer `agent-review`. A milestone reads specific `RD`, `DD`,
+and `DC` entries, and the whole of `conventions.md` and `notes-by-user.md`.
 The parent never pastes brief text, so a rule
 the parent needs stays in `policy/` or `pipelines/` and a rule a sub-agent
 needs stays in its brief.

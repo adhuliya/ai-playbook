@@ -1,8 +1,9 @@
 # Test evidence
 
-Applies to planning, building, `start-review`, `verify-plan`, and
+Applies to planning, building, `agent-review`, and
 `mark-completed`. Plan every tier during planning; write the tests as each
-milestone is built. On `thin`, do not invent unit or integration cases.
+milestone is built. A milestone is complete when its own test cases pass.
+The next milestone may then start (**Continue mode**). On `thin`, do not invent unit or integration cases.
 On `thin`, name the runnable e2e, or record the user's drop in
 `agent-activity.md`, while the plan is written. Evidence bullets name the runnable command and the
 case list per tier. Follow the repo's test layout, naming, and helpers.
@@ -23,7 +24,9 @@ Use the same case name in the milestone's test bullets and in `spec-design.md`'s
   without that named, runnable e2e unless the user explicitly drops it
   (reason in `agent-activity.md`). Run the command when the env can; a user nod
   does not replace a missing e2e name, and the user drop is the only
-  waiver.
+  waiver. When a review appends a milestone after this checked e2e
+  milestone, that new milestone runs the same command again unless the
+  user says not to (**Reviews**).
 - **`software-interface` peers you cannot run live:** emulate them with the
   smallest in-repo test double or throwaway fake that implements the
   concerned interface, reusing the repo's test-double pattern if one

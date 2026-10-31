@@ -6,22 +6,22 @@ block implementation. It does not change where a record lives.
 
 ## Choose
 
-Default `thin` when the request has one outcome and a clear done
-condition. The agent judges. The user may say `thin` or `full` at create.
+The agent sets `kind`. Do not ask the user to pick `thin` or `full`.
+Do not tell the user to remember `make-full`. A clear single outcome
+with a clear done condition stays `thin`.
+
+Unsafe means two real designs, an unclear done condition, or several
+milestones. An unsafe request sets `kind` to `full`. Grill the open
+branches. Do not stop to offer `full` or `thin`.
 
 A request for requirements first sets `kind: full` and
 `stage: requirements`.
 
-Stop when the agent cannot choose safely. Ask with **Asking**. Offer
-`full` (recommended) and `thin`. Unsafe means two real designs, an unclear
-done condition, or several milestones. Do not start the full grill until
-the user picks `full`.
-
-When the user says `thin` anyway, name the risk in one sentence, then
-run `thin`. On an existing activity, an unsafe scope offers `make-full`
-(recommended) or staying `thin`. Stop until the user picks. Do not
-prompt `make-full` while the status is `Complete`; reopen to `Planning`
-first. A reply of `thin` continues the command that asked.
+When the user types `thin` or `full`, honor it. A typed `thin` stays
+`thin`. On an existing thin activity whose scope becomes unsafe, upgrade
+in place the way `make-full` does. Do this only when the user did not
+type `thin`. Follow `commands/make-full.md`. Do not ask the user to type
+that keyword.
 
 `create-sibling` defaults to the parent's kind unless the user says
 otherwise.
@@ -39,20 +39,21 @@ requirement. Write a `DC` only when a choice was made. Keep the test plan
 to checks the user named. The e2e name follows **Test evidence**. One
 milestone is enough for one outcome.
 
-`approve-plan` does not run on a thin activity. Prompt `make-full` or
-`start-building`. `requirements-ok` does not run on a thin activity.
-Prompt `make-full`. `conventions-ok` may be typed and does not change
+`approve-plan` does not run on a thin activity. Follow **Choose**. Prompt
+`start-building` when `kind` stays `thin`. `requirements-ok` does not run
+on a thin activity. Follow **Choose**.
+`conventions-ok` may be typed and does not change
 kind. Do not prompt for it. `conventions` stays `pending` and does not
 block.
 
 Status stays `Planning` until `start-building`. No product engineering
-before that keyword. A later chat note follows **Agent notes**. Name
-`make-full` only when they ask for a stricter plan, or the scope is
-unsafe.
+before that keyword. A later chat note follows **Agent notes**. Follow
+**Choose**. The agent upgrades in place and does not ask for the keyword.
+A typed `thin` stays `thin`.
 
 After `start-building`, build inline. Do not launch explores or the
 milestone, review, or plan pipelines unless the user typed that keyword.
-`start-review`, `verify-plan`, and `fix-activity` still run when typed.
+`start-review`, `agent-review`, and `fix-activity` still run when typed.
 
 ## Full
 

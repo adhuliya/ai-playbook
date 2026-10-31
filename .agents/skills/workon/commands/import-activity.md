@@ -32,5 +32,8 @@ Reads: repair.md, policy/catalog.md, policy/journal.md, policy/execution-gate.md
    Append a `Created` event: source and drift found.
 6. Do not start product engineering (**Execution gate**). Prompt the
    next keyword. `Complete`: `resume-work`. `stage: requirements` and
-   thin: `make-full`. `stage: requirements` and full: `requirements-ok`.
+   thin: follow **Choose**. A typed `thin` names `start-building`. When
+   the user did not type `thin`, set `kind` to `full`, follow
+   `commands/make-full.md`, and name `requirements-ok`. Do not name
+   `make-full`. `stage: requirements` and full: `requirements-ok`.
    Other full: `approve-plan`. Other thin: `start-building`.

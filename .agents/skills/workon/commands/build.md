@@ -15,5 +15,8 @@ checkpoint per **Update cadence**. Before the first sub-agent launch of
 the session, read the launch kit and `pipelines/milestone.md`
 (**Background sub-agents**).
 
-When work remains, follow **Continue mode**. When the milestones and the
-end-to-end check are done, prompt `mark-completed`.
+When you pick up a milestone, choose the concrete edits in the areas its
+paragraph names. Leave that file list off the milestone. A milestone is
+complete when its test cases pass. When work remains, follow
+**Continue mode**. When the milestones and the end-to-end check are done,
+prompt `mark-completed`.

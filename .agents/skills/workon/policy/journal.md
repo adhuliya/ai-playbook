@@ -14,7 +14,7 @@ Write one entry per event, in the same turn:
 | `Requirements` | `requirements-ok` |
 | `Approved` / `Building` | `approve-plan` / `start-building` |
 | `Milestone` | checkpoint that checks a milestone |
-| `Review` | every `RU<n>` cycle close (`apply-review`, `verify-plan`, `fix-activity` inline) |
+| `Review` | every `RU<n>` cycle close (`apply-review`, the `agent-review` plan pass, `fix-activity` inline) |
 | `Replan` | `replan-work` |
 | `Make-full` | `make-full` |
 | `Blocked` | entering `Blocked` |
@@ -24,7 +24,9 @@ Write one entry per event, in the same turn:
 
 No other change writes the journal: notes edits, **Consistency check**,
 `update-convention`, `conventions-ok`, `start-review` (opening or
-refreshing a cycle), `add-review-comments`, `remove-review-comments`,
+refreshing a cycle), `agent-review` (opening a cycle, or recording `open`
+points without closing),
+`add-review-comments`, `remove-review-comments`,
 `create-guide`, `detailed-design`, `delete-tmp-files`, list, details, `help`.
 
 An entry is `## <Event>: <short title> (<from> → <to>)`; omit the arrow when
@@ -32,7 +34,8 @@ the status is unchanged. Then at most three bullets: what happened, IDs /
 paths / evidence command, and `next:` when not obvious. Point at IDs; do
 not copy RD, plans, or review points. No dates unless asked; entry order is
 the timeline. A pause or resume recap stays within ~10 lines and omits
-empty fields. While a pipeline is in flight, the pause `next:` is
+empty fields. The pause recap includes where the agent stopped and what
+remains. While a pipeline is in flight, the pause `next:` is
 `resume-work` and `watch` names the pipeline. Do not also write
 `Milestone` or `Review` for that pause. `Complete` is the one thick entry: a project-work write-up of
 what shipped, paths, decisions, and gaps, not a lifecycle novel.

@@ -23,14 +23,16 @@ The order is mandatory:
    Plan, and a Traceability table with every case tagged `(planned for
    M<n>)`), Plan, MECE milestones (`M1`, `M2`, …), evidence, Next Steps,
    and `spec-plan-outline.md`. Each real milestone has a `reads:` line
-   (**agent-activity.md**). Cited sources go to
+   and a short paragraph of what it does and which parts of the project
+   tree it touches (**agent-activity.md**). Cited sources go to
    `references.md`. Each milestone lists unit cases per part and
    integration cases for the boundaries it completes; the last names the e2e
    (and any interface fake). Use the same case names in the milestone test
    bullets and in `spec-design.md`'s `TC<n>` Test Plan and Traceability. Note
    existing tests to extend (**Test evidence**).
 6. **draft-check:** the parent re-reads the drafted files before user
-   review. No critics; this is not the `start-review` pipeline.
+   review. No critics. Critics wait for `agent-review` or a fix-cycle
+   review.
 
 Required project-fit prompt (or equivalent):
 

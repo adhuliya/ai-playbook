@@ -8,7 +8,8 @@ rewritten. Shape: `shapes/plan-outline.md`.
   and the final check, in plain words a reader can follow without the
   other activity files. Then a list, with sub-lists where it helps, that
   shows how the plan is structured: one item per milestone `M<n>` with its
-  outcome, parts, and test tiers. Name decisions in words, including what
+  outcome, parts, and test tiers. The parts are the project-tree areas
+  named in that milestone's paragraph, not a file list. Name decisions in words, including what
   they rule out. An `RD` or `DD` id may follow a name in parentheses. Each
   group points to the place for detail (`agent-activity.md` `# Milestones`,
   `M<n>`). Use `.dev-notes/vocabulary.md` terms when that file exists.

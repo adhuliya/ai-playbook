@@ -6,8 +6,8 @@ description: >-
   guide for users). Use when the user manages or imports an activity, or
   issues a workon keyword: help, requirements-ok, approve-plan,
   conventions-ok, start-building, pause-work, resume-work, mark-completed,
-  replan-work, create-sibling, import-activity, make-full, start-review, apply-review,
-  verify-plan, update-convention, add-review-comments,
+  replan-work, create-sibling, import-activity, make-full, start-review, agent-review, apply-review,
+  update-convention, add-review-comments,
   remove-review-comments, fix-activity, compact-journal, create-guide,
   detailed-design, add-ac, delete-tmp-files, query-work, no-query-work,
   user-away, teach-off, teach-brief, teach-deep, grill-me, auto-continue,
@@ -32,8 +32,10 @@ place and returns it to `Planning`.
 
 An activity moves through `Planning → Approved → Active → Complete`, with
 optional `Paused` or `Blocked` stops. A thin activity skips `Approved`.
-The user drives each transition with a reserved keyword. The agent plans,
-builds, and keeps the records current, but never crosses a gate on its own.
+The user drives status gates with a reserved keyword (`approve-plan`,
+`start-building`, `pause-work`, `mark-completed`). Setting `kind` is not
+one of those gates. The agent plans, builds, and keeps the records
+current, but never crosses a status gate on its own.
 
 On a full activity, reviews, plan checks, and drift repair run as
 pipelines of background sub-agents that write files. The parent reads only
@@ -46,7 +48,8 @@ Each folder holds a fixed set of files. The shape of each is in `shapes/`.
 
 - `agent-activity.md`: the current truth (status, goal, scope, a pointer to
   design, plan, milestones `M1`, `M2`, …, next steps). Each real milestone
-  has a `reads:` line. `spec-plan-outline.md`: a short overview of that plan, in
+  has a `reads:` line and a short paragraph of what it does and which
+  parts of the project tree it touches. `spec-plan-outline.md`: a short overview of that plan, in
   plain words.
 - `spec-design.md`: the lean design reference (invariants, current `DD<n>`
   statements, and a requirement-to-test-to-path trace). `detailed-design.md`
@@ -55,7 +58,8 @@ Each folder holds a fixed set of files. The shape of each is in `shapes/`.
 - `agent-journal.md`: the append-only event timeline.
 - `spec-req-def.md`, `spec-design-choices.md`, `conventions.md`: numbered
   entries (`RD<n>`, `DC<nn>`, `CONV<n>`). A milestone cites `RD` and `DD`
-  from its `reads:` line. `DC` stays the choice history a `DD` cites.
+  from its `reads:` line, and reads `conventions.md` and `notes-by-user.md`
+  in full. `DC` stays the choice history a `DD` cites.
 - `references.md` (`REF<n>`), `reviews.md` (`RU<n>`), `notes-by-user.md`
   (the user's), `artifacts/guide-for-users.md` (written for humans when the work
   ships).
@@ -92,7 +96,7 @@ reset. Never bulk-read a folder.
 | Planning: `create`, `replan-work`, `create-sibling`, `import-activity` | the command file and its `Reads:`; open each `shapes/` file when you write that record |
 | Gates: `requirements-ok`, `approve-plan`, `conventions-ok`, `start-building`, `make-full` | the command file and its `Reads:` (a few policies) |
 | Building: `build` | the command file and its `Reads:`; on `full`, the launch kit and `pipelines/milestone.md` just before the first sub-agent launch |
-| Review: `start-review`, `apply-review`, `verify-plan` | the command file and its `Reads:`. `verify-plan` includes the launch kit. `start-review` names the kit at its launch step |
+| Review: `start-review`, `agent-review`, `apply-review` | the command file and its `Reads:`. `agent-review` names the kit at its launch step. In `Planning` that step is `pipelines/verify-plan.md`. Otherwise it is `pipelines/review.md`. `start-review` launches nothing |
 | Sub-agent launch | the launch kit (**Background sub-agents** in `always.md`). Sub-agents read their own `briefs/` files; the parent does not |
 | Upkeep: `fix-activity`, `compact-journal`, `update-convention`, `add-ac` | the command file and its `Reads:`; `fix-activity` names its pipelines at the step that needs them |
 | Output and cleanup: `create-guide`, `detailed-design` | the command file and its `Reads:` |

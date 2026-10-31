@@ -29,8 +29,9 @@ Follow **Agent notes** before step 1.
    Do not ask `replan-work`. Stop.
 3. Give every `open` point an outcome (**Reviews** outcome). Apply notes
    edits as each point's `where` says (**Reviews** where a change lands).
-   Product work → a review milestone `Apply RU<n>`; those points are
-   `planned → M<k>`. Set `status: closed`.
+   Product work → append a review milestone `Apply RU<n>`; those points are
+   `planned → M<k>`. Do not edit or uncheck a checked milestone
+   (**Reviews**). Set `status: closed`.
 4. **Status and journal:** one entry only.
    - `Complete` with a new review milestone: `Complete` → `Planning`.
      Rewrite `# Current Plan` / `# Next Steps` as `resume-work` `Complete`

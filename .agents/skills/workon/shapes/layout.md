@@ -32,9 +32,9 @@ roles: **Paths and readiness**. `inflight.md` is parent scratch
 ```markdown
 # Inflight
 
-- pipeline: start-review | fix-cycle review | verify-plan | comments | drift | milestone
+- pipeline: agent-review | fix-cycle review | verify-plan | comments | drift | milestone
 - unit: RU<n> | M<n> | <command>
 - launched: <steps launched so far>
 - final: <path of the final file>
-- notes: <short working notes>
+- notes: <short working notes; on pause, where the agent stopped and what remains>
 ```

@@ -3,8 +3,9 @@
 The `stage` row in `agent-activity.md` is `requirements` or `design`. The default
 is `design`: the whole **Planning quality bar** runs in one pass. Both
 stages keep the status `Planning`. `stage: requirements` belongs on
-a `full` activity. When a record has that stage and `kind: thin`, do not
-write `kind`. Prompt `make-full`. A user who wants to settle requirements first says so at
+a `full` activity. When a record has that stage and `kind: thin`, set
+`kind` to `full` and continue. Do not ask the user to type `make-full`.
+A user who wants to settle requirements first says so at
 create, or on an existing activity through `replan-work` or `make-full`.
 Set `kind: full` and `stage: requirements` (**Activity kind**). The exit
 keyword is `requirements-ok`.

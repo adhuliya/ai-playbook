@@ -8,8 +8,7 @@ Remind once per phase change.
 - `approve-plan`: one-time note that planning is done; the user may drop the
   strong model. Do not recommend an execution tier.
 
-**Optional-remind** (once; do not require): `verify-plan` at `approve-plan`
-when this session has not run it; `apply-review` when `reviews.md` has an
+**Optional-remind** (once; do not require): `apply-review` when `reviews.md` has an
 `open` cycle (at `approve-plan`, `start-building`, `pause-work`,
 `resume-work`); `detailed-design` at
 `mark-completed` when `spec-design.md`'s Decisions section has grown past a
@@ -20,4 +19,7 @@ rebased branch, or cited paths missing). When
 `artifacts/guide-for-users.md` is missing at `mark-completed`, the keyword
 is `create-guide`. That is required. Do not treat a stale guide as missing.
 Remind `requirements-ok` once when `kind` is `full`, `stage` is
-`requirements`, and RD looks complete. On `thin`, remind `make-full`.
+`requirements`, and RD looks complete. On `thin` in that stage, follow
+**Choose**. A typed `thin` names `start-building`. When the user did not
+type `thin`, set `kind` to `full` and follow `commands/make-full.md`.
+Then name `requirements-ok`. Do not remind `make-full`.

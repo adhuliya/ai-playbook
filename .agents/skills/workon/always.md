@@ -12,8 +12,12 @@ message resumes it. Every command needs one focused activity,
 except `help`, `import-activity`, `create`, `list`, `query-work`,
 `no-query-work`, `teach-off`, `teach-brief`, and `teach-deep`. When the
 status is not on the file's `Status:` line,
-report the status and stop. `start-review`, `apply-review`, `verify-plan`,
-and `draft-check` are four distinct steps; do not treat one as another.
+report the status and stop. `start-review`, `agent-review`, and
+`apply-review` are distinct steps; do not treat one as another.
+`draft-check` is not a keyword. It is step 6 of
+`policy/planning-quality-bar.md`: the parent re-reads the drafted
+files before user review and launches no critics.
+Critics run only for `agent-review` and a fix-cycle review.
 
 ## Stops
 
@@ -79,8 +83,17 @@ prompt `resume-work`.
 Exceptions: the agent MAY run the consistency check
 (`policy/consistency-check.md`) without a keyword, and `mark-completed`
 runs the `delete-tmp-files` flow. Both confirm each item. A `yes` to the
-`approve-plan` conventions offer counts as `conventions-ok`. `grill me`
+`approve-plan` conventions offer counts as `conventions-ok`. A `yes`
+answers only the question just asked. Treat that `yes` as
+`conventions-ok` only when the conventions offer was the question. A
+later `yes` continues the command that asked. `apply-review` applies
+on the next turn after its gap answers, with no new keyword.
+`start-review` and `agent-review` continue on the next turn after a yes
+when they stopped for an open fix cycle. `mark-completed` continues when the user says `defer`. `grill me`
 or `grill-me` reads `policy/grill.md` and runs it. No status change.
+`verify-plan` is retired. Prompt `agent-review` and do not launch a
+separate pass. Do not offer `agent-review` unless the user asks for an
+automated review.
 
 ## Guide the user
 
@@ -88,7 +101,8 @@ Assume the user is new to workon or to this situation. The user should
 always know where the activity stands and what to type next.
 
 - After each step: what happened and the state, then `Most likely:` one
-  keyword (the command names it; else the first of that `help` row) and
+  keyword (the command names it; else the `help` clause that matches this
+  activity's `kind` and `stage`) and
   `Also:` up to three. Before a long command or a
   batch, one line says what and why; after, the result. A single read or
   edit stays quiet. A reminder is one line, never required.
@@ -116,14 +130,21 @@ options as `a)`, `b)`, `c)` in chat and let the user answer with a letter.
 - Give 2–4 options. Put the recommended one first and end its label with
   `(Recommended)`. Add a clause on the consequence when it is not obvious.
   Do not add an "Other" option; the tool offers free text.
+- A multi-select is one question whose options combine. Use it only when
+  the command says so. Give 2–4 options that fit this activity, and omit a
+  slice that is not there. Mark each option in the recommended set with
+  `(Recommended)`. The question states that set and why in one sentence.
+  Selected options are in. Unselected options are dropped. Free text
+  replaces the set.
 - Ask one question per call while grilling. Independent confirm questions
   MAY share one call.
 - A yes / no / mods gate has the options `Yes (Recommended)`, `No`, and
   `Modify`; mark the one that fits the case.
 - Explore the repo first; ask only what it cannot answer. Ask for a bare
   fact (a name, a path) in plain chat and propose a default.
-- Under **User away**, do not ask: take the recommended option, record it
-  as an assumption, and ask when the user returns.
+- Under **User away**, do not ask: take the recommended option, or the
+  recommended set on a multi-select, record it as an assumption, and ask
+  when the user returns.
 
 ## Fewer prompts
 
@@ -153,6 +174,7 @@ On `full`, delegate work by default: give each sub-agent one
 self-contained part, keep write paths disjoint, and use files as the
 handoff. Work inline for a few tool calls, or when a split would overlap
 writes. For full planning, launch explores, then grill, then end the
-turn. Critic pairs only in `verify-plan` and review, not a milestone. On
+turn. Critic pairs only for `agent-review` and a fix-cycle review. Not
+on a milestone. Not on `start-review`. On
 `thin`, do not launch explores or a pipeline unless the
 user typed that keyword.

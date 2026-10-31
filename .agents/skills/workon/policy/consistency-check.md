@@ -8,7 +8,7 @@ status change, no journal.
    header vs Goal and Scope, Goal vs RD, `spec-design.md`'s Current Design and
    Decisions vs `spec-design-choices.md`, plan and milestones vs RD, Setup vs
    rules. A real milestone (not `TBD (design stage)`, not `removed`, not `superseded`) with
-   no `reads:` line is a fix. A missing `AC<n>` is not a finding. Flag, as
+   no `reads:` line, or with no paragraph under its title, is a fix. A missing `AC<n>` is not a finding. Flag, as
    a suggestion (not a block), a `spec-design.md` Traceability row that is stale
    against the milestones and paths (a `TC<n>` tag that still says
    `planned for` after its milestone is checked, or vice versa), an

@@ -5,7 +5,7 @@ Status: `Planning` with `stage: requirements`. If `stage` is already
 
 Reads: policy/activity-kind.md, policy/planning-stages.md, policy/planning-quality-bar.md, policy/execution-gate.md, policy/journal.md, shapes/journal.md
 
-When `kind` is `thin`, stop. Prompt `make-full`.
+When `kind` is `thin`, follow **Choose** and do not run the steps below. A typed `thin` stays thin and names `start-building`. When the user did not type `thin`, set `kind` to `full` and follow `commands/make-full.md`. Do not ask the user to type `make-full`. Then name `requirements-ok`.
 
 1. Needs RD that is current and reviewed: the **Problem header** (a
    `## Problem:` heading in RD) exists and no grill branch is open. If not,

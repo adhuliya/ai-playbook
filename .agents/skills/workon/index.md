@@ -47,7 +47,7 @@ from their file name are listed.
 - `commands/`: one file per keyword. Exceptions: **Details** is in `list.md`,
   **Command map** in `help-map.md`, **User away** in `user-away.md`.
   Keyword shares: `SKILL.md` step 3. `grill-me` is `policy/grill.md`.
-- `pipelines/`: `verify-plan` (also **Question gate**), `review`, `milestone`,
+- `pipelines/`: `verify-plan` (plan pass of `agent-review`; also **Question gate**), `review`, `milestone`,
   `comments`, `drift`.
 - `shapes/`: the shape of each record, named for it.
 - `briefs/`: one file per sub-agent role. Sub-agents read them; the parent

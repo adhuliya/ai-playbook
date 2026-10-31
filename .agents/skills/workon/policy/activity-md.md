@@ -30,15 +30,28 @@ Current Design, Current Plan, Milestones, Next Steps. References live in
 - **Milestones:** MECE outcomes with **Test evidence**, numbered `M1`,
   `M2`, … in order. Always write the `M` prefix, in this file and in every
   citation. Each real milestone has a `reads:` line (**IDs**): the `RD` and
-  `DD` it implements, plus a `CONV` or `REF` when that rule or reference is
-  load-bearing for it. Leave `AC`, `TC`, and `DC` off the line. Use
-  `reads: none` when it implements no RD. A `TBD (design stage)` milestone
-  has no `reads:` line. A `removed` milestone and a `superseded` milestone
-  have no `reads:` line. On reopen, `replan-work`, or `make-full`, keep
-  checked items, append new ones, and mark removed work `superseded`; do
-  not delete. Milestone numbers are
-  stable: a `fix-activity` prune replaces a milestone body with a one-line
-  `M<n>: removed: <why>` stub. Review milestones: **Reviews**.
+  `DD` it implements, plus a `REF` when that reference is load-bearing.
+  Leave `AC`, `TC`, `DC`, and `CONV` off the line. The `DD` `cites:` line
+  is the link to the `DC`. The milestone's agents
+  read `conventions.md` and `notes-by-user.md` in full. Use `reads: none`
+  when it implements no RD. Each real milestone has a short paragraph
+  under its title. The paragraph says what the milestone does, and which
+  parts of the project tree it touches. Name areas, such as a directory or
+  a module, not each file (unless some or all the file names are already known).
+  A reader can follow it without the other activity files.
+  Do not list the concrete edits there. Those edits are
+  chosen when the milestone is picked up. Each milestone lists the test
+  cases that complete it (**Test evidence**). A `TBD (design stage)` milestone
+  has no `reads:` line and no paragraph. A `removed` milestone and a
+  `superseded` milestone have no `reads:` line and no paragraph.
+  A checked milestone stays in the list. When a later milestone
+  replaces an aspect of it, add `Superseded by: M<k> — <aspect>`.
+  On reopen, `replan-work`, or `make-full`, keep checked items,
+  append new ones, and mark undone work `superseded`; do not delete.
+  Milestone numbers are stable.
+  A `fix-activity` prune may replace an unchecked milestone with a one-line
+  `M<n>: removed: <why>` stub. It asks before it removes a checked
+  milestone. Review milestones: **Reviews**.
 - **Next Steps:** while `Planning`, item 1 is the exit keyword. Work
   steps follow it. On `Complete`, item 1 is `resume-work`.
 - In `stage: requirements`, Current Design points at `spec-design.md`, whose

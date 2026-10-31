@@ -1,6 +1,7 @@
 # Inflight pipelines
 
-A pipeline is a `verify-plan`, review (`start-review` or fix cycle),
+A pipeline is a plan pass (`verify-plan`, which `agent-review` runs in
+`Planning`), a review (`agent-review` outside `Planning`, or a fix cycle),
 comment, drift, or milestone run. It is in flight while
 `<slug>/artifacts/inflight.md` exists. Planning explores are not pipelines,
 and an open review cycle that waits for `apply-review` is not a unit of
@@ -26,7 +27,9 @@ reads) are the **Stops** pipeline rule.
 
 ## Pause and resume
 
-`pause-work` sets `Paused` and does not delete or rewrite `inflight.md`.
+A grill pause does not create `inflight.md`; `pause-work` sets `Paused`,
+keeps an existing file, and adds where the agent stopped and what remains
+to `notes:`.
 Sub-agents keep running. They may write only their assigned outputs.
 They still must not write activity files or `inflight.md`. Do not kill them.
 
@@ -54,5 +57,5 @@ re-run keyword in `# Next Steps`. Leave an unchecked milestone unchecked.
 Do not roll back any other product code. An open review cycle stays open.
 Do not record this run's points. Abandon does not unpause.
 
-Re-run keywords: `verify-plan`; `start-review`; `fix-activity`; the
+Re-run keywords: `agent-review`; `fix-activity`; the
 comment command named in `unit:`; an unchecked `M<n>` names `continue`.

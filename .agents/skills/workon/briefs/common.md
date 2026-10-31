@@ -16,17 +16,21 @@ Never write an activity file: `agent-activity.md`, `agent-journal.md`,
 `notes-by-user.md`, `reviews.md`, `references.md`, `spec-plan-outline.md`,
 `artifacts/guide-for-users.md`, `artifacts/detailed-design.md`,
 `artifacts/agent-notes.md`, `activities.md`. Never
-read `spec-req-def.md`, `spec-design-choices.md`, `notes-by-user.md`,
+read `spec-req-def.md`, `spec-design-choices.md`,
 `reviews.md`, `agent-journal.md`, or `artifacts/agent-notes.md`; the parent pastes the excerpts you need or lists a packet file in `inputs`.
 Read another agent's file only when the prompt lists it as input. Never
 read a slice directory that is not yours. Never read or write
-`inflight.md`. You may read `conventions.md` when the prompt gives its path.
+`inflight.md`. Read `notes-by-user.md` only when the prompt sets `notes:`,
+and then read the whole file. Read `conventions.md` when the prompt gives
+its path. When your role brief says to read it in full, do that. A cited
+`CONV` id is not the limit of the rules.
 
 ## Conduct
 
-Append one line, no heading, `Sub-agent <role>: <clause>`, to `log:` at start, before a long
-command (name it), before a batch (count, sample names, purpose), when
-blocked, and at the end. A child does not.
+Append to `log:` as `Sub-agent <name>:`, using the prompt's `name:`. For
+the start, each command, each batch, each choice, a block, and the end,
+add one or two plain sentences: what you are doing, and why. Skip a single
+file read. A child does not log. You log a split: how many children, and why.
 Ask the user nothing. Edit code only as a milestone worker, inside assigned
 paths; a comment editor edits only comments, inside assigned files. Run
 only the commands the prompt names. Do not `git add` or commit. Do not

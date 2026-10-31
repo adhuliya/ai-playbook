@@ -11,11 +11,12 @@ Traceability case names for those RDs tagged with this `M` (`planned for`,
 `done by`, or `implemented by`); each `DD` on the `reads:` line; each `DC`
 named in those `cites:` lines, plus any `DC` on the `reads:` line; each
 `REF` on the `reads:` line; each `RU<n>` section cited in the milestone
-block, or the `RU<n>.<m>` bullet when the cycle itself is not cited. A
-`CONV` id becomes the line `CONV<n>: see conventions.md`. The prompt still
-passes `conventions.md`. A missing `AC` prints no `AC` lines and is not a
-`missing:` line. `reads: none` loads no RD. A `missing:` line names an ID
-the milestone asked for and the file did not hold.
+block, or the `RU<n>.<m>` bullet when the cycle itself is not cited. Do not
+copy `conventions.md` or `notes-by-user.md` into the slice, and do not treat
+a `CONV` id as the convention scope. The prompt passes both paths. The
+worker and the collator read each file in full. A missing `AC` prints no
+`AC` lines and is not a `missing:` line. `reads: none` loads no RD. A
+`missing:` line names an ID the milestone asked for and the file did not hold.
 
 Tools are `mkdir` and `awk` (POSIX `sh`). They are enough on Linux, macOS,
 and Git Bash. The program strips CR. Copy it as-is. Replace `<slug>` and
@@ -81,7 +82,6 @@ function take(text, mode,    rest, tok, kind) {
       if (tok ~ /^RD/) kind = "rd"
       else if (tok ~ /^DD/) kind = "dd"
       else if (tok ~ /^DC/) kind = "dc"
-      else if (tok ~ /^CONV/) kind = "conv"
       else if (tok ~ /^REF/) kind = "ref"
     } else if (tok ~ /^RU[0-9]+$/) kind = "ruc"
     else if (tok ~ /^RU/) kind = "rup"
@@ -218,11 +218,6 @@ BEGIN {
     sub(/\..*$/, "", cycle)
     if (has(printed, cycle)) continue
     if (!emit_point(id)) { print "missing: " id }
-    print ""
-  }
-  if (cnt["conv"] > 0) {
-    print "## Conventions"
-    for (i = 1; i <= cnt["conv"]; i++) print ord["conv", i] ": see conventions.md"
     print ""
   }
 }

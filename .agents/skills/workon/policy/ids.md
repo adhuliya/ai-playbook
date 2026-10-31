@@ -63,3 +63,6 @@ exception in **Writing style**.
   `rg -n -A 2 'TC3:'` on `spec-design.md`. When `AC3:` is absent, stop after the
   `RD3` block.
 - Read a whole notes file only to grill, review, or rewrite it as a whole.
+  A milestone worker and the collator are the exception: they read
+  `conventions.md` and `notes-by-user.md` in full. Other entries stay one
+  ID at a time.
