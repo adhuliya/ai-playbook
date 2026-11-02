@@ -2,6 +2,11 @@
 
 Records are for durability, not a live log.
 
+During Planning, write a settled RD, Design Decision, design fact, or plan
+fact in the same turn it becomes clear. Do not hold it only in chat for a
+later checkpoint. An important fleeting note with no home yet follows
+**Agent notes**.
+
 - `agent-activity.md`: on a scope, design, or plan change, a milestone reached, a
   blocker, and before pause, complete, or handoff. Update a milestone's
   `reads:` line in that same edit. A checked milestone also appends a

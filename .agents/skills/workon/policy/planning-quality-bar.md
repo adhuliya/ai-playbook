@@ -15,8 +15,10 @@ The order is mandatory:
 3. Grill the remaining branches: goal, success, scope, constraints,
    assumptions, risks, interfaces, non-goals. Classify each requirement and
    write RD as it becomes clear. Record Design Decisions as they are made.
-   Draft Conventions (rules and Setup) best-effort from repo and activity
-   facts; the user corrects.
+   Write each settled fact to its home record in the same turn. Do not leave
+   it only in chat. An important unsettled note with no home yet goes to
+   **Agent notes** as `working:`. Draft Conventions (rules and Setup)
+   best-effort from repo and activity facts; the user corrects.
 4. If the user cited files, run **Cited context**.
 5. Draft Goal (RD summary), `spec-design.md` (**Design document**: Current
    Design, `DD<n>` blocks that cite their `DC` entries, a `TC<n>` Test
