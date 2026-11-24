@@ -16,8 +16,8 @@ rewritten. Shape: `shapes/plan-outline.md`.
 - **Structure only.** No done marks, no dates, no copied detail. Drop a
   `removed` or `superseded` milestone from the list.
 - **Write** it when the plan is first drafted (design stage of create,
-  `create-sibling`, `replan-work`, `import-activity`). **Rewrite** it in the
-  same edit whenever `# Current Plan` or `# Milestones` changes (**Update
-  cadence**).
+  `create-sibling`, `replan-work`, `import-activity`, `capture-work`).
+  **Rewrite** it in the same edit whenever `# Current Plan` or
+  `# Milestones` changes (**Update cadence**).
 - Show it first at **File review**; it makes the plan cheap to review.
 - It is not part of the handoff (**Portability**).

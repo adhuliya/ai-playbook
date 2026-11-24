@@ -10,7 +10,7 @@ Write one entry per event, in the same turn:
 
 | Event | Written by |
 |---|---|
-| `Created` | create, `create-sibling` (in the new activity), `import-activity` |
+| `Created` | create, `create-sibling` (in the new activity), `import-activity`, `capture-work` |
 | `Requirements` | `requirements-ok` |
 | `Approved` / `Building` | `approve-plan` / `start-building` |
 | `Milestone` | checkpoint that checks a milestone |

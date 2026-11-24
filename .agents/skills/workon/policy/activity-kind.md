@@ -24,7 +24,8 @@ type `thin`. Follow `commands/make-full.md`. Do not ask the user to type
 that keyword.
 
 `create-sibling` defaults to the parent's kind unless the user says
-otherwise.
+otherwise. `capture-work` uses **Choose** from the work definition and
+the repo assessment.
 
 ## Thin
 

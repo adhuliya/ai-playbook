@@ -36,9 +36,10 @@ In `stage: requirements`:
 - To reopen requirements, the user asks in `Planning`, or runs
   `replan-work`, which sets `stage: requirements` on request. Drafted design
   stays until the user revises it.
-- `create-sibling` starts at `stage: design`, unless the user asked for
-  requirements first. `import-activity` keeps `stage: requirements` when
-  the imported record has it. Otherwise it sets `design`.
+- `create-sibling` and `capture-work` start at `stage: design`, unless the
+  user asked for requirements first. `import-activity` keeps
+  `stage: requirements` when the imported record has it. Otherwise it
+  sets `design`.
 
 ## File review
 

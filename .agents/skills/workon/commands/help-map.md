@@ -10,6 +10,7 @@ Printed by `help all`. Keep one row per command; `help.md` names this file.
 | | `create-sibling` | New `Planning` activity derived from this one |
 | | `make-full` | If typed: thin → full, same slug, back to `Planning`. The agent also runs that upgrade without asking, unless the user typed `thin`. |
 | | `import-activity` | Adopt activity files from elsewhere → `Planning` (`Complete` kept) |
+| | `capture-work` | New activity from work already started or finished outside workon → `Planning` (milestones checked only with evidence) |
 | Gates and lifecycle | `approve-plan` | Full only: `Planning` → `Approved`. Thin: follow **Choose**. A typed `thin`, or a `kind` that stays `thin`, names `start-building`. When **Choose** sets `full`, follow `commands/make-full.md` without asking, and name `approve-plan` or `requirements-ok`. |
 | | `conventions-ok` | Sign off rules + Setup (one-time) |
 | | `start-building` | Thin design: `Planning` → `Active`. Full: `Approved` → `Active`; needs `conventions: ok`. Refuses `stage: requirements` and full `Planning`. |

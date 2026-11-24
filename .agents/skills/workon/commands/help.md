@@ -40,7 +40,7 @@ Status: any; read-only; no focused activity needed.
 | Pipeline in flight | `pause-work` keeps the pipeline. Next is `resume-work`. Or wait, or ask to abandon. |
 | Fix cycle `open` | Review its points in `reviews.md`; then `apply-review` (applies drift fixes first). `Paused` or `Blocked` still needs `resume-work`. |
 | Regular cycle `open` | Add or edit points, then `apply-review`. `Paused` or `Blocked` still needs `resume-work`. After it closes: requirements names `requirements-ok`, a deeper design names `approve-plan`, and a short design names `start-building`. |
-| No focused activity | Name an activity to switch to it, or describe new work to create one. |
+| No focused activity | Name an activity to switch to it, describe new work to create one, or `capture-work` for work already started outside workon. |
 | `Planning`, `stage: requirements` | Answer open questions. Review RD and the Problem header. Then `requirements-ok`. The agent deepens a short plan first when the request needs it. |
 | `Planning`, `kind: thin` | Review the short files (start with `spec-plan-outline.md`). A same-Goal note follows **Agent notes**. Then `start-building`. |
 | `Planning` | Answer open questions. Review the files, starting with `spec-plan-outline.md`. Feedback follows **Agent notes**. Then `approve-plan` (it offers to accept the conventions if `pending`). |

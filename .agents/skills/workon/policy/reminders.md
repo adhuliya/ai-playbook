@@ -2,9 +2,10 @@
 
 Remind once per phase change.
 
-- On `full`, create, `create-sibling`, and `replan-work`: remind the user to use a
-  **strong** model, the most capable reasoning model they can pick (for
-  example, a top Claude Opus or GPT high-reasoning tier).
+- On `full`, create, `create-sibling`, `capture-work`, and `replan-work`:
+  remind the user to use a **strong** model, the most capable reasoning
+  model they can pick (for example, a top Claude Opus or GPT
+  high-reasoning tier).
 - `approve-plan`: one-time note that planning is done; the user may drop the
   strong model. Do not recommend an execution tier.
 

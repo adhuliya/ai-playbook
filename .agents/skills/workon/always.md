@@ -9,8 +9,9 @@ Follow only the loaded command file and the policies it names; ignore rules
 that belong to another command. Run the steps in order. The word "Stop"
 ends the turn. It ends the command unless that command says the next
 message resumes it. Every command needs one focused activity,
-except `help`, `import-activity`, `create`, `list`, `query-work`,
-`no-query-work`, `teach-off`, `teach-brief`, and `teach-deep`. When the
+except `help`, `import-activity`, `capture-work`, `create`, `list`,
+`query-work`, `no-query-work`, `teach-off`, `teach-brief`, and
+`teach-deep`. When the
 status is not on the file's `Status:` line,
 report the status and stop. `start-review`, `agent-review`, and
 `apply-review` are distinct steps; do not treat one as another.
@@ -76,9 +77,11 @@ Critics run only for `agent-review` and a fix-cycle review.
 Natural language is fine for discussion, create, switch, list, and details.
 A gated transition needs the exact reserved keyword. When you detect the
 intent, do not transition silently; prompt the keyword, for example `If you
-want to replan, write \`replan-work\`.` A plain "Resume <slug>" means switch
-plus context reload; when the status is `Paused`, `Blocked`, or `Complete`,
-prompt `resume-work`.
+want to replan, write \`replan-work\`.` When the user describes work already
+started or finished outside workon and wants records for it, prompt
+`capture-work`; do not run `create` or `import-activity` for that intent. A
+plain "Resume <slug>" means switch plus context reload; when the status is
+`Paused`, `Blocked`, or `Complete`, prompt `resume-work`.
 
 Exceptions: the agent MAY run the consistency check
 (`policy/consistency-check.md`) without a keyword, and `mark-completed`

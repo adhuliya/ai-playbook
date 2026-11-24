@@ -3,10 +3,10 @@ name: workon
 description: >-
   Manage durable activities under .dev-notes/activities/ (activity record,
   journal, requirements, design decisions, conventions, references, reviews,
-  guide for users). Use when the user manages or imports an activity, or
-  issues a workon keyword: help, requirements-ok, approve-plan,
+  guide for users). Use when the user manages, imports, or captures an
+  activity, or issues a workon keyword: help, requirements-ok, approve-plan,
   conventions-ok, start-building, pause-work, resume-work, mark-completed,
-  replan-work, create-sibling, import-activity, make-full, start-review, agent-review, apply-review,
+  replan-work, create-sibling, import-activity, capture-work, make-full, start-review, agent-review, apply-review,
   update-convention, add-review-comments,
   remove-review-comments, fix-activity, compact-journal, create-guide,
   detailed-design, add-ac, delete-tmp-files, query-work, no-query-work,
@@ -93,7 +93,7 @@ reset. Never bulk-read a folder.
 
 | Phase or action | Read after the base files |
 |---|---|
-| Planning: `create`, `replan-work`, `create-sibling`, `import-activity` | the command file and its `Reads:`; open each `shapes/` file when you write that record |
+| Planning: `create`, `replan-work`, `create-sibling`, `import-activity`, `capture-work` | the command file and its `Reads:`; open each `shapes/` file when you write that record |
 | Gates: `requirements-ok`, `approve-plan`, `conventions-ok`, `start-building`, `make-full` | the command file and its `Reads:` (a few policies) |
 | Building: `build` | the command file and its `Reads:`; on `full`, the launch kit and `pipelines/milestone.md` just before the first sub-agent launch |
 | Review: `start-review`, `agent-review`, `apply-review` | the command file and its `Reads:`. `agent-review` names the kit at its launch step. In `Planning` that step is `pipelines/verify-plan.md`. Otherwise it is `pipelines/review.md`. `start-review` launches nothing |
